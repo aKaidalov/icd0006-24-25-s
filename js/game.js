@@ -7,7 +7,6 @@ const DOWN_LEFT = 4;
 const DOWN = 5;
 const DOWN_RIGHT = 6;
 
-const squares = document.querySelectorAll('.square');
 const players = ['X', 'O'];
 let currentPlayer = players[0];
 let gameOver = false;

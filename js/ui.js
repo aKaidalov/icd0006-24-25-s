@@ -1,6 +1,7 @@
 import {logBoardClick} from "./helpers.js";
 
 const TOTAL_SQUARES = 25;
+const GRID_STARTING_SQUARES = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 
 export function setUpBaseUiElements() {
     const appContainer = document.getElementById('app-container');
@@ -27,6 +28,9 @@ function createBoard(){
     for (let i = 0; i < TOTAL_SQUARES; i++) {
         const square = document.createElement('div');
         square.classList.add('square');
+        if (GRID_STARTING_SQUARES.includes(i)) {
+            square.classList.add('grid');
+        }
         square.dataset.index = i;
         board.appendChild(square);
     }

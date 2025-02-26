@@ -32,6 +32,10 @@ h1 {
     background-color: #FFFFE0;
 }
 
+.grid {
+    border: 2px solid lightskyblue;
+}
+
 #restart-button {
     display: block;
     margin-left: auto;

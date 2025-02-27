@@ -1,11 +1,4 @@
-const UP_LEFT = -6;
-const UP = -5;
-const UP_RIGHT = -4;
-const LEFT = -1;
-const RIGHT = 1;
-const DOWN_LEFT = 4;
-const DOWN = 5;
-const DOWN_RIGHT = 6;
+import Direction from "./components/direction.js";
 
 const players = ['X', 'O'];
 let currentPlayer = players[0];
@@ -66,25 +59,25 @@ function handleGridMove(key) {
 function defineDirection(key) {
     let direction = null;
 
-    if (key === 'r') direction = UP_LEFT;
-    else if (key === 't') direction = UP;
-    else if (key === 'y') direction = UP_RIGHT;
-    else if (key === 'f') direction = LEFT;
-    else if (key === 'h') direction = RIGHT;
-    else if (key === 'v') direction = DOWN_LEFT;
-    else if (key === 'b') direction = DOWN;
-    else if (key === 'n') direction = DOWN_RIGHT;
+    if (key === 'r') direction = Direction.UP_LEFT;
+    else if (key === 't') direction = Direction.UP;
+    else if (key === 'y') direction = Direction.UP_RIGHT;
+    else if (key === 'f') direction = Direction.LEFT;
+    else if (key === 'h') direction = Direction.RIGHT;
+    else if (key === 'v') direction = Direction.DOWN_LEFT;
+    else if (key === 'b') direction = Direction.DOWN;
+    else if (key === 'n') direction = Direction.DOWN_RIGHT;
 
     return direction;
 }
 
 function move(direction) {
     let currentGrid = gridPeek(direction);
-    let gridCenterElementIndex = getGridCenter(currentGrid)
+    let gridCenterSquareIndex = getGridCenter(currentGrid)
 
-    if (isInBounds(gridCenterElementIndex)) {
+    if (isInBounds(gridCenterSquareIndex)) {
         deleteOldGrid();
-        createCurrentGrid(currentGrid);
+        createNewGridFrom(currentGrid);
         changePlayer();
         changeEndMessage();
         return true;
@@ -95,7 +88,7 @@ function move(direction) {
     return false;
 }
 
-function createCurrentGrid(currentGrid) {
+function createNewGridFrom(currentGrid) {
     document.querySelectorAll('.square').forEach((square) => {
         if (currentGrid.includes(Number(square.dataset.index))) {
             square.classList.add('grid');

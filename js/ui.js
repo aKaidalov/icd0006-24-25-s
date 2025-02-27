@@ -50,7 +50,6 @@ function createEndGame() {
     restartButton.type = 'button';
     restartButton.value = 'Restart';
     restartButton.id = 'restart-button';
-    // restartButton.addEventListener('click', restartGame);
 
     endGame.appendChild(restartButton);
 

@@ -33,7 +33,7 @@ h1 {
 }
 
 .grid {
-    border: 2px solid lightskyblue;
+    border: 2px solid #87CEFAFF;
 }
 
 #restart-button {
@@ -51,4 +51,10 @@ h1 {
 #restart-button:hover {
     background-color: #000000;
     color: #ffffff;
+}
+
+.winner {
+    color: red;
+    font-weight: bold;
+    transition: background-color 0.6s ease;
 }

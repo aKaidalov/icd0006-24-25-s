@@ -5,7 +5,7 @@ let currentPlayer = players[0];
 let gameOver = false;
 let isGridMoveMode = false; // Tracks if 'G' was pressed
 let gridBounds = [6, 7, 8, 11, 12, 13, 16, 17, 18];
-let moveCounter = 0; //TODO: Reset the counter when finished or restart
+let moveCounter = 0;
 let currentGridCenterSquareIndex = 12;
 let currentWinningCombinations = [];
 
@@ -32,17 +32,26 @@ export function startGame() {
                 enableOtherRules();
             }
 
-            // Check winner immediately after click
-            if (checkWin()) { //TODO: Reduce from duplicates
-                changeEndMessage(`Game Over! ${currentPlayer} wins!`);
-                gameOver = true;
-                return;
+            if (!checkTieOrWin()) {
+                changePlayer();
+                changeEndMessage(`${currentPlayer}'s turn!`);
             }
-
-            changePlayer();
-            changeEndMessage(`${currentPlayer}'s turn!`);
         }
     });
+}
+
+function checkTieOrWin() {
+    if (checkTie()) {
+        changeEndMessage(`It's a tie!`);
+        gameOver = true;
+        return true;
+    }
+    if (checkWin()) {
+        changeEndMessage(`Game Over! ${currentPlayer} wins!`);
+        gameOver = true;
+        return true;
+    }
+    return false;
 }
 
 function generateWinningCombinations() {
@@ -74,6 +83,37 @@ function checkWin() {
     });
 }
 
+function checkTie() {
+    if (isBoardFull()) {
+        return true;
+    }
+
+    generateWinningCombinations();
+    currentWinningCombinations.forEach(([a, b, c]) => {
+        const squares = document.querySelectorAll('.square');
+        if ((squares[a].textContent === players[0] && squares[b].textContent === players[0] && squares[c].textContent === players[0])
+            || (squares[a].textContent === players[1] && squares[b].textContent === players[1] && squares[c].textContent === players[1])) {
+            squares[a].classList.add('winner');
+            squares[b].classList.add('winner');
+            squares[c].classList.add('winner');
+        }
+    });
+
+    let winningCombinationsFound = document.querySelectorAll('.winner').length;
+    console.log(`winningCombinationCounter: ${winningCombinationsFound / 3 > 1}`);
+    return winningCombinationsFound / 3 > 1;
+
+}
+
+function isBoardFull() {
+    const squares = document.querySelectorAll('.square');
+    const isFull = [...squares].every(square => square.textContent.trim() !== '');
+
+    if (isFull) squares.forEach(square => square.classList.add('winner'));
+
+    return isFull;
+}
+
 function enableOtherRules() {
     // Attach keypress listener to the document, not board
     document.addEventListener('keydown', (event) => {
@@ -82,12 +122,7 @@ function enableOtherRules() {
             console.log("Grid move mode enabled. Press a movement key.");
         } else if (isGridMoveMode) {
             handleGridMove(event.key);
-
-            // Check winner immediately after grid move
-            if (checkWin()) {
-                changeEndMessage(`Game Over! ${currentPlayer} wins!`);
-                gameOver = true;
-            }
+            checkTieOrWin();
         }
     });
 }

@@ -9,6 +9,7 @@ let gridBounds = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 let moveCounter = 0;
 let currentGridCenterSquareIndex = 12;
 let currentWinningCombinations = [];
+let isPreviousElementRemoved = false;
 
 export function startGame() {
     const board = document.getElementById('board');
@@ -20,25 +21,96 @@ export function startGame() {
         const square = event.target;
         console.log(square);
 
-        if (!square.classList.contains('square') || square.textContent !== '' || gameOver) {
+        if ((square.classList.contains('square') && isPositionChangeMode && !gameOver)) {
+            handlePositionChange(square);
+            return;
+        } else if (!square.classList.contains('square') || square.textContent !== '' || gameOver) {
             return;
         }
 
         if (!isGridMoveMode) {
+            // // Waits changes to happen in enableOtherRules()
+            // if (isPositionChangeMode) handlePositionChange(square);
+            // else {
+            //     assignSquareValue(square);
+            //     moveCounter++;
+            // }
+
             assignSquareValue(square);
             moveCounter++;
-
-            // Enable grid movement after 4 moves
-            if (moveCounter === 4) { //TODO: make grid independent from click listener?
+            // Enable grid movement after 4 moves. Executes only once.
+            if (moveCounter === 4) {
                 enableOtherRules();
             }
 
-            if (!checkTieOrWin()) {
+            if (!checkTieOrWin() && !isPositionChangeMode) {
                 changePlayer();
                 changeEndMessage(`${currentPlayer}'s turn!`);
             }
         }
     });
+}
+
+function enableOtherRules() {
+    // Attach keypress listener to the document, not board
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'g' && !gameOver && !isPositionChangeMode) {
+            isGridMoveMode = true; // Enable movement mode
+            changeEndMessage(`Grid move mode for player: ${currentPlayer}!`);
+            console.log("Grid move mode enabled. Press a movement key.");
+        } else if (isGridMoveMode) {
+            handleGridMove(event.key);
+        } else if (event.key === 'c' && !gameOver && !isGridMoveMode) {
+            isPositionChangeMode = true; // Enable changing mode
+            changeEndMessage(`Position mode for player: ${currentPlayer}!`);
+            console.log("Position change mode enabled. Click on existing position.");
+        }
+
+        checkTieOrWin();
+    });
+}
+
+function handleGridMove(key) {
+    const direction = Direction.fromKey(key);
+    if (!direction) {
+        console.log("Invalid key! Try again.");
+        return;
+    }
+    if (move(direction)) {
+        isGridMoveMode = false; // Disable movement mode after a move
+        console.log(`Moved in direction: ${direction}`);
+    }
+}
+
+function handlePositionChange(clickedSquare) {
+    if (clickedSquare.textContent === currentPlayer  && !isPreviousElementRemoved) {
+        clickedSquare.textContent = '';
+        isPreviousElementRemoved = true;
+    } else if (clickedSquare.textContent === '' && isPreviousElementRemoved) {
+        clickedSquare.textContent = currentPlayer;
+        isPreviousElementRemoved = false;
+        isPositionChangeMode = false;
+        if (!checkTieOrWin()) {
+            changePlayer();
+            changeEndMessage(`${currentPlayer}'s turn!`);
+        }
+    }
+}
+
+function move(direction) {
+    let currentGrid = gridPeek(direction);
+    let gridCenterSquareIndex = getGridCenter(currentGrid)
+    if (isInBounds(gridCenterSquareIndex)) {
+        deleteOldGrid();
+        createNewGridFrom(currentGrid);
+        currentGridCenterSquareIndex = gridCenterSquareIndex;
+        console.log(`Grid center: ${currentGridCenterSquareIndex}`);
+        changePlayer();
+        changeEndMessage(`${currentPlayer}'s turn!`);
+        return true;
+    }
+    console.log("Wrong direction! Try again.");
+    return false;
 }
 
 function generateWinningCombinations() {
@@ -65,8 +137,8 @@ function checkTieOrWin() {
 
     currentWinningCombinations.forEach(([a, b, c]) => {
         const squares = document.querySelectorAll('.square');
-        if ((squares[a].textContent === players[0] && squares[b].textContent === players[0] && squares[c].textContent === players[0])
-            || (squares[a].textContent === players[1] && squares[b].textContent === players[1] && squares[c].textContent === players[1])) {
+        if (positionContainsPlayer(squares, a, b, c, 0)
+            || positionContainsPlayer(squares, a, b, c, 1)) {
             squares[a].classList.add('winner');
             squares[b].classList.add('winner');
             squares[c].classList.add('winner');
@@ -74,19 +146,23 @@ function checkTieOrWin() {
     });
 
     let winningCombinationsFound = (document.querySelectorAll('.winner').length) / 3;
-    console.log(`winningCombinationCounter: ${winningCombinationsFound / 3 > 1}`);
 
-    if (winningCombinationsFound === 1) {
-        changeEndMessage(`Game Over! ${document.querySelector(`.winner`).textContent} wins!`);
-        gameOver = true;
-        return true;
-    } else if (winningCombinationsFound === 2) {
-        changeEndMessage(`It's a tie!`);
+    if (winningCombinationsFound >= 1) {
+        const message = winningCombinationsFound === 1
+            ? `Game Over! ${document.querySelector('.winner').textContent} wins!`
+            : "It's a tie!";
+
+        changeEndMessage(message);
         gameOver = true;
         return true;
     }
 
+
     return false;
+}
+
+function positionContainsPlayer(squares, a, b, c, playerIndex) {
+    return squares[a].textContent === players[playerIndex] && squares[b].textContent === players[playerIndex] && squares[c].textContent === players[playerIndex];
 }
 
 function isBoardFull() {
@@ -96,29 +172,6 @@ function isBoardFull() {
     if (isFull) squares.forEach(square => square.classList.add('winner'));
 
     return isFull;
-}
-
-function enableOtherRules() {
-    // Attach keypress listener to the document, not board
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'g' && !gameOver) {
-            isGridMoveMode = true; // Enable movement mode
-            console.log("Grid move mode enabled. Press a movement key.");
-        } else if (isGridMoveMode) {
-            handleGridMove(event.key);
-        } else if (event.key === 'c' && !gameOver) {
-            isPositionChangeMode = true; // Enable movement mode
-            console.log("Position change mode enabled. Click on existing position.");
-        } else if (isPositionChangeMode) {
-            handlePositionChange();
-        }
-
-        checkTieOrWin();
-    });
-}
-
-function handlePositionChange() {
-
 }
 
 function assignSquareValue(square) {
@@ -132,34 +185,6 @@ function changePlayer() {
 function changeEndMessage(newMessage) {
     const endMessage = document.getElementById('end-message');
     endMessage.textContent = newMessage;
-}
-
-function handleGridMove(key) {
-    const direction = Direction.fromKey(key);
-    if (!direction) {
-        console.log("Invalid key! Try again.");
-        return;
-    }
-    if (move(direction)) {
-        isGridMoveMode = false; // Disable movement mode after a move
-        console.log(`Moved in direction: ${direction}`);
-    }
-}
-
-function move(direction) {
-    let currentGrid = gridPeek(direction);
-    let gridCenterSquareIndex = getGridCenter(currentGrid)
-    if (isInBounds(gridCenterSquareIndex)) {
-        deleteOldGrid();
-        createNewGridFrom(currentGrid);
-        currentGridCenterSquareIndex = gridCenterSquareIndex;
-        console.log(`Grid center: ${currentGridCenterSquareIndex}`);
-        changePlayer();
-        changeEndMessage(`${currentPlayer}'s turn!`);
-        return true;
-    }
-    console.log("Wrong direction! Try again.");
-    return false;
 }
 
 function createNewGridFrom(currentGrid) {
@@ -192,7 +217,7 @@ function isInBounds(gridCenter) {
     return gridBounds.includes(gridCenter);
 }
 
-function restartGame() {
+function restartGame() { //TODO: Change to reload page
     const squares = document.querySelectorAll('.square');
     changeEndMessage(`X's turn!`);
     currentPlayer = players[0];
@@ -203,6 +228,7 @@ function restartGame() {
     moveCounter = 0;
     currentGridCenterSquareIndex = 12;
     currentWinningCombinations = [];
+    isPreviousElementRemoved = false;
 
     squares.forEach(square => {
         square.textContent = '';

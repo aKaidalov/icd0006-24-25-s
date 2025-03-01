@@ -4,6 +4,7 @@ const players = ['X', 'O'];
 let currentPlayer = players[0];
 let gameOver = false;
 let isGridMoveMode = false; // Tracks if 'G' was pressed
+let isPositionChangeMode = false;
 let gridBounds = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 let moveCounter = 0;
 let currentGridCenterSquareIndex = 12;
@@ -122,9 +123,19 @@ function enableOtherRules() {
             console.log("Grid move mode enabled. Press a movement key.");
         } else if (isGridMoveMode) {
             handleGridMove(event.key);
-            checkTieOrWin();
+        } else if (event.key === 'c' && !gameOver) {
+            isPositionChangeMode = true; // Enable movement mode
+            console.log("Position change mode enabled. Click on existing position.");
+        } else if (isPositionChangeMode) {
+            handlePositionChange();
         }
+
+        checkTieOrWin();
     });
+}
+
+function handlePositionChange() {
+
 }
 
 function assignSquareValue(square) {
@@ -204,6 +215,7 @@ function restartGame() {
     currentPlayer = players[0];
     gameOver = false;
     isGridMoveMode = false; // Tracks if 'G' was pressed
+    isPositionChangeMode = false;
     gridBounds = [6, 7, 8, 11, 12, 13, 16, 17, 18];
     moveCounter = 0;
     currentGridCenterSquareIndex = 12;

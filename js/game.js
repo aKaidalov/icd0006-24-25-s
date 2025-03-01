@@ -41,20 +41,6 @@ export function startGame() {
     });
 }
 
-function checkTieOrWin() {
-    if (checkTie()) {
-        changeEndMessage(`It's a tie!`);
-        gameOver = true;
-        return true;
-    }
-    if (checkWin()) {
-        changeEndMessage(`Game Over! ${currentPlayer} wins!`);
-        gameOver = true;
-        return true;
-    }
-    return false;
-}
-
 function generateWinningCombinations() {
     currentWinningCombinations = [
         [currentGridCenterSquareIndex + Direction.UP_LEFT, currentGridCenterSquareIndex + Direction.UP, currentGridCenterSquareIndex + Direction.UP_RIGHT],
@@ -68,28 +54,15 @@ function generateWinningCombinations() {
     ];
 }
 
-function checkWin() {
-    generateWinningCombinations();
-    return currentWinningCombinations.some(([a, b, c]) => {
-        const squares = document.querySelectorAll('.square');
-        if (squares[a].textContent === currentPlayer &&
-            squares[b].textContent === currentPlayer &&
-            squares[c].textContent === currentPlayer) {
-            squares[a].classList.add('winner');
-            squares[b].classList.add('winner');
-            squares[c].classList.add('winner');
-            return true;
-        }
-        return false;
-    });
-}
-
-function checkTie() {
+function checkTieOrWin() {
     if (isBoardFull()) {
+        changeEndMessage(`It's a tie!`);
+        gameOver = true;
         return true;
     }
 
     generateWinningCombinations();
+
     currentWinningCombinations.forEach(([a, b, c]) => {
         const squares = document.querySelectorAll('.square');
         if ((squares[a].textContent === players[0] && squares[b].textContent === players[0] && squares[c].textContent === players[0])
@@ -100,10 +73,20 @@ function checkTie() {
         }
     });
 
-    let winningCombinationsFound = document.querySelectorAll('.winner').length;
+    let winningCombinationsFound = (document.querySelectorAll('.winner').length) / 3;
     console.log(`winningCombinationCounter: ${winningCombinationsFound / 3 > 1}`);
-    return winningCombinationsFound / 3 > 1;
 
+    if (winningCombinationsFound === 1) {
+        changeEndMessage(`Game Over! ${document.querySelector(`.winner`).textContent} wins!`);
+        gameOver = true;
+        return true;
+    } else if (winningCombinationsFound === 2) {
+        changeEndMessage(`It's a tie!`);
+        gameOver = true;
+        return true;
+    }
+
+    return false;
 }
 
 function isBoardFull() {

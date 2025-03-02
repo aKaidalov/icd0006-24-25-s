@@ -33,7 +33,7 @@ function createSubheadings(mode) {
 
     const timeSubheading = document.createElement("span");
     timeSubheading.id = "game-time";
-    timeSubheading.textContent = "0";
+    timeSubheading.textContent = "00:00";
 
     subheadings.append(modeSubheading, elementBetween, timeSubheading);
 

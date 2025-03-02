@@ -1,6 +1,5 @@
 import Direction from "./components/direction.js";
 import {startTimer, stopTimer} from "./app.js";
-import {setUpBaseUiElements} from "./ui.js";
 
 const players = ['X', 'O'];
 let currentPlayer = players[0];
@@ -158,12 +157,13 @@ function checkTieOrWin() {
         }
     });
 
-    let winningCombinationsFound = (document.querySelectorAll('.winner').length) / 3;
+    let winningCombinationsFound = Math.round((document.querySelectorAll('.winner').length) / 3);
 
     if (winningCombinationsFound >= 1) {
-        const message = winningCombinationsFound === 1
-            ? `Game Over! ${document.querySelector('.winner').textContent} wins!`
-            : "It's a tie!";
+        let message = "It's a tie!";
+        if (winningCombinationsFound === 1 || (winningCombinationsFound === 2 && allElementsHaveSameWinner())) {
+            message = `Game Over! ${document.querySelector('.winner').textContent} wins!`;
+        }
 
         changeEndMessage(message);
         gameOver = true;
@@ -173,6 +173,14 @@ function checkTieOrWin() {
 
 
     return false;
+}
+
+function allElementsHaveSameWinner() {
+    const winnerElements = document.querySelectorAll('.winner');
+    if (winnerElements.length === 0) return false;
+    const player = winnerElements[0].textContent;
+
+    return Array.from(winnerElements).every(el => el.textContent === player);
 }
 
 function positionContainsPlayer(squares, a, b, c, playerIndex) {

@@ -3,9 +3,9 @@ import {logBoardClick} from "./helpers/helpers.js";
 const TOTAL_SQUARES = 25;
 const GRID_STARTING_SQUARES = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 
-export function setUpBaseUiElements() {
+export function setUpBaseUiElements(mode) {
     const appContainer = document.getElementById('app-container');
-    appContainer.append(createTitle(), createBoard(), createEndMessage(), createEndGame());
+    appContainer.append(createTitle(), createSubheadings(mode), createBoard(), createEndMessage(), createEndGame());
 
     return appContainer;
 }
@@ -19,6 +19,25 @@ function createTitle(){
     title.append(titleText);
 
     return title;
+}
+
+function createSubheadings(mode) {
+    const subheadings = document.createElement("h2");
+    subheadings.id = "subheadings";
+
+    const modeSubheading = document.createElement("span");
+    modeSubheading.textContent = mode;
+
+    const elementBetween = document.createElement("span");
+    elementBetween.textContent = " - ";
+
+    const timeSubheading = document.createElement("span");
+    timeSubheading.id = "game-time";
+    timeSubheading.textContent = "0";
+
+    subheadings.append(modeSubheading, elementBetween, timeSubheading);
+
+    return subheadings;
 }
 
 function createBoard(){

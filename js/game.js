@@ -1,15 +1,18 @@
 import Direction from "./components/direction.js";
+import {startTimer, stopTimer} from "./app.js";
+import {setUpBaseUiElements} from "./ui.js";
 
 const players = ['X', 'O'];
 let currentPlayer = players[0];
 let gameOver = false;
-let isGridMoveMode = false; // Tracks if 'G' was pressed
-let isPositionChangeMode = false;
+let isGridMoveMode = false; // Tracks if 'g' was pressed
+let isPositionChangeMode = false; // Tracks if 'c' was pressed
 let gridBounds = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 let moveCounter = 0;
 let currentGridCenterSquareIndex = 12;
 let currentWinningCombinations = [];
 let isPreviousElementRemoved = false;
+let clickCounter = 0;
 
 export function startGame() {
     const board = document.getElementById('board');
@@ -18,6 +21,9 @@ export function startGame() {
     restartButton.addEventListener('click', restartGame);
 
     board.addEventListener('click', (event) => {
+        console.log(`Click counter: ${++clickCounter}`);
+        if (!gameOver) startTimer();
+
         const square = event.target;
         console.log(square);
 
@@ -31,17 +37,23 @@ export function startGame() {
         if (!isGridMoveMode) {
             if (hasMadeFirstFourMoves()) {
                 assignSquareValue(square);
+                console.log("OOOOOOOOOOOO")
                 moveCounter++;
+            } else {
+                assignSquareValueWithinGrid(square);
+                if (moveCounter === 4) {
+                    changePlayer();
+                }
             }
-            else assignSquareValueWithinGrid(square);
 
-            console.log(moveCounter);
+            console.log(`moveCounter: ${moveCounter}`);
             // Enable grid movement after 4 moves. Executes only once.
             if (moveCounter === 4) {
                 enableOtherRules();
             }
 
             if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves()) {
+                console.log("Aaaaaaallllliiiisaaaaaaa");
                 changePlayer();
             }
         }
@@ -93,7 +105,6 @@ function handlePositionChange(clickedSquare) {
         isPositionChangeMode = false;
         if (!checkTieOrWin()) {
             changePlayer();
-            changeEndMessage(`${currentPlayer}'s turn!`);
         }
     }
 }
@@ -131,6 +142,7 @@ function checkTieOrWin() {
     if (isBoardFull()) {
         changeEndMessage(`It's a tie!`);
         gameOver = true;
+        stopTimer();
         return true;
     }
 
@@ -155,6 +167,7 @@ function checkTieOrWin() {
 
         changeEndMessage(message);
         gameOver = true;
+        stopTimer();
         return true;
     }
 
@@ -178,9 +191,10 @@ function isBoardFull() {
 function assignSquareValue(square) {
     square.textContent = currentPlayer;
 }
+
 function assignSquareValueWithinGrid(square) {
     if (gridBounds.includes(Number(square.dataset.index))) {
-        square.textContent = currentPlayer;
+        assignSquareValue(square);
         moveCounter++;
         changePlayer();
     }
@@ -227,23 +241,5 @@ function isInBounds(gridCenter) {
 }
 
 function restartGame() { //TODO: Change to reload page
-    const squares = document.querySelectorAll('.square');
-    changeEndMessage(`X's turn!`);
-    currentPlayer = players[0];
-    gameOver = false;
-    isGridMoveMode = false; // Tracks if 'G' was pressed
-    isPositionChangeMode = false;
-    gridBounds = [6, 7, 8, 11, 12, 13, 16, 17, 18];
-    moveCounter = 0;
-    currentGridCenterSquareIndex = 12;
-    currentWinningCombinations = [];
-    isPreviousElementRemoved = false;
-
-    squares.forEach(square => {
-        square.textContent = '';
-        square.classList.remove('winner');
-    });
-
-    deleteOldGrid();
-    createNewGridFrom(gridBounds);
+    location.reload();
 }

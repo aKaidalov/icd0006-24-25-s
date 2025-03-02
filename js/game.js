@@ -29,26 +29,27 @@ export function startGame() {
         }
 
         if (!isGridMoveMode) {
-            // // Waits changes to happen in enableOtherRules()
-            // if (isPositionChangeMode) handlePositionChange(square);
-            // else {
-            //     assignSquareValue(square);
-            //     moveCounter++;
-            // }
+            if (hasMadeFirstFourMoves()) {
+                assignSquareValue(square);
+                moveCounter++;
+            }
+            else assignSquareValueWithinGrid(square);
 
-            assignSquareValue(square);
-            moveCounter++;
+            console.log(moveCounter);
             // Enable grid movement after 4 moves. Executes only once.
             if (moveCounter === 4) {
                 enableOtherRules();
             }
 
-            if (!checkTieOrWin() && !isPositionChangeMode) {
+            if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves()) {
                 changePlayer();
-                changeEndMessage(`${currentPlayer}'s turn!`);
             }
         }
     });
+}
+
+function hasMadeFirstFourMoves() {
+    return moveCounter >= 4;
 }
 
 function enableOtherRules() {
@@ -177,9 +178,17 @@ function isBoardFull() {
 function assignSquareValue(square) {
     square.textContent = currentPlayer;
 }
+function assignSquareValueWithinGrid(square) {
+    if (gridBounds.includes(Number(square.dataset.index))) {
+        square.textContent = currentPlayer;
+        moveCounter++;
+        changePlayer();
+    }
+}
 
 function changePlayer() {
     currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
+    changeEndMessage(`${currentPlayer}'s turn!`);
 }
 
 function changeEndMessage(newMessage) {

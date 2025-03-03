@@ -7,6 +7,42 @@ h1, h2 {
     text-align: center;
 }
 
+#landing-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers vertically */
+    align-items: center; /* Centers horizontally */
+    height: 80vh; /* Makes the landing page take up full height of the viewport */
+    text-align: center; /* Centers text */
+}
+
+#mode-selection {
+    display: flex;
+    justify-content: space-between; /* Distributes space between the buttons */
+    width: 60%; /* Adjust width as needed */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#pvp-button, #pve-button {
+    width: 47%; /* Buttons will take up 45% of the parent container width */
+    height: 50px;
+    background-color: #FFFFFF;
+    border: 1px solid #000000;
+    border-radius: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#pvp-button:hover, #pve-button:hover {
+    background-color: #000000;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
 #board {
     margin-left: auto;
     margin-right: auto;

@@ -19,12 +19,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Create the Player vs Player button
     const pvpButton = document.createElement('button');
     pvpButton.id = 'pvp-button';
-    pvpButton.textContent = 'Player vs Player';
+    pvpButton.textContent = 'PvP';
 
     // Create the Player vs Environment button
     const pveButton = document.createElement('button');
     pveButton.id = 'pve-button';
-    pveButton.textContent = 'Player vs Environment';
+    pveButton.textContent = 'PvE';
 
     // Append the title and buttons to the mode selection container
     modeSelection.appendChild(pvpButton);

@@ -3,6 +3,14 @@ import {logBoardClick} from "./helpers/helpers.js";
 const TOTAL_SQUARES = 25;
 const GRID_STARTING_SQUARES = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 
+export function createLandingPage() {
+    document.getElementById('landing-page')?.remove();
+    let landingPage = document.getElementById('div');
+    landingPage.id = 'landing-page';
+
+
+}
+
 export function setUpBaseUiElements(mode) {
     document.getElementById('app-container')?.remove();
 
@@ -23,12 +31,8 @@ export function setUpBaseUiElements(mode) {
 }
 
 function createTitle(){
-    const title = document.createElement("div");
-    title.id = 'title';
-
-    const titleText = document.createElement("h1");
-    titleText.textContent = 'TicTacTwo';
-    title.append(titleText);
+    const title = document.createElement('h1');
+    title.textContent = 'TicTacTwo';
 
     return title;
 }

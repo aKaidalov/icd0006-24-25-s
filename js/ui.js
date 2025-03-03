@@ -3,14 +3,6 @@ import {logBoardClick} from "./helpers/helpers.js";
 const TOTAL_SQUARES = 25;
 const GRID_STARTING_SQUARES = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 
-export function createLandingPage() {
-    document.getElementById('landing-page')?.remove();
-    let landingPage = document.getElementById('div');
-    landingPage.id = 'landing-page';
-
-
-}
-
 export function setUpBaseUiElements(mode) {
     document.getElementById('app-container')?.remove();
 

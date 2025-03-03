@@ -4,8 +4,20 @@ const TOTAL_SQUARES = 25;
 const GRID_STARTING_SQUARES = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 
 export function setUpBaseUiElements(mode) {
-    const appContainer = document.getElementById('app-container');
-    appContainer.append(createTitle(), createSubheadings(mode), createBoard(), createEndMessage(), createEndGame());
+    document.getElementById('app-container')?.remove();
+
+    let appContainer = document.createElement('div');
+    appContainer.id = 'app-container';
+
+    document.body.appendChild(appContainer);
+
+    appContainer.append(
+        createTitle(),
+        createSubheadings(mode),
+        createBoard(),
+        createEndMessage(),
+        createEndGame()
+    );
 
     return appContainer;
 }
@@ -55,8 +67,6 @@ function createBoard(){
     }
 
     logBoardClick(board);
-
-    board.after(createEndMessage());
 
     return board;
 }

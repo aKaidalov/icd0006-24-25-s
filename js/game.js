@@ -1,5 +1,5 @@
 import Direction from "./components/direction.js";
-import {startTimer, stopTimer} from "./app.js";
+import {startTimer, stopTimer} from "./helpers/helpers.js";
 
 const players = ['X', 'O'];
 let currentPlayer = players[0];
@@ -11,7 +11,6 @@ let moveCounter = 0;
 let currentGridCenterSquareIndex = 12;
 let currentWinningCombinations = [];
 let isPreviousElementRemoved = false;
-let clickCounter = 0;
 
 export function startGame() {
     const board = document.getElementById('board');
@@ -20,7 +19,6 @@ export function startGame() {
     restartButton.addEventListener('click', restartGame);
 
     board.addEventListener('click', (event) => {
-        console.log(`Click counter: ${++clickCounter}`);
         if (!gameOver) startTimer();
 
         const square = event.target;
@@ -36,7 +34,6 @@ export function startGame() {
         if (!isGridMoveMode) {
             if (hasMadeFirstFourMoves()) {
                 assignSquareValue(square);
-                console.log("OOOOOOOOOOOO")
                 moveCounter++;
             } else {
                 assignSquareValueWithinGrid(square);
@@ -52,7 +49,6 @@ export function startGame() {
             }
 
             if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves()) {
-                console.log("Aaaaaaallllliiiisaaaaaaa");
                 changePlayer();
             }
         }

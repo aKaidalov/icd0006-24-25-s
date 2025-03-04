@@ -61,7 +61,8 @@ export function startGame(gameMode) {
 function makeAIMove() {
     if (gameOver) return; // Don't move if the game is over
 
-    const availableSquares = Array.from(document.querySelectorAll('.grid'))
+    let selector = hasMadeFirstFourMoves() ? '.square' : '.grid';
+    const availableSquares = Array.from(document.querySelectorAll(selector))
         .filter(square => square.textContent === ''); // Find empty squares
 
     if (availableSquares.length === 0) return; // No available moves

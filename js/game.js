@@ -40,14 +40,15 @@ export function startGame(gameMode) {
                 moveCounter++;
             } else {
                 assignSquareValueWithinGrid(square);
-                if (moveCounter === 4) {
+                if (isFourthMove()) {
                     changePlayer();
                 }
             }
 
             console.log(`moveCounter: ${moveCounter}`);
             // Enable grid movement after 4 moves. Executes only once.
-            if (moveCounter === 4) {
+            if (isFourthMove()) {
+                console.log("ENABLED");
                 enableOtherRules();
             }
 
@@ -61,6 +62,11 @@ export function startGame(gameMode) {
 function makeAIMove() {
     if (gameOver) return; // Don't move if the game is over
 
+    moveCounter++;
+    if (isFourthMove()) { // Waits for click. Player clicks on 3rd move -> during tha same click AI handles 4th move.
+        enableOtherRules();
+    }
+
     let selector = hasMadeFirstFourMoves() ? '.square' : '.grid';
     const availableSquares = Array.from(document.querySelectorAll(selector))
         .filter(square => square.textContent === ''); // Find empty squares
@@ -70,7 +76,6 @@ function makeAIMove() {
     const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
     assignSquareValue(aiMove);
 
-    moveCounter++;
     checkTieOrWin();
 
     if (!gameOver) {
@@ -80,6 +85,9 @@ function makeAIMove() {
 
 function hasMadeFirstFourMoves() {
     return moveCounter >= 4;
+}
+function isFourthMove() {
+    return moveCounter === 4;
 }
 
 function enableOtherRules() {

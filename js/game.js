@@ -35,10 +35,12 @@ export function startGame(gameMode) {
         }
 
         if (!isGridMoveMode) {
-            if (hasMadeFirstFourMoves()) {
+
+            //Originally was without currentPlayerMadeMoves()
+            if (hasMadeFirstFourMoves() && currentPlayerMadeMoves() < 4) {
                 assignSquareValue(square);
                 moveCounter++;
-            } else {
+            } else if (!hasMadeFirstFourMoves()) {
                 assignSquareValueWithinGrid(square);
                 if (isFourthMove()) {
                     changePlayer();
@@ -57,6 +59,11 @@ export function startGame(gameMode) {
             }
         }
     });
+}
+
+function currentPlayerMadeMoves() {
+    return Array.from(document.querySelectorAll('.square'))
+        .filter(square => square.textContent === `${currentPlayer}`).length
 }
 
 function makeAIMove() {

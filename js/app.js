@@ -1,7 +1,7 @@
 import {setUpBaseUiElements} from "./ui.js";
 import {startGame} from "./game.js";
+import {GameMode} from "./components/gameMode.js";
 
-const modes = ['PvP', 'PvE'];
 
 document.addEventListener("DOMContentLoaded", () => {
     // Create landing page container
@@ -38,14 +38,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(landingPage);
 
     // Add event listeners for the buttons
-    pvpButton.addEventListener('click', () => playGame(modes[0]));
-    pveButton.addEventListener('click', () => playGame(modes[1]));
+    pvpButton.addEventListener('click', () => playGame(GameMode.PVP));
+    pveButton.addEventListener('click', () => playGame(GameMode.PVE));
 });
 
-function playGame(mode){
+function playGame(gameMode){
     const landingPage = document.getElementById('landing-page');
     landingPage.style.display = 'none';
 
-    setUpBaseUiElements(mode);
-    startGame(mode);
+    setUpBaseUiElements(gameMode);
+    startGame(gameMode);
 }

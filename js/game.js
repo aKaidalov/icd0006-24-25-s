@@ -1,5 +1,6 @@
 import Direction from "./components/direction.js";
 import {startTimer, stopTimer} from "./helpers/helpers.js";
+import {GameMode} from "./components/gameMode.js";
 
 const players = ['X', 'O'];
 let currentPlayer = players[0];
@@ -11,8 +12,10 @@ let moveCounter = 0;
 let currentGridCenterSquareIndex = 12;
 let currentWinningCombinations = [];
 let isPreviousElementRemoved = false;
+let currentGameMode;
 
-export function startGame() {
+export function startGame(gameMode) {
+    currentGameMode = gameMode;
     const board = document.getElementById('board');
     const restartButton = document.getElementById('restart-button');
 
@@ -53,6 +56,25 @@ export function startGame() {
             }
         }
     });
+}
+
+function makeAIMove() {
+    if (gameOver) return; // Don't move if the game is over
+
+    const availableSquares = Array.from(document.querySelectorAll('.grid'))
+        .filter(square => square.textContent === ''); // Find empty squares
+
+    if (availableSquares.length === 0) return; // No available moves
+
+    const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
+    assignSquareValue(aiMove);
+
+    moveCounter++;
+    checkTieOrWin();
+
+    if (!gameOver) {
+        changePlayer(); // Switch turn back to the player
+    }
 }
 
 function hasMadeFirstFourMoves() {
@@ -207,6 +229,9 @@ function assignSquareValueWithinGrid(square) {
 function changePlayer() {
     currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
     changeEndMessage(`${currentPlayer}'s turn!`);
+    if (currentGameMode === GameMode.PVE && currentPlayer === players[1] && !gameOver) {
+        setTimeout(makeAIMove, 500); // AI moves automatically
+    }
 }
 
 function changeEndMessage(newMessage) {

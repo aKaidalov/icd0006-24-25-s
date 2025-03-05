@@ -58,7 +58,10 @@ export function startGame(gameMode) {
             if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves() && moveCounter < 8) {
                 console.log("CHANGE");
                 changePlayer();
-            } else if (moveCounter === 8) changePlayer(); //last change before all possible clicks are made
+            } else if (moveCounter === 8) {  //last change before all possible clicks are made
+                changePlayer();
+                moveCounter++; // added just to fix the last possible click and disable changing player after click
+            }
         }
     });
 }
@@ -76,7 +79,7 @@ function makeAIMove() {
         enableOtherRules();
     }
 
-    if (currentPlayerMadeMoves() < 4) {
+    if (currentPlayerMadeMoves() !== 4) {
         let selector = moveCounter > 4 ? '.square' : '.grid';
         const availableSquares = Array.from(document.querySelectorAll(selector))
             .filter(square => square.textContent === ''); // Find empty squares

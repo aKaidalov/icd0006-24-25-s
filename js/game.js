@@ -54,11 +54,17 @@ export function startGame(gameMode) {
                 enableOtherRules();
             }
 
-            if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves()) {
+            //Originally was without playerHasDoneMaxMoves()
+            if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves() && !playerHasDoneMaxMoves()) {
+                console.log("CHANGE");
                 changePlayer();
             }
         }
     });
+}
+
+function playerHasDoneMaxMoves() {
+    return currentPlayerMadeMoves() === 5;
 }
 
 function currentPlayerMadeMoves() {

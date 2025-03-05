@@ -55,16 +55,12 @@ export function startGame(gameMode) {
             }
 
             //Originally was without playerHasDoneMaxMoves()
-            if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves() && !playerHasDoneMaxMoves()) {
+            if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves() && moveCounter < 8) {
                 console.log("CHANGE");
                 changePlayer();
-            }
+            } else if (moveCounter === 8) changePlayer(); //last change before all possible clicks are made
         }
     });
-}
-
-function playerHasDoneMaxMoves() {
-    return currentPlayerMadeMoves() === 5;
 }
 
 function currentPlayerMadeMoves() {
@@ -80,19 +76,21 @@ function makeAIMove() {
         enableOtherRules();
     }
 
-    let selector = hasMadeFirstFourMoves() ? '.square' : '.grid';
-    const availableSquares = Array.from(document.querySelectorAll(selector))
-        .filter(square => square.textContent === ''); // Find empty squares
+    if (currentPlayerMadeMoves() < 4) {
+        let selector = moveCounter > 4 ? '.square' : '.grid';
+        const availableSquares = Array.from(document.querySelectorAll(selector))
+            .filter(square => square.textContent === ''); // Find empty squares
 
-    if (availableSquares.length === 0) return; // No available moves
+        if (availableSquares.length === 0) return; // No available moves
 
-    const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
-    assignSquareValue(aiMove);
+        const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
+        assignSquareValue(aiMove);
 
-    checkTieOrWin();
+        checkTieOrWin();
 
-    if (!gameOver) {
-        changePlayer(); // Switch turn back to the player
+        if (!gameOver) {
+            changePlayer(); // Switch turn back to the player
+        }
     }
 }
 

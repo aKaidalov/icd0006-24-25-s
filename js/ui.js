@@ -1,14 +1,10 @@
 import {logBoardClick} from "./helpers/helpers.js";
 import {GRID_STARTING_SQUARES, TOTAL_SQUARES} from "./helpers/constants.js";
 
-let title = null; //Ensures only one <h1> is created, preventing duplicates.
-
 export function setUpBaseUiElements(mode) {
     document.getElementById('app-container')?.remove();
 
-    let appContainer = document.createElement('div');
-    appContainer.id = 'app-container';
-
+    const appContainer = createElementWithId('div', 'app-container');
     document.body.appendChild(appContainer);
 
     appContainer.append(
@@ -23,9 +19,10 @@ export function setUpBaseUiElements(mode) {
 }
 
 export function createLandingPage() {
-    const landingPage = createLandingPageElement();
+    const landingPage = createElementWithId('div', 'landing-page');
     const title = createTitleElement();
-    const modeSelection = createModeSelectionElement();
+    const modeSelection = createElementWithId('div', 'mode-selection');
+
     const pvpButton = createButton('pvp-button', 'PvP');
     const pveButton = createButton('pve-button', 'PvE');
 
@@ -38,25 +35,19 @@ export function createLandingPage() {
     return { pvpButton, pveButton };
 }
 
-function createLandingPageElement() {
-    const landingPage = document.createElement('div');
-    landingPage.id = 'landing-page';
-    return landingPage;
+function createElementWithId(tag, id) {
+    const el = document.createElement(tag);
+    el.id = id;
+    return el;
 }
 
-function createTitleElement(){
-    if (!title){
-        title = document.createElement('h1');
-        title.id = 'title';
-        title.textContent = 'TicTacTwo';
+function createTitleElement() {
+    let titleElement = document.querySelector('h1');
+    if (!titleElement) {
+        titleElement = document.createElement('h1');
+        titleElement.textContent = 'TicTacTwo';
     }
-    return title;
-}
-
-function createModeSelectionElement() {
-    const modeSelection = document.createElement('div');
-    modeSelection.id = 'mode-selection';
-    return modeSelection;
+    return titleElement;
 }
 
 function createButton(id, text) {
@@ -68,8 +59,7 @@ function createButton(id, text) {
 
 
 function createSubheadings(mode) {
-    const subheadings = document.createElement("h2");
-    subheadings.id = "subheadings";
+    const subheadings = createElementWithId('h2', 'subheadings');
 
     const modeSubheading = document.createElement("span");
     modeSubheading.textContent = mode;

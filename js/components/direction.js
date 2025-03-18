@@ -22,6 +22,6 @@ class Direction {
     static fromKey(key) {
         return this.#keyDirectionMap.get(key) || null;
     }
-};
+}
 
 export default Direction;

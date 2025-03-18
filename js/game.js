@@ -1,6 +1,6 @@
 import Direction from "./components/direction.js";
 import {startTimer, stopTimer} from "./helpers/helpers.js";
-import {GameMode} from "./components/gameMode.js";
+import {GAME_MODE} from "./helpers/constants.js";
 
 const players = ['X', 'O'];
 let currentPlayer = players[0];
@@ -252,7 +252,7 @@ function assignSquareValueWithinGrid(square) {
 function changePlayer() {
     currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
     changeEndMessage(`${currentPlayer}'s turn!`);
-    if (currentGameMode === GameMode.PVE && currentPlayer === players[1] && !gameOver) {
+    if (currentGameMode === GAME_MODE.PVE && currentPlayer === players[1] && !gameOver) {
         setTimeout(makeAIMove, 500); // AI moves automatically
     }
 }

@@ -40,15 +40,12 @@ export function startGame(gameMode) {
                 assignSquareValueWithinGrid(square);
                 if (isFourthMove()) {
                     changePlayer();
+                    enableOtherRules(); // Enable grid movement after 4 moves. Executes only once.
+                    console.log("ENABLED");
                 }
             }
 
             console.log(`moveCounter: ${moveCounter}`);
-            // Enable grid movement after 4 moves. Executes only once.
-            if (isFourthMove()) {
-                console.log("ENABLED");
-                enableOtherRules();
-            }
 
             //Originally was without playerHasDoneMaxMoves()
             if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves() && moveCounter < MAX_MOVES) {

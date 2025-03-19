@@ -2,14 +2,19 @@ import Direction from "./components/direction.js";
 import {startTimer, stopTimer} from "./helpers/helpers.js";
 import {GAME_MODE} from "./helpers/constants.js";
 
-const players = ['X', 'O'];
-let currentPlayer = players[0];
+const PLAYERS = ['X', 'O'];
+const GRID_BOUNDS = [6, 7, 8, 11, 12, 13, 16, 17, 18];
+const MAX_MOVES = 8;
+const FOUR_MOVES = 4;
+const AI_DELAY = 500;
+
+
+let currentPlayer = PLAYERS[0];
 let gameOver = false;
 let isGridMoveMode = false; // Tracks if 'g' was pressed
 let isPositionChangeMode = false; // Tracks if 'c' was pressed
-let gridBounds = [6, 7, 8, 11, 12, 13, 16, 17, 18];
 let moveCounter = 0;
-let currentGridCenterSquareIndex = 12;
+let currentGridCenterSquareIndex = GRID_BOUNDS[4];
 let currentWinningCombinations = [];
 let isPreviousElementRemoved = false;
 let currentGameMode;
@@ -37,7 +42,7 @@ export function startGame(gameMode) {
         if (!isGridMoveMode) {
 
             //Originally was without currentPlayerMadeMoves()
-            if (hasMadeFirstFourMoves() && currentPlayerMadeMoves() < 4) {
+            if (hasMadeFirstFourMoves() && currentPlayerMadeMoves() < FOUR_MOVES) {
                 assignSquareValue(square);
                 moveCounter++;
             } else if (!hasMadeFirstFourMoves()) {
@@ -55,10 +60,10 @@ export function startGame(gameMode) {
             }
 
             //Originally was without playerHasDoneMaxMoves()
-            if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves() && moveCounter < 8) {
+            if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves() && moveCounter < MAX_MOVES) {
                 console.log("CHANGE");
                 changePlayer();
-            } else if (moveCounter === 8) {  //last change before all possible clicks are made
+            } else if (moveCounter === MAX_MOVES) {  //last change before all possible clicks are made
                 changePlayer();
                 moveCounter++; // added just to fix the last possible click and disable changing player after click
             }
@@ -79,8 +84,8 @@ function makeAIMove() {
         enableOtherRules();
     }
 
-    if (currentPlayerMadeMoves() !== 4) {
-        let selector = moveCounter > 4 ? '.square' : '.grid';
+    if (currentPlayerMadeMoves() !== FOUR_MOVES) {
+        let selector = moveCounter > FOUR_MOVES ? '.square' : '.grid';
         const availableSquares = Array.from(document.querySelectorAll(selector))
             .filter(square => square.textContent === ''); // Find empty squares
 
@@ -98,10 +103,10 @@ function makeAIMove() {
 }
 
 function hasMadeFirstFourMoves() {
-    return moveCounter >= 4;
+    return moveCounter >= FOUR_MOVES;
 }
 function isFourthMove() {
-    return moveCounter === 4;
+    return moveCounter === FOUR_MOVES;
 }
 
 function enableOtherRules() {
@@ -225,7 +230,7 @@ function allElementsHaveSameWinner() {
 }
 
 function positionContainsPlayer(squares, a, b, c, playerIndex) {
-    return squares[a].textContent === players[playerIndex] && squares[b].textContent === players[playerIndex] && squares[c].textContent === players[playerIndex];
+    return squares[a].textContent === PLAYERS[playerIndex] && squares[b].textContent === PLAYERS[playerIndex] && squares[c].textContent === PLAYERS[playerIndex];
 }
 
 function isBoardFull() {
@@ -242,7 +247,7 @@ function assignSquareValue(square) {
 }
 
 function assignSquareValueWithinGrid(square) {
-    if (gridBounds.includes(Number(square.dataset.index))) {
+    if (GRID_BOUNDS.includes(Number(square.dataset.index))) {
         assignSquareValue(square);
         moveCounter++;
         changePlayer();
@@ -250,10 +255,10 @@ function assignSquareValueWithinGrid(square) {
 }
 
 function changePlayer() {
-    currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
+    currentPlayer = currentPlayer === PLAYERS[0] ? PLAYERS[1] : PLAYERS[0];
     changeEndMessage(`${currentPlayer}'s turn!`);
-    if (currentGameMode === GAME_MODE.PVE && currentPlayer === players[1] && !gameOver) {
-        setTimeout(makeAIMove, 500); // AI moves automatically
+    if (currentGameMode === GAME_MODE.PVE && currentPlayer === PLAYERS[1] && !gameOver) {
+        setTimeout(makeAIMove, AI_DELAY); // AI moves automatically
     }
 }
 
@@ -289,7 +294,7 @@ function getGridCenter(grid) {
 }
 
 function isInBounds(gridCenter) {
-    return gridBounds.includes(gridCenter);
+    return GRID_BOUNDS.includes(gridCenter);
 }
 
 function restartGame() { //TODO: Change to reload page

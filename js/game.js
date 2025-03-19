@@ -1,13 +1,6 @@
 import Direction from "./components/direction.js";
 import {startTimer, stopTimer} from "./helpers/helpers.js";
-import {GAME_MODE} from "./helpers/constants.js";
-
-const PLAYERS = ['X', 'O'];
-const GRID_BOUNDS = [6, 7, 8, 11, 12, 13, 16, 17, 18];
-const MAX_MOVES = 8;
-const FOUR_MOVES = 4;
-const AI_DELAY = 500;
-
+import {AI_DELAY, FOUR_MOVES, GAME_MODE, GRID_BOUNDS, MAX_MOVES, PLAYERS} from "./helpers/constants.js";
 
 let currentPlayer = PLAYERS[0];
 let gameOver = false;

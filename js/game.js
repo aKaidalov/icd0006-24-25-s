@@ -1,6 +1,7 @@
 import Direction from "./components/direction.js";
 import {startTimer, stopTimer} from "./helpers/helpers.js";
-import {AI_DELAY, FOUR_MOVES, GAME_MODE, GRID_BOUNDS, MAX_MOVES, PLAYERS} from "./helpers/constants.js";
+import {AI_DELAY, FOUR_MOVES, GAME_MODE, GRID_BOUNDS, MAX_MOVES, PLAYERS, } from "./helpers/constants.js";
+import {DOM_ELEMENTS} from "./components/domElements.js";
 
 let currentPlayer = PLAYERS[0];
 let gameOver = false;
@@ -14,12 +15,9 @@ let currentGameMode;
 
 export function startGame(gameMode) {
     currentGameMode = gameMode;
-    const board = document.getElementById('board');
-    const restartButton = document.getElementById('restart-button');
 
-    restartButton.addEventListener('click', restartGame);
-
-    board.addEventListener('click', (event) => {
+    DOM_ELEMENTS.restartButton.addEventListener('click', restartGame);
+    DOM_ELEMENTS.board.addEventListener('click', (event) => {
         if (!gameOver) startTimer();
 
         const square = event.target;
@@ -256,8 +254,7 @@ function changePlayer() {
 }
 
 function changeEndMessage(newMessage) {
-    const endMessage = document.getElementById('end-message');
-    endMessage.textContent = newMessage;
+    DOM_ELEMENTS.endMessage.textContent = newMessage;
 }
 
 function createNewGridFrom(currentGrid) {

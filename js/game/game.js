@@ -3,7 +3,7 @@ import {startTimer, stopTimer} from "../utils/helpers.js";
 import {AI_DELAY, FOUR_MOVES, GAME_MODE, GRID_BOUNDS, MAX_MOVES, PLAYERS, } from "../utils/constants.js";
 import {DOM_ELEMENTS} from "../ui/domElements.js";
 import {gameState} from "./gameState.js";
-
+import {makeAIMove} from "./ai.js";
 
 
 export function startGame(gameMode) {
@@ -52,33 +52,7 @@ export function startGame(gameMode) {
     });
 }
 
-function makeAIMove() {
-    if (gameState.gameOver) return; // Don't move if the game is over
-
-    gameState.moveCounter++;
-    if (gameState.isFourthMove()) { // Waits for click. Player clicks on 3rd move -> during tha same click AI handles 4th move.
-        enableOtherRules();
-    }
-
-    if (gameState.currentPlayerMadeMoves() !== FOUR_MOVES) {
-        let selector = gameState.moveCounter > FOUR_MOVES ? '.square' : '.grid';
-        const availableSquares = Array.from(document.querySelectorAll(selector))
-            .filter(square => square.textContent === ''); // Find empty squares
-
-        if (availableSquares.length === 0) return; // No available moves
-
-        const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
-        assignSquareValue(aiMove);
-
-        checkTieOrWin();
-
-        if (!gameState.gameOver) {
-            changePlayer(); // Switch turn back to the player
-        }
-    }
-}
-
-function enableOtherRules() {
+export function enableOtherRules() {
     // Attach keypress listener to the document, not board
     document.addEventListener('keydown', (event) => {
         if (event.key === 'g' && !gameState.gameOver && !gameState.isPositionChangeMode) {
@@ -139,7 +113,7 @@ function move(direction) {
     return false;
 }
 
-function checkTieOrWin() {
+export function checkTieOrWin() {
     if (isBoardFull()) {
         changeEndMessage(`It's a tie!`);
         gameState.gameOver = true;
@@ -197,7 +171,7 @@ function isBoardFull() {
     return isFull;
 }
 
-function assignSquareValue(square) {
+export function assignSquareValue(square) {
     square.textContent = gameState.currentPlayer;
 }
 
@@ -209,7 +183,7 @@ function assignSquareValueWithinGrid(square) {
     }
 }
 
-function changePlayer() {
+export function changePlayer() {
     gameState.currentPlayer = gameState.currentPlayer === PLAYERS[0] ? PLAYERS[1] : PLAYERS[0];
     changeEndMessage(`${gameState.currentPlayer}'s turn!`);
     if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {

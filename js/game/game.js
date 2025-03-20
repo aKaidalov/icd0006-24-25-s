@@ -2,78 +2,66 @@ import Direction from "../utils/direction.js";
 import {startTimer, stopTimer} from "../utils/helpers.js";
 import {AI_DELAY, FOUR_MOVES, GAME_MODE, GRID_BOUNDS, MAX_MOVES, PLAYERS, } from "../utils/constants.js";
 import {DOM_ELEMENTS} from "../ui/domElements.js";
+import {gameState} from "./gameState.js";
 
-let currentPlayer = PLAYERS[0];
-let gameOver = false;
-let isGridMoveMode = false; // Tracks if 'g' was pressed
-let isPositionChangeMode = false; // Tracks if 'c' was pressed
-let moveCounter = 0;
-let currentGridCenterSquareIndex = GRID_BOUNDS[4];
-let currentWinningCombinations = [];
-let isPreviousElementRemoved = false;
-let currentGameMode;
+
 
 export function startGame(gameMode) {
-    currentGameMode = gameMode;
+    gameState.currentGameMode = gameMode;
 
     DOM_ELEMENTS.restartButton.addEventListener('click', restartGame);
     DOM_ELEMENTS.board.addEventListener('click', (event) => {
-        if (!gameOver) startTimer();
+        if (!gameState.gameOver) startTimer();
 
         const square = event.target;
         console.log(square);
 
-        if ((square.classList.contains('square') && isPositionChangeMode && !gameOver)) {
+        if ((square.classList.contains('square') && gameState.isPositionChangeMode && !gameState.gameOver)) {
             handlePositionChange(square);
             return;
-        } else if (!square.classList.contains('square') || square.textContent !== '' || gameOver) {
+        } else if (!square.classList.contains('square') || square.textContent !== '' || gameState.gameOver) {
             return;
         }
 
-        if (!isGridMoveMode) {
+        if (!gameState.isGridMoveMode) {
 
             //Originally was without currentPlayerMadeMoves()
-            if (hasMadeFirstFourMoves() && currentPlayerMadeMoves() < FOUR_MOVES) {
+            if (gameState.hasMadeFirstFourMoves() && gameState.currentPlayerMadeMoves() < FOUR_MOVES) {
                 assignSquareValue(square);
-                moveCounter++;
-            } else if (!hasMadeFirstFourMoves()) {
+                gameState.moveCounter++;
+            } else if (!gameState.hasMadeFirstFourMoves()) {
                 assignSquareValueWithinGrid(square);
-                if (isFourthMove()) {
+                if (gameState.isFourthMove()) {
                     changePlayer();
                     enableOtherRules(); // Enable grid movement after 4 moves. Executes only once.
                     console.log("ENABLED");
                 }
             }
 
-            console.log(`moveCounter: ${moveCounter}`);
+            console.log(`moveCounter: ${gameState.moveCounter}`);
 
             //Originally was without playerHasDoneMaxMoves()
-            if (!checkTieOrWin() && !isPositionChangeMode && hasMadeFirstFourMoves() && moveCounter < MAX_MOVES) {
+            if (!checkTieOrWin() && !gameState.isPositionChangeMode && gameState.hasMadeFirstFourMoves() && gameState.moveCounter < MAX_MOVES) {
                 console.log("CHANGE");
                 changePlayer();
-            } else if (moveCounter === MAX_MOVES) {  //last change before all possible clicks are made
+            } else if (gameState.moveCounter === MAX_MOVES) {  //last change before all possible clicks are made
                 changePlayer();
-                moveCounter++; // added just to fix the last possible click and disable changing player after click
+                gameState.moveCounter++; // added just to fix the last possible click and disable changing player after click
             }
         }
     });
 }
 
-function currentPlayerMadeMoves() {
-    return Array.from(document.querySelectorAll('.square'))
-        .filter(square => square.textContent === `${currentPlayer}`).length
-}
-
 function makeAIMove() {
-    if (gameOver) return; // Don't move if the game is over
+    if (gameState.gameOver) return; // Don't move if the game is over
 
-    moveCounter++;
-    if (isFourthMove()) { // Waits for click. Player clicks on 3rd move -> during tha same click AI handles 4th move.
+    gameState.moveCounter++;
+    if (gameState.isFourthMove()) { // Waits for click. Player clicks on 3rd move -> during tha same click AI handles 4th move.
         enableOtherRules();
     }
 
-    if (currentPlayerMadeMoves() !== FOUR_MOVES) {
-        let selector = moveCounter > FOUR_MOVES ? '.square' : '.grid';
+    if (gameState.currentPlayerMadeMoves() !== FOUR_MOVES) {
+        let selector = gameState.moveCounter > FOUR_MOVES ? '.square' : '.grid';
         const availableSquares = Array.from(document.querySelectorAll(selector))
             .filter(square => square.textContent === ''); // Find empty squares
 
@@ -84,31 +72,24 @@ function makeAIMove() {
 
         checkTieOrWin();
 
-        if (!gameOver) {
+        if (!gameState.gameOver) {
             changePlayer(); // Switch turn back to the player
         }
     }
 }
 
-function hasMadeFirstFourMoves() {
-    return moveCounter >= FOUR_MOVES;
-}
-function isFourthMove() {
-    return moveCounter === FOUR_MOVES;
-}
-
 function enableOtherRules() {
     // Attach keypress listener to the document, not board
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'g' && !gameOver && !isPositionChangeMode) {
-            isGridMoveMode = true; // Enable movement mode
-            changeEndMessage(`Grid move mode for player: ${currentPlayer}!`);
+        if (event.key === 'g' && !gameState.gameOver && !gameState.isPositionChangeMode) {
+            gameState.isGridMoveMode = true; // Enable movement mode
+            changeEndMessage(`Grid move mode for player: ${gameState.currentPlayer}!`);
             console.log("Grid move mode enabled. Press a movement key.");
-        } else if (isGridMoveMode) {
+        } else if (gameState.isGridMoveMode) {
             handleGridMove(event.key);
-        } else if (event.key === 'c' && !gameOver && !isGridMoveMode) {
-            isPositionChangeMode = true; // Enable changing mode
-            changeEndMessage(`Position mode for player: ${currentPlayer}!`);
+        } else if (event.key === 'c' && !gameState.gameOver && !gameState.isGridMoveMode) {
+            gameState.isPositionChangeMode = true; // Enable changing mode
+            changeEndMessage(`Position mode for player: ${gameState.currentPlayer}!`);
             console.log("Position change mode enabled. Click on existing position.");
         }
 
@@ -123,19 +104,19 @@ function handleGridMove(key) {
         return;
     }
     if (move(direction)) {
-        isGridMoveMode = false; // Disable movement mode after a move
+        gameState.isGridMoveMode = false; // Disable movement mode after a move
         console.log(`Moved in direction: ${direction}`);
     }
 }
 
 function handlePositionChange(clickedSquare) {
-    if (clickedSquare.textContent === currentPlayer  && !isPreviousElementRemoved) {
+    if (clickedSquare.textContent === gameState.currentPlayer  && !gameState.isPreviousElementRemoved) {
         clickedSquare.textContent = '';
-        isPreviousElementRemoved = true;
-    } else if (clickedSquare.textContent === '' && isPreviousElementRemoved) {
-        clickedSquare.textContent = currentPlayer;
-        isPreviousElementRemoved = false;
-        isPositionChangeMode = false;
+        gameState.isPreviousElementRemoved = true;
+    } else if (clickedSquare.textContent === '' && gameState.isPreviousElementRemoved) {
+        clickedSquare.textContent = gameState.currentPlayer;
+        gameState.isPreviousElementRemoved = false;
+        gameState.isPositionChangeMode = false;
         if (!checkTieOrWin()) {
             changePlayer();
         }
@@ -148,40 +129,27 @@ function move(direction) {
     if (isInBounds(gridCenterSquareIndex)) {
         deleteOldGrid();
         createNewGridFrom(currentGrid);
-        currentGridCenterSquareIndex = gridCenterSquareIndex;
-        console.log(`Grid center: ${currentGridCenterSquareIndex}`);
+        gameState.currentGridCenterSquareIndex = gridCenterSquareIndex;
+        console.log(`Grid center: ${gameState.currentGridCenterSquareIndex}`);
         changePlayer();
-        changeEndMessage(`${currentPlayer}'s turn!`);
+        changeEndMessage(`${gameState.currentPlayer}'s turn!`);
         return true;
     }
     console.log("Wrong direction! Try again.");
     return false;
 }
 
-function generateWinningCombinations() {
-    currentWinningCombinations = [
-        [currentGridCenterSquareIndex + Direction.UP_LEFT, currentGridCenterSquareIndex + Direction.UP, currentGridCenterSquareIndex + Direction.UP_RIGHT],
-        [currentGridCenterSquareIndex + Direction.LEFT, currentGridCenterSquareIndex, currentGridCenterSquareIndex + Direction.RIGHT],
-        [currentGridCenterSquareIndex + Direction.DOWN_LEFT, currentGridCenterSquareIndex + Direction.DOWN, currentGridCenterSquareIndex + Direction.DOWN_RIGHT],
-        [currentGridCenterSquareIndex + Direction.UP_LEFT, currentGridCenterSquareIndex + Direction.LEFT, currentGridCenterSquareIndex + Direction.DOWN_LEFT],
-        [currentGridCenterSquareIndex + Direction.UP, currentGridCenterSquareIndex, currentGridCenterSquareIndex + Direction.DOWN],
-        [currentGridCenterSquareIndex + Direction.UP_RIGHT, currentGridCenterSquareIndex + Direction.RIGHT, currentGridCenterSquareIndex + Direction.DOWN_RIGHT],
-        [currentGridCenterSquareIndex + Direction.UP_LEFT, currentGridCenterSquareIndex, currentGridCenterSquareIndex + Direction.DOWN_RIGHT],
-        [currentGridCenterSquareIndex + Direction.UP_RIGHT, currentGridCenterSquareIndex, currentGridCenterSquareIndex + Direction.DOWN_LEFT]
-    ];
-}
-
 function checkTieOrWin() {
     if (isBoardFull()) {
         changeEndMessage(`It's a tie!`);
-        gameOver = true;
+        gameState.gameOver = true;
         stopTimer();
         return true;
     }
 
-    generateWinningCombinations();
+    gameState.generateWinningCombinations();
 
-    currentWinningCombinations.forEach(([a, b, c]) => {
+    gameState.currentWinningCombinations.forEach(([a, b, c]) => {
         const squares = document.querySelectorAll('.square');
         if (positionContainsPlayer(squares, a, b, c, 0)
             || positionContainsPlayer(squares, a, b, c, 1)) {
@@ -200,11 +168,10 @@ function checkTieOrWin() {
         }
 
         changeEndMessage(message);
-        gameOver = true;
+        gameState.gameOver = true;
         stopTimer();
         return true;
     }
-
 
     return false;
 }
@@ -231,21 +198,21 @@ function isBoardFull() {
 }
 
 function assignSquareValue(square) {
-    square.textContent = currentPlayer;
+    square.textContent = gameState.currentPlayer;
 }
 
 function assignSquareValueWithinGrid(square) {
     if (GRID_BOUNDS.includes(Number(square.dataset.index))) {
         assignSquareValue(square);
-        moveCounter++;
+        gameState.moveCounter++;
         changePlayer();
     }
 }
 
 function changePlayer() {
-    currentPlayer = currentPlayer === PLAYERS[0] ? PLAYERS[1] : PLAYERS[0];
-    changeEndMessage(`${currentPlayer}'s turn!`);
-    if (currentGameMode === GAME_MODE.PVE && currentPlayer === PLAYERS[1] && !gameOver) {
+    gameState.currentPlayer = gameState.currentPlayer === PLAYERS[0] ? PLAYERS[1] : PLAYERS[0];
+    changeEndMessage(`${gameState.currentPlayer}'s turn!`);
+    if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {
         setTimeout(makeAIMove, AI_DELAY); // AI moves automatically
     }
 }

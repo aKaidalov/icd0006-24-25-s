@@ -125,8 +125,8 @@ export function checkTieOrWin() {
 
     gameState.currentWinningCombinations.forEach(([a, b, c]) => {
         const squares = document.querySelectorAll('.square');
-        if (positionContainsPlayer(squares, a, b, c, 0)
-            || positionContainsPlayer(squares, a, b, c, 1)) {
+        if (winningCombinationContainsPlayer(squares, a, b, c, 0)
+            || winningCombinationContainsPlayer(squares, a, b, c, 1)) {
             squares[a].classList.add('winner');
             squares[b].classList.add('winner');
             squares[c].classList.add('winner');
@@ -158,7 +158,7 @@ function allElementsHaveSameWinner() {
     return Array.from(winnerElements).every(el => el.textContent === player);
 }
 
-function positionContainsPlayer(squares, a, b, c, playerIndex) {
+function winningCombinationContainsPlayer(squares, a, b, c, playerIndex) {
     return squares[a].textContent === PLAYERS[playerIndex] && squares[b].textContent === PLAYERS[playerIndex] && squares[c].textContent === PLAYERS[playerIndex];
 }
 

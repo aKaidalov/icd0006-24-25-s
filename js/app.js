@@ -1,7 +1,7 @@
-import {createLandingPage, setUpBaseUiElements} from "./ui.js";
-import {startGame} from "./game.js";
-import {GAME_MODE} from "./helpers/constants.js";
-import {initializeDOMElements} from "./components/domElements.js";
+import {createLandingPage, setUpBaseUiElements} from "./ui/ui.js";
+import {startGame} from "./game/game.js";
+import {GAME_MODE} from "./utils/constants.js";
+import {initializeDOMElements} from "./ui/domElements.js";
 
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -1,7 +1,7 @@
-import Direction from "./components/direction.js";
-import {startTimer, stopTimer} from "./helpers/helpers.js";
-import {AI_DELAY, FOUR_MOVES, GAME_MODE, GRID_BOUNDS, MAX_MOVES, PLAYERS, } from "./helpers/constants.js";
-import {DOM_ELEMENTS} from "./components/domElements.js";
+import Direction from "../utils/direction.js";
+import {startTimer, stopTimer} from "../utils/helpers.js";
+import {AI_DELAY, FOUR_MOVES, GAME_MODE, GRID_BOUNDS, MAX_MOVES, PLAYERS, } from "../utils/constants.js";
+import {DOM_ELEMENTS} from "../ui/domElements.js";
 
 let currentPlayer = PLAYERS[0];
 let gameOver = false;
@@ -284,6 +284,6 @@ function isInBounds(gridCenter) {
     return GRID_BOUNDS.includes(gridCenter);
 }
 
-function restartGame() { //TODO: Change to reload page
+function restartGame() {
     location.reload();
 }

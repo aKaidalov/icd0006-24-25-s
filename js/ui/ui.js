@@ -1,5 +1,5 @@
-import {logBoardClick} from "./helpers/helpers.js";
-import {GRID_STARTING_SQUARES, TOTAL_SQUARES} from "./helpers/constants.js";
+import {logBoardClick} from "../utils/helpers.js";
+import {GRID_STARTING_SQUARES, TOTAL_SQUARES} from "../utils/constants.js";
 
 export function setUpBaseUiElements(mode) {
     document.getElementById('app-container')?.remove();

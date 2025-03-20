@@ -184,7 +184,7 @@ function assignSquareValueWithinGrid(square) {
 }
 
 export function changePlayer() {
-    gameState.currentPlayer = gameState.currentPlayer === PLAYERS[0] ? PLAYERS[1] : PLAYERS[0];
+    gameState.changePlayer();
     changeEndMessage(`${gameState.currentPlayer}'s turn!`);
     if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {
         setTimeout(makeAIMove, AI_DELAY); // AI moves automatically

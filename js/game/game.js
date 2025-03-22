@@ -1,6 +1,6 @@
 import Direction from "../utils/direction.js";
 import {startTimer, stopTimer} from "../utils/helpers.js";
-import {AI_DELAY, FOUR_MOVES, GAME_MODE, GRID_BOUNDS, MAX_MOVES, PLAYERS, } from "../utils/constants.js";
+import {AI_DELAY, GAME_MODE, GRID_BOUNDS, PLAYERS, } from "../utils/constants.js";
 import {DOM_ELEMENTS} from "../ui/domElements.js";
 import {gameState} from "./gameState.js";
 import {makeAIMove} from "./ai.js";

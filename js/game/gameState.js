@@ -1,4 +1,4 @@
-import {FOUR_MOVES, GRID_BOUNDS, MAX_MOVES, PLAYERS} from "../utils/constants.js";
+import {FOUR_MOVES, GRID_BOUNDS, PLAYERS} from "../utils/constants.js";
 import Direction from "../utils/direction.js";
 
 class GameState {

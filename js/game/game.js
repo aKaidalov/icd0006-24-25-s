@@ -85,7 +85,7 @@ function handlePositionChange(clickedSquare) {
     if (clickedSquare.textContent === gameState.currentPlayer  && !gameState.isPreviousElementRemoved) {
         clickedSquare.textContent = '';
         gameState.isPreviousElementRemoved = true;
-    } else if (clickedSquare.textContent === '' && gameState.isPreviousElementRemoved) {
+    } else if (clickedSquare.textContent === '' && gameState.isPreviousElementRemoved && clickedSquareWithinGrid(clickedSquare)) {
         clickedSquare.textContent = gameState.currentPlayer;
         gameState.isPreviousElementRemoved = false;
         gameState.isPositionChangeMode = false;

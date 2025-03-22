@@ -1,4 +1,4 @@
-import {FOUR_MOVES, GRID_BOUNDS, PLAYERS} from "../utils/constants.js";
+import {FOUR_MOVES, GRID_BOUNDS, MAX_MOVES, PLAYERS} from "../utils/constants.js";
 import Direction from "../utils/direction.js";
 
 class GameState {
@@ -12,6 +12,7 @@ class GameState {
         this.currentWinningCombinations = [];
         this.isPreviousElementRemoved = false;
         this.currentGameMode = null;
+        this.otherRulesEnabled = false;
     }
 
     changePlayer() {
@@ -23,11 +24,16 @@ class GameState {
             .filter(square => square.textContent === `${this.currentPlayer}`).length
     }
 
-    eachPlayerPlacedTwoOrMorePieces() {
-        return this.moveCounter >= FOUR_MOVES;
-    }
     isFourthMove() {
         return this.moveCounter === FOUR_MOVES;
+    }
+
+    getCurrentGridBounds() {
+        return  [
+            this.currentGridCenterSquareIndex + Direction.UP_LEFT, this.currentGridCenterSquareIndex + Direction.UP, this.currentGridCenterSquareIndex + Direction.UP_RIGHT,
+            this.currentGridCenterSquareIndex + Direction.LEFT, this.currentGridCenterSquareIndex, this.currentGridCenterSquareIndex + Direction.RIGHT,
+            this.currentGridCenterSquareIndex + Direction.DOWN_LEFT, this.currentGridCenterSquareIndex + Direction.DOWN, this.currentGridCenterSquareIndex + Direction.DOWN_RIGHT
+        ];
     }
 
     generateWinningCombinations() {

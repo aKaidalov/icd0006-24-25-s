@@ -14,6 +14,8 @@ export function startGame(gameMode) {
 }
 
 function handleGameLogic(event) {
+    console.log("---------------------------------------------------------");
+
     if (!gameState.gameOver) startTimer();
 
     const square = event.target;
@@ -29,44 +31,38 @@ function handleGameLogic(event) {
     if (!gameState.isGridMoveMode) {
 
         // Each player has only four pieces/moves
-        if (gameState.eachPlayerPlacedTwoOrMorePieces() && gameState.currentPlayerPlacedPieces() < FOUR_MOVES) {
-            assignSquareValue(square);
-            gameState.moveCounter++;
-        } else if (!gameState.eachPlayerPlacedTwoOrMorePieces()) { //TODO: Change so it moves places pieces only within th grid!!!
-            assignSquareValueWithinGrid(square);
-            if (gameState.isFourthMove()) {
+        if (gameState.currentPlayerPlacedPieces() < 4) {
+            if(!gameState.isPositionChangeMode && clickedSquareWithinGrid(square)) {
+                assignSquareValue(square);
+                console.log(`currentPlayerPlacedPieces ${gameState.currentPlayer}: ${gameState.currentPlayerPlacedPieces()}`);
+                gameState.moveCounter++; // count as move was made
+                console.log(`moveCounter: ${gameState.moveCounter}`);
                 changePlayer();
-                enableOtherRules(); // Enable grid movement after 4 moves. Executes only once.
+                console.log("CHANGE");
+                checkTieOrWin();
+            } // place new piece
+            if (gameState.isFourthMove() && !gameState.otherRulesEnabled) {
+                enableOtherRules(); // Enable grid movement and position change after 4 moves. Executes only once.
                 console.log("ENABLED");
             }
-        }
-
-        console.log(`moveCounter: ${gameState.moveCounter}`);
-
-        //Originally was without playerHasDoneMaxMoves()
-        if (!checkTieOrWin() && !gameState.isPositionChangeMode && gameState.eachPlayerPlacedTwoOrMorePieces() && gameState.moveCounter < MAX_MOVES) {
-            console.log("CHANGE");
-            changePlayer();
-        } else if (gameState.moveCounter === MAX_MOVES) {  //last change before all possible clicks are made
-            changePlayer();
-            gameState.moveCounter++; // added just to fix the last possible click and disable changing player after click
         }
     }
 }
 
 export function enableOtherRules() {
+    gameState.otherRulesEnabled = true;
     // Attach keypress listener to the document, not board
     document.addEventListener('keydown', (event) => {
         if (event.key === 'g' && !gameState.gameOver && !gameState.isPositionChangeMode) {
             gameState.isGridMoveMode = true; // Enable movement mode
             changeEndMessage(`Grid move mode for player: ${gameState.currentPlayer}!`);
-            console.log("Grid move mode enabled. Press a movement key.");
+            console.log("Grid move mode enabled. Press a movement key: r, t, y, f, h, v, b, n.");
         } else if (gameState.isGridMoveMode) {
             handleGridMove(event.key);
         } else if (event.key === 'c' && !gameState.gameOver && !gameState.isGridMoveMode) {
             gameState.isPositionChangeMode = true; // Enable changing mode
             changeEndMessage(`Position mode for player: ${gameState.currentPlayer}!`);
-            console.log("Position change mode enabled. Click on existing position.");
+            console.log("Position change mode enabled. Click on existing position -> click on a new position.");
         }
 
         checkTieOrWin();
@@ -177,12 +173,8 @@ export function assignSquareValue(square) {
     square.textContent = gameState.currentPlayer;
 }
 
-function assignSquareValueWithinGrid(square) {
-    if (GRID_BOUNDS.includes(Number(square.dataset.index))) {
-        assignSquareValue(square);
-        gameState.moveCounter++;
-        changePlayer();
-    }
+function clickedSquareWithinGrid(square) {
+    return gameState.getCurrentGridBounds().includes(Number(square.dataset.index));
 }
 
 export function changePlayer() {

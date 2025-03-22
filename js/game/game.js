@@ -37,9 +37,10 @@ function handleGameLogic(event) {
                 console.log(`currentPlayerPlacedPieces ${gameState.currentPlayer}: ${gameState.currentPlayerPlacedPieces()}`);
                 gameState.moveCounter++; // count as move was made
                 console.log(`moveCounter: ${gameState.moveCounter}`);
-                changePlayer();
-                console.log("CHANGE");
-                checkTieOrWin();
+                if (!checkTieOrWin()) {
+                    changePlayer();
+                    console.log("CHANGE");
+                }
             } // place new piece
             if (gameState.isFourthMove() && !gameState.otherRulesEnabled) {
                 enableOtherRules(); // Enable grid movement and position change after 4 moves. Executes only once.

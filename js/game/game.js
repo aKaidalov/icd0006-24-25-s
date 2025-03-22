@@ -10,46 +10,48 @@ export function startGame(gameMode) {
     gameState.currentGameMode = gameMode;
 
     DOM_ELEMENTS.restartButton.addEventListener('click', restartGame);
-    DOM_ELEMENTS.board.addEventListener('click', (event) => {
-        if (!gameState.gameOver) startTimer();
+    DOM_ELEMENTS.board.addEventListener('click', (event) => handleGameLogic(event));
+}
 
-        const square = event.target;
-        console.log(square);
+function handleGameLogic(event) {
+    if (!gameState.gameOver) startTimer();
 
-        if ((square.classList.contains('square') && gameState.isPositionChangeMode && !gameState.gameOver)) {
-            handlePositionChange(square);
-            return;
-        } else if (!square.classList.contains('square') || square.textContent !== '' || gameState.gameOver) {
-            return;
-        }
+    const square = event.target;
+    console.log(square);
 
-        if (!gameState.isGridMoveMode) {
+    if ((square.classList.contains('square') && gameState.isPositionChangeMode && !gameState.gameOver)) {
+        handlePositionChange(square);
+        return;
+    } else if (!square.classList.contains('square') || square.textContent !== '' || gameState.gameOver) {
+        return;
+    }
 
-            // Each player has only four pieces/moves
-            if (gameState.playersMadeFirstFourMoves() && gameState.currentPlayerMadeMoves() < FOUR_MOVES) {
-                assignSquareValue(square);
-                gameState.moveCounter++;
-            } else if (!gameState.playersMadeFirstFourMoves()) {
-                assignSquareValueWithinGrid(square);
-                if (gameState.isFourthMove()) {
-                    changePlayer();
-                    enableOtherRules(); // Enable grid movement after 4 moves. Executes only once.
-                    console.log("ENABLED");
-                }
-            }
+    if (!gameState.isGridMoveMode) {
 
-            console.log(`moveCounter: ${gameState.moveCounter}`);
-
-            //Originally was without playerHasDoneMaxMoves()
-            if (!checkTieOrWin() && !gameState.isPositionChangeMode && gameState.playersMadeFirstFourMoves() && gameState.moveCounter < MAX_MOVES) {
-                console.log("CHANGE");
+        // Each player has only four pieces/moves
+        if (gameState.eachPlayerPlacedTwoOrMorePieces() && gameState.currentPlayerPlacedPieces() < FOUR_MOVES) {
+            assignSquareValue(square);
+            gameState.moveCounter++;
+        } else if (!gameState.eachPlayerPlacedTwoOrMorePieces()) { //TODO: Change so it moves places pieces only within th grid!!!
+            assignSquareValueWithinGrid(square);
+            if (gameState.isFourthMove()) {
                 changePlayer();
-            } else if (gameState.moveCounter === MAX_MOVES) {  //last change before all possible clicks are made
-                changePlayer();
-                gameState.moveCounter++; // added just to fix the last possible click and disable changing player after click
+                enableOtherRules(); // Enable grid movement after 4 moves. Executes only once.
+                console.log("ENABLED");
             }
         }
-    });
+
+        console.log(`moveCounter: ${gameState.moveCounter}`);
+
+        //Originally was without playerHasDoneMaxMoves()
+        if (!checkTieOrWin() && !gameState.isPositionChangeMode && gameState.eachPlayerPlacedTwoOrMorePieces() && gameState.moveCounter < MAX_MOVES) {
+            console.log("CHANGE");
+            changePlayer();
+        } else if (gameState.moveCounter === MAX_MOVES) {  //last change before all possible clicks are made
+            changePlayer();
+            gameState.moveCounter++; // added just to fix the last possible click and disable changing player after click
+        }
+    }
 }
 
 export function enableOtherRules() {

@@ -18,12 +18,12 @@ class GameState {
         this.currentPlayer = this.currentPlayer === PLAYERS[0] ? PLAYERS[1] : PLAYERS[0];
     }
 
-    currentPlayerMadeMoves() {
+    currentPlayerPlacedPieces() {
         return Array.from(document.querySelectorAll('.square'))
             .filter(square => square.textContent === `${this.currentPlayer}`).length
     }
 
-    playersMadeFirstFourMoves() {
+    eachPlayerPlacedTwoOrMorePieces() {
         return this.moveCounter >= FOUR_MOVES;
     }
     isFourthMove() {

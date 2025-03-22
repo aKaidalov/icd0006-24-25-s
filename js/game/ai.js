@@ -10,7 +10,7 @@ export function makeAIMove() {
         enableOtherRules();
     }
 
-    if (gameState.currentPlayerMadeMoves() !== FOUR_MOVES) {
+    if (gameState.currentPlayerPlacedPieces() !== FOUR_MOVES) {
         placeOneOfRemainingPieces();
     }
 }

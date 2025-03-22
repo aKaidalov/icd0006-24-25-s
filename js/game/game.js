@@ -25,11 +25,11 @@ export function startGame(gameMode) {
 
         if (!gameState.isGridMoveMode) {
 
-            //Originally was without currentPlayerMadeMoves()
-            if (gameState.hasMadeFirstFourMoves() && gameState.currentPlayerMadeMoves() < FOUR_MOVES) {
+            // Each player has only four pieces/moves
+            if (gameState.playersMadeFirstFourMoves() && gameState.currentPlayerMadeMoves() < FOUR_MOVES) {
                 assignSquareValue(square);
                 gameState.moveCounter++;
-            } else if (!gameState.hasMadeFirstFourMoves()) {
+            } else if (!gameState.playersMadeFirstFourMoves()) {
                 assignSquareValueWithinGrid(square);
                 if (gameState.isFourthMove()) {
                     changePlayer();
@@ -41,7 +41,7 @@ export function startGame(gameMode) {
             console.log(`moveCounter: ${gameState.moveCounter}`);
 
             //Originally was without playerHasDoneMaxMoves()
-            if (!checkTieOrWin() && !gameState.isPositionChangeMode && gameState.hasMadeFirstFourMoves() && gameState.moveCounter < MAX_MOVES) {
+            if (!checkTieOrWin() && !gameState.isPositionChangeMode && gameState.playersMadeFirstFourMoves() && gameState.moveCounter < MAX_MOVES) {
                 console.log("CHANGE");
                 changePlayer();
             } else if (gameState.moveCounter === MAX_MOVES) {  //last change before all possible clicks are made

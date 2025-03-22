@@ -5,25 +5,29 @@ import {assignSquareValue, changePlayer, checkTieOrWin, enableOtherRules} from "
 export function makeAIMove() {
     if (gameState.gameOver) return; // Don't move if the game is over
 
-    gameState.moveCounter++;
+    gameState.moveCounter++; //TODO: can move to startGame
     if (gameState.isFourthMove()) { // Waits for click. Player clicks on 3rd move -> during tha same click AI handles 4th move.
         enableOtherRules();
     }
 
     if (gameState.currentPlayerMadeMoves() !== FOUR_MOVES) {
-        let selector = gameState.moveCounter > FOUR_MOVES ? '.square' : '.grid';
-        const availableSquares = Array.from(document.querySelectorAll(selector))
-            .filter(square => square.textContent === ''); // Find empty squares
+        placeOneOfRemainingPieces();
+    }
+}
 
-        if (availableSquares.length === 0) return; // No available moves
+function placeOneOfRemainingPieces() {
+    let selector = gameState.moveCounter > FOUR_MOVES ? '.square' : '.grid';
+    const availableSquares = Array.from(document.querySelectorAll(selector))
+        .filter(square => square.textContent === ''); // Find empty squares
 
-        const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
-        assignSquareValue(aiMove);
+    if (availableSquares.length === 0) return; // No available moves
 
-        checkTieOrWin();
+    const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
+    assignSquareValue(aiMove);
 
-        if (!gameState.gameOver) {
-            changePlayer(); // Switch turn back to the player
-        }
+    checkTieOrWin();
+
+    if (!gameState.gameOver) {
+        changePlayer(); // Switch turn back to the player
     }
 }

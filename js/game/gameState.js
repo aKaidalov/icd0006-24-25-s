@@ -23,7 +23,7 @@ class GameState {
             .filter(square => square.textContent === `${this.currentPlayer}`).length
     }
 
-    hasMadeFirstFourMoves() {
+    playersMadeFirstFourMoves() {
         return this.moveCounter >= FOUR_MOVES;
     }
     isFourthMove() {

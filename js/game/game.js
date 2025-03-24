@@ -21,7 +21,7 @@ function handleGameLogic(event) {
     const square = event.target;
     console.log(square);
 
-    if ((square.classList.contains('square') && gameState.isPositionChangeMode && !gameState.gameOver)) {
+    if (square.classList.contains('square') && gameState.isPositionChangeMode && !gameState.gameOver) {
         handlePositionChange(square);
         return;
     } else if (!square.classList.contains('square') || square.textContent !== '' || gameState.gameOver) {
@@ -42,6 +42,7 @@ function handleGameLogic(event) {
                     console.log("CHANGE");
                 }
             } // place new piece
+            console.log(`moveCounter after AI move: ${gameState.moveCounter}`);
             if (gameState.isFourthMove() && !gameState.otherRulesEnabled) {
                 enableOtherRules(); // Enable grid movement and position change after 4 moves. Executes only once.
                 console.log("ENABLED");
@@ -113,12 +114,6 @@ function move(direction) {
 }
 
 export function checkTieOrWin() {
-    if (isBoardFull()) {
-        changeEndMessage(`It's a tie!`);
-        gameState.gameOver = true;
-        stopTimer();
-        return true;
-    }
 
     gameState.generateWinningCombinations();
 
@@ -161,15 +156,6 @@ function winningCombinationContainsPlayer(squares, a, b, c, playerIndex) {
     return squares[a].textContent === PLAYERS[playerIndex] && squares[b].textContent === PLAYERS[playerIndex] && squares[c].textContent === PLAYERS[playerIndex];
 }
 
-function isBoardFull() {
-    const squares = document.querySelectorAll('.square');
-    const isFull = [...squares].every(square => square.textContent.trim() !== '');
-
-    if (isFull) squares.forEach(square => square.classList.add('winner'));
-
-    return isFull;
-}
-
 export function assignSquareValue(square) {
     square.textContent = gameState.currentPlayer;
 }
@@ -190,6 +176,7 @@ function changeEndMessage(newMessage) {
     DOM_ELEMENTS.endMessage.textContent = newMessage;
 }
 
+// TODO: Move to ui.js!
 function createNewGridFrom(currentGrid) {
     document.querySelectorAll('.square').forEach((square) => {
         if (currentGrid.includes(Number(square.dataset.index))) {

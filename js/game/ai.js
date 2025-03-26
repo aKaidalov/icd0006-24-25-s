@@ -37,22 +37,17 @@ function placeOneOfRemainingPieces() {
     }
 }
 
+//TODO: Refactor code
 function handleOtherRules() {
-    if (gameState.isPositionChangeMode) {
+    const random = Math.random();
+    if (random < 0.5) {
+        gameState.isPositionChangeMode = true;
+        changeEndMessage(`AI is moving its piece`);
         aiPositionChangeMove();
-    } else if (gameState.isGridMoveMode) {
-        aiGridMove();
     } else {
-        const random = Math.random();
-        if (random < 0.5) {
-            gameState.isPositionChangeMode = true;
-            changeEndMessage(`AI is moving its piece`);
-            aiPositionChangeMove();
-        } else {
-            gameState.isGridMoveMode = true;
-            changeEndMessage(`AI is moving the grid`);
-            aiGridMove();
-        }
+        gameState.isGridMoveMode = true;
+        changeEndMessage(`AI is moving the grid`);
+        aiGridMove();
     }
 }
 
@@ -116,6 +111,7 @@ function aiGridMove() {
     }
 }
 
+//TODO: make aiHelpers.js
 function getRandomDirection() {
     let randomKey = POSSIBLE_KEYS[Math.floor(Math.random() * POSSIBLE_KEYS.length)];
     return Direction.fromKey(randomKey);

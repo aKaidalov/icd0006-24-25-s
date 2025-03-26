@@ -1,7 +1,7 @@
 import Direction from "../utils/direction.js";
 import {startTimer, stopTimer} from "../utils/helpers.js";
 import {AI_DELAY, GAME_MODE, GRID_BOUNDS, PLAYERS, } from "../utils/constants.js";
-import {DOM_ELEMENTS} from "../ui/domElements.js";
+import {DOM_ELEMENTS, changeEndMessage, createNewGridFrom, deleteOldGrid, gridPeek} from "../ui/domElements.js";
 import {gameState} from "./gameState.js";
 import {makeAIMove} from "./ai.js";
 
@@ -134,7 +134,7 @@ export function checkTieOrWin() {
 
     if (winningCombinationsFound >= 1) {
         let message = "It's a tie!";
-        if (winningCombinationsFound === 1 || (winningCombinationsFound === 2 && allElementsHaveSameWinner())) {
+        if (winningCombinationsFound === 1) {
             message = `Game Over! ${document.querySelector('.winner').textContent} wins!`;
         }
 
@@ -147,14 +147,6 @@ export function checkTieOrWin() {
     return false;
 }
 
-function allElementsHaveSameWinner() {
-    const winnerElements = document.querySelectorAll('.winner');
-    if (winnerElements.length === 0) return false;
-    const player = winnerElements[0].textContent;
-
-    return Array.from(winnerElements).every(el => el.textContent === player);
-}
-
 function winningCombinationContainsPlayer(squares, a, b, c, playerIndex) {
     return squares[a].textContent === PLAYERS[playerIndex] && squares[b].textContent === PLAYERS[playerIndex] && squares[c].textContent === PLAYERS[playerIndex];
 }
@@ -164,38 +156,15 @@ function clickedSquareWithinGrid(square) {
 }
 
 export function changePlayer() {
-    gameState.changePlayer();
-    changeEndMessage(`${gameState.currentPlayer}'s turn!`);
+    changePlayerAndEndMessage();
     if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {
         setTimeout(makeAIMove, AI_DELAY); // AI moves automatically
     }
 }
 
-function changeEndMessage(newMessage) {
-    DOM_ELEMENTS.endMessage.textContent = newMessage;
-}
-
-// TODO: Move to ui.js!
-function createNewGridFrom(currentGrid) {
-    document.querySelectorAll('.square').forEach((square) => {
-        if (currentGrid.includes(Number(square.dataset.index))) {
-            square.classList.add('grid');
-        }
-    });
-}
-
-function deleteOldGrid() {
-    document.querySelectorAll('.grid').forEach((square) => {
-        square.classList.remove('grid');
-    });
-}
-
-function gridPeek(direction) {
-    let gridAfterMove = [];
-    document.querySelectorAll('.grid').forEach((square) => {
-        gridAfterMove.push(Number(square.dataset.index) + direction);
-    });
-    return gridAfterMove;
+export function changePlayerAndEndMessage() {
+    gameState.changePlayer();
+    changeEndMessage(`${gameState.currentPlayer}'s turn!`);
 }
 
 function getGridCenter(grid) {

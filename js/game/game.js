@@ -34,20 +34,23 @@ function handleGameLogic(event) {
         if (gameState.currentPlayerPlacedPieces() < 4) {
             if(!gameState.isPositionChangeMode && clickedSquareWithinGrid(square)) {
                 assignSquareValue(square);
-                console.log(`currentPlayerPlacedPieces ${gameState.currentPlayer}: ${gameState.currentPlayerPlacedPieces()}`);
-                gameState.moveCounter++; // count as move was made
-                console.log(`moveCounter: ${gameState.moveCounter}`);
                 if (!checkTieOrWin()) {
                     changePlayer();
                     console.log("CHANGE");
                 }
-            } // place new piece
-            console.log(`moveCounter after AI move: ${gameState.moveCounter}`);
-            if (gameState.isFourthMove() && !gameState.otherRulesEnabled) {
-                enableOtherRules(); // Enable grid movement and position change after 4 moves. Executes only once.
-                console.log("ENABLED");
             }
         }
+    }
+}
+
+export function assignSquareValue(square) {
+    square.textContent = gameState.currentPlayer;
+    console.log(`currentPlayerPlacedPieces ${gameState.currentPlayer}: ${gameState.currentPlayerPlacedPieces()}`);
+    gameState.moveCounter++; // count as move was made
+    console.log(`moveCounter: ${gameState.moveCounter}`);
+    if (gameState.isFourthMove() && !gameState.otherRulesEnabled) {
+        enableOtherRules(); // Enable grid movement and position change after 4 moves. Executes only once.
+        console.log("ENABLED");
     }
 }
 
@@ -154,10 +157,6 @@ function allElementsHaveSameWinner() {
 
 function winningCombinationContainsPlayer(squares, a, b, c, playerIndex) {
     return squares[a].textContent === PLAYERS[playerIndex] && squares[b].textContent === PLAYERS[playerIndex] && squares[c].textContent === PLAYERS[playerIndex];
-}
-
-export function assignSquareValue(square) {
-    square.textContent = gameState.currentPlayer;
 }
 
 function clickedSquareWithinGrid(square) {

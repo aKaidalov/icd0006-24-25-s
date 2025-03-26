@@ -8,7 +8,7 @@ export function makeAIMove() {
         placeOneOfRemainingPieces();
     }
 
-    gameState.moveCounter++;
+    console.log(`moveCounter after AI move: ${gameState.moveCounter}`);
 }
 
 function placeOneOfRemainingPieces() {

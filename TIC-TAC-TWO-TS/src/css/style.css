@@ -1,0 +1,96 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #000000;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+#landing-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers vertically */
+    align-items: center; /* Centers horizontally */
+    height: 80vh; /* Makes the landing page take up full height of the viewport */
+    text-align: center; /* Centers text */
+}
+
+#mode-selection {
+    display: flex;
+    justify-content: space-between; /* Distributes space between the buttons */
+    width: 60%; /* Adjust width as needed */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#pvp-button, #pve-button {
+    width: 47%; /* Buttons will take up 45% of the parent container width */
+    height: 50px;
+    background-color: #FFFFFF;
+    border: 1px solid #000000;
+    border-radius: 40px;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#pvp-button:hover, #pve-button:hover {
+    background-color: #000000;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+#board {
+    margin-left: auto;
+    margin-right: auto;
+    width: 375px;
+    height: 375px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-gap: 5px;
+}
+
+.square {
+    font-size: 40px;
+    text-align: center;
+    background-color: #F5F5F5;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.square:hover {
+    background-color: #FFFFE0;
+}
+
+.grid {
+    border: 2px solid #87CEFAFF;
+}
+
+#restart-button {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 150px;
+    height: 40px;
+    background-color: #FFFFFF;
+    border: 1px solid #000000;
+    border-radius: 40px;
+    font-size: 18px;
+}
+
+#restart-button:hover {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.winner {
+    color: red;
+    font-weight: bold;
+    transition: background-color 0.6s ease;
+}

@@ -1,5 +1,5 @@
 # icd0006-24-25-s
-## TIC-TAC-TWO-JS
+## TIC-TAC-TWO-TS
 ### AUTHOR
 
 ````

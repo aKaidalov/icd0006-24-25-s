@@ -1,10 +1,10 @@
 import {gameState} from "./gameState.js";
 import {assignSquareValue, changePlayerAndEndMessage, checkTieOrWin} from "./game.js";
 import {
-    changeEndMessage,
     createNewGridFrom,
     deleteOldGrid,
     findEmptySquaresWithinGrid,
+    getAllSquares,
     gridPeek
 } from "../ui/domElements.js";
 import Direction from "../utils/direction.js";
@@ -24,46 +24,32 @@ export function makeAIMove() {
 
 function placeOneOfRemainingPieces() {
     const availableSquares = findEmptySquaresWithinGrid();
-
     if (availableSquares.length === 0) {
         throw new Error("AI move failed: no empty grid squares available");
     }
-
     const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
     assignSquareValue(aiMove);
-
     if (!checkTieOrWin()) {
         changePlayerAndEndMessage();
     }
 }
 
-//TODO: Refactor code
 function handleOtherRules() {
     const random = Math.random();
     if (random < 0.5) {
         gameState.isPositionChangeMode = true;
-        changeEndMessage(`AI is moving its piece`);
         aiPositionChangeMove();
     } else {
         gameState.isGridMoveMode = true;
-        changeEndMessage(`AI is moving the grid`);
         aiGridMove();
     }
 }
 
 function aiPositionChangeMove() {
-    const squares = document.querySelectorAll('.square');
+    const squares = getAllSquares();
     const currentGridBounds = gameState.getCurrentGridBounds();
-    const aiPieces = [];
-
-    // Find all AI moves
-    currentGridBounds.forEach(i => {
-        if (squares[i].textContent === gameState.currentPlayer) {
-            aiPieces.push(i);
-        }
-    });
-
-    const emptySquaresWithinGrid = currentGridBounds.filter(i => squares[i].textContent === '');
+    const aiPieces = findAllAiPieces(squares, currentGridBounds);
+    const emptySquaresWithinGrid = findEmptySquaresWithinGridForAi(squares, currentGridBounds);
 
     if (aiPieces.length === 0 || emptySquaresWithinGrid.length === 0) {
         gameState.isPositionChangeMode = false;
@@ -73,10 +59,8 @@ function aiPositionChangeMove() {
 
     const fromIndex = aiPieces[Math.floor(Math.random() * aiPieces.length)];
     const toIndex = emptySquaresWithinGrid[Math.floor(Math.random() * emptySquaresWithinGrid.length)];
-
     squares[fromIndex].textContent = '';
     squares[toIndex].textContent = gameState.currentPlayer;
-
     gameState.isPreviousElementRemoved = false;
     gameState.isPositionChangeMode = false;
 
@@ -90,12 +74,9 @@ function aiGridMove() {
 
     while (!moved){
         let direction = getRandomDirection();
-
         if (!direction) continue;
-
         let currentGrid = gridPeek(direction);
         let gridCenterSquareIndex = currentGrid[4];
-
         if (GRID_BOUNDS.includes(gridCenterSquareIndex)) {
             deleteOldGrid();
             createNewGridFrom(currentGrid);
@@ -111,10 +92,23 @@ function aiGridMove() {
     }
 }
 
-//TODO: make aiHelpers.js
+// Helpers
 function getRandomDirection() {
     let randomKey = POSSIBLE_KEYS[Math.floor(Math.random() * POSSIBLE_KEYS.length)];
     return Direction.fromKey(randomKey);
 }
 
+function findAllAiPieces(squares, currentGridBounds) {
+    const aiPieces = [];
+    currentGridBounds.forEach(i => {
+        if (squares[i].textContent === gameState.currentPlayer) {
+            aiPieces.push(i);
+        }
+    });
+    return aiPieces;
+}
+
+function findEmptySquaresWithinGridForAi(squares, currentGridBounds) {
+    return currentGridBounds.filter(i => squares[i].textContent === '')
+}
 

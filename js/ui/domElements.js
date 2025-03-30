@@ -40,3 +40,8 @@ export function findEmptySquaresWithinGrid() {
     return Array.from(document.querySelectorAll('.grid'))
         .filter(square => square.textContent === ''); // Find empty squares
 }
+
+// AI
+export function getAllSquares() {
+    return document.querySelectorAll('.square');
+}

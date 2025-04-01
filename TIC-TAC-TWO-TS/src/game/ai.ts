@@ -1,129 +1,110 @@
-import { gameState } from "./gameState";
-import { assignSquareValue, changePlayerAndEndMessage, checkTieOrWin } from "./game";
-import {
-    createNewGridFrom,
-    deleteOldGrid,
-    findEmptySquaresWithinGrid,
-    getAllSquares,
-    gridPeek
-} from "../ui/domElements";
-import Direction from "../utils/direction";
-import { GRID_BOUNDS, POSSIBLE_KEYS } from "../utils/constants";
+import { gameState } from "./gameState.js";
+import { gameController } from "./game.js";
+import { domService } from "../ui/domElements.js";
+import Direction from "../utils/direction.js";
+import { GRID_BOUNDS, POSSIBLE_KEYS } from "../utils/constants.js";
 
-// HTML element alias
-type SquareElement = HTMLElement;
+class AI {
+    makeAIMove(): void {
+        if (gameState.gameOver) return;
 
-export function makeAIMove(): void {
-    if (gameState.gameOver) return;
+        if (gameState.currentPlayerPlacedPieces() < 4) {
+            this.#placeOneOfRemainingPieces();
+        } else {
+            this.#handleOtherRules();
+        }
 
-    if (gameState.currentPlayerPlacedPieces() < 4) {
-        placeOneOfRemainingPieces();
-    } else {
-        handleOtherRules();
+        console.log(`moveCounter after AI move: ${gameState.moveCounter}`);
     }
 
-    console.log(`moveCounter after AI move: ${gameState.moveCounter}`);
-}
-
-function placeOneOfRemainingPieces(): void {
-    const availableSquares = findEmptySquaresWithinGrid();
-    if (availableSquares.length === 0) {
-        throw new Error("AI move failed: no empty grid squares available");
+    #placeOneOfRemainingPieces(): void {
+        const availableSquares = domService.findEmptySquaresWithinGrid();
+        if (availableSquares.length === 0) {
+            throw new Error("AI move failed: no empty grid squares available");
+        }
+        const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)] as HTMLElement;
+        gameController.assignSquareValue(aiMove);
+        if (!gameController.checkTieOrWin()) {
+            gameController.changePlayerAndEndMessage();
+        }
     }
 
-    const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)];
-    assignSquareValue(aiMove);
-
-    if (!checkTieOrWin()) {
-        changePlayerAndEndMessage();
+    #handleOtherRules(): void {
+        const random = Math.random();
+        if (random < 0.5) {
+            gameState.isPositionChangeMode = true;
+            this.#aiPositionChangeMove();
+        } else {
+            gameState.isGridMoveMode = true;
+            this.#aiGridMove();
+        }
     }
-}
 
-function handleOtherRules(): void {
-    const random = Math.random();
+    #aiPositionChangeMove(): void {
+        const squares = domService.getAllSquares();
+        const currentGridBounds = gameState.getCurrentGridBounds();
+        const aiPieces = this.#findAllAiPieces(squares, currentGridBounds);
+        const emptySquaresWithinGrid = this.#findEmptySquaresWithinGridForAi(squares, currentGridBounds);
 
-    if (random < 0.5) {
-        gameState.isPositionChangeMode = true;
-        aiPositionChangeMove();
-    } else {
-        gameState.isGridMoveMode = true;
-        aiGridMove();
-    }
-}
+        if (aiPieces.length === 0 || emptySquaresWithinGrid.length === 0) {
+            gameState.isPositionChangeMode = false;
+            gameController.changePlayerAndEndMessage();
+            return;
+        }
 
-function aiPositionChangeMove(): void {
-    const squares: HTMLElement[] = [...getAllSquares()];
-    const currentGridBounds = gameState.getCurrentGridBounds();
-    const aiPieces = findAllAiPieces(squares, currentGridBounds);
-    const emptySquaresWithinGrid = findEmptySquaresWithinGridForAi(squares, currentGridBounds);
-
-    if (aiPieces.length === 0 || emptySquaresWithinGrid.length === 0) {
+        const fromIndex = aiPieces[Math.floor(Math.random() * aiPieces.length)];
+        const toIndex = emptySquaresWithinGrid[Math.floor(Math.random() * emptySquaresWithinGrid.length)];
+        (squares[fromIndex] as HTMLElement).textContent = '';
+        (squares[toIndex] as HTMLElement).textContent = gameState.currentPlayer;
+        gameState.isPreviousElementRemoved = false;
         gameState.isPositionChangeMode = false;
-        changePlayerAndEndMessage();
-        return;
-    }
 
-    const fromIndex = aiPieces[Math.floor(Math.random() * aiPieces.length)];
-    const toIndex = emptySquaresWithinGrid[Math.floor(Math.random() * emptySquaresWithinGrid.length)];
-
-    squares[fromIndex].textContent = '';
-    squares[toIndex].textContent = gameState.currentPlayer;
-
-    gameState.isPreviousElementRemoved = false;
-    gameState.isPositionChangeMode = false;
-
-    if (!checkTieOrWin()) {
-        changePlayerAndEndMessage();
-    }
-}
-
-function aiGridMove(): void {
-    let moved = false;
-
-    while (!moved) {
-        const direction: number | null = getRandomDirection();
-        if (!direction) continue;
-
-        const currentGrid = gridPeek(direction);
-        const gridCenterSquareIndex = currentGrid[4];
-
-        if (GRID_BOUNDS.includes(gridCenterSquareIndex)) {
-            deleteOldGrid();
-            createNewGridFrom(currentGrid);
-            gameState.currentGridCenterSquareIndex = gridCenterSquareIndex;
-            console.log(`AI moved grid to center index: ${gridCenterSquareIndex}`);
-            moved = true;
+        if (!gameController.checkTieOrWin()) {
+            gameController.changePlayerAndEndMessage();
         }
     }
 
-    gameState.isGridMoveMode = false;
+    #aiGridMove(): void {
+        let moved = false;
 
-    if (!checkTieOrWin()) {
-        changePlayerAndEndMessage();
+        while (!moved) {
+            const direction = this.#getRandomDirection();
+            if (!direction) continue;
+            const currentGrid = domService.gridPeek(direction);
+            const gridCenterSquareIndex = currentGrid[4];
+            if (GRID_BOUNDS.includes(gridCenterSquareIndex)) {
+                domService.deleteOldGrid();
+                domService.createNewGridFrom(currentGrid);
+                gameState.currentGridCenterSquareIndex = gridCenterSquareIndex;
+                console.log(`AI moved grid to center index: ${gridCenterSquareIndex}`);
+                moved = true;
+            }
+        }
+
+        gameState.isGridMoveMode = false;
+        if (!gameController.checkTieOrWin()) {
+            gameController.changePlayerAndEndMessage();
+        }
+    }
+
+    #getRandomDirection(): number | null {
+        const randomKey = POSSIBLE_KEYS[Math.floor(Math.random() * POSSIBLE_KEYS.length)];
+        return Direction.fromKey(randomKey);
+    }
+
+    #findAllAiPieces(squares: NodeListOf<Element>, currentGridBounds: number[]): number[] {
+        const aiPieces: number[] = [];
+        currentGridBounds.forEach(i => {
+            if ((squares[i] as HTMLElement).textContent === gameState.currentPlayer) {
+                aiPieces.push(i);
+            }
+        });
+        return aiPieces;
+    }
+
+    #findEmptySquaresWithinGridForAi(squares: NodeListOf<Element>, currentGridBounds: number[]): number[] {
+        return currentGridBounds.filter(i => (squares[i] as HTMLElement).textContent === '');
     }
 }
 
-// ------------------------
-// Helpers
-// ------------------------
-
-function getRandomDirection(): number | null {
-    const randomKey = POSSIBLE_KEYS[Math.floor(Math.random() * POSSIBLE_KEYS.length)];
-    return Direction.fromKey(randomKey);
-}
-
-function findAllAiPieces(squares: SquareElement[], currentGridBounds: number[]): number[] {
-    const aiPieces: number[] = [];
-
-    currentGridBounds.forEach(i => {
-        if (squares[i].textContent === gameState.currentPlayer) {
-            aiPieces.push(i);
-        }
-    });
-
-    return aiPieces;
-}
-
-function findEmptySquaresWithinGridForAi(squares: SquareElement[], currentGridBounds: number[]): number[] {
-    return currentGridBounds.filter(i => squares[i].textContent === '');
-}
+export const ai = new AI();

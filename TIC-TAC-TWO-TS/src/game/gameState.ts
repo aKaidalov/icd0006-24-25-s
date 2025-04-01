@@ -1,17 +1,18 @@
-import { FOUR_MOVES, GRID_BOUNDS, PLAYERS } from "../utils/constants";
-import Direction from "../utils/direction";
+import { FOUR_MOVES, GRID_BOUNDS, PLAYERS } from "../utils/constants.js";
+import Direction from "../utils/direction.js";
 
-type PlayerSymbol = string;
+type Player = typeof PLAYERS[number];
 type GameMode = string | null;
+type WinningCombination = [number, number, number];
 
 class GameState {
-    currentPlayer: PlayerSymbol;
+    currentPlayer: Player;
     gameOver: boolean;
     isGridMoveMode: boolean;
     isPositionChangeMode: boolean;
     moveCounter: number;
     currentGridCenterSquareIndex: number;
-    currentWinningCombinations: number[][];
+    currentWinningCombinations: WinningCombination[];
     isPreviousElementRemoved: boolean;
     currentGameMode: GameMode;
     otherRulesEnabled: boolean;
@@ -34,10 +35,8 @@ class GameState {
     }
 
     currentPlayerPlacedPieces(): number {
-        const squares = document.querySelectorAll('.square') as NodeListOf<HTMLElement>;
-        return Array.from(squares).filter(
-            square => square.textContent === this.currentPlayer
-        ).length;
+        return Array.from(document.querySelectorAll('.square'))
+            .filter(square => (square as HTMLElement).textContent === this.currentPlayer).length;
     }
 
     isFourthMove(): boolean {
@@ -45,25 +44,25 @@ class GameState {
     }
 
     getCurrentGridBounds(): number[] {
-        const c = this.currentGridCenterSquareIndex;
+        const i = this.currentGridCenterSquareIndex;
         return [
-            c + Direction.UP_LEFT, c + Direction.UP, c + Direction.UP_RIGHT,
-            c + Direction.LEFT, c, c + Direction.RIGHT,
-            c + Direction.DOWN_LEFT, c + Direction.DOWN, c + Direction.DOWN_RIGHT
+            i + Direction.UP_LEFT, i + Direction.UP, i + Direction.UP_RIGHT,
+            i + Direction.LEFT, i, i + Direction.RIGHT,
+            i + Direction.DOWN_LEFT, i + Direction.DOWN, i + Direction.DOWN_RIGHT
         ];
     }
 
     generateWinningCombinations(): void {
-        const c = this.currentGridCenterSquareIndex;
+        const i = this.currentGridCenterSquareIndex;
         this.currentWinningCombinations = [
-            [c + Direction.UP_LEFT, c + Direction.UP, c + Direction.UP_RIGHT],
-            [c + Direction.LEFT, c, c + Direction.RIGHT],
-            [c + Direction.DOWN_LEFT, c + Direction.DOWN, c + Direction.DOWN_RIGHT],
-            [c + Direction.UP_LEFT, c + Direction.LEFT, c + Direction.DOWN_LEFT],
-            [c + Direction.UP, c, c + Direction.DOWN],
-            [c + Direction.UP_RIGHT, c + Direction.RIGHT, c + Direction.DOWN_RIGHT],
-            [c + Direction.UP_LEFT, c, c + Direction.DOWN_RIGHT],
-            [c + Direction.UP_RIGHT, c, c + Direction.DOWN_LEFT]
+            [i + Direction.UP_LEFT, i + Direction.UP, i + Direction.UP_RIGHT],
+            [i + Direction.LEFT, i, i + Direction.RIGHT],
+            [i + Direction.DOWN_LEFT, i + Direction.DOWN, i + Direction.DOWN_RIGHT],
+            [i + Direction.UP_LEFT, i + Direction.LEFT, i + Direction.DOWN_LEFT],
+            [i + Direction.UP, i, i + Direction.DOWN],
+            [i + Direction.UP_RIGHT, i + Direction.RIGHT, i + Direction.DOWN_RIGHT],
+            [i + Direction.UP_LEFT, i, i + Direction.DOWN_RIGHT],
+            [i + Direction.UP_RIGHT, i, i + Direction.DOWN_LEFT]
         ];
     }
 }

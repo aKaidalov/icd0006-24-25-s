@@ -15,15 +15,15 @@ class AI {
         if (gameState.gameOver) return; // Don't move if the game is over
 
         if (gameState.currentPlayerPlacedPieces() < 4) {
-            this.placeOneOfRemainingPieces();
+            this.#placeOneOfRemainingPieces();
         } else {
-            this.handleOtherRules();
+            this.#handleOtherRules();
         }
 
         console.log(`moveCounter after AI move: ${gameState.moveCounter}`);
     }
 
-     placeOneOfRemainingPieces() {
+     #placeOneOfRemainingPieces() {
         const availableSquares = findEmptySquaresWithinGrid();
         if (availableSquares.length === 0) {
             throw new Error("AI move failed: no empty grid squares available");
@@ -35,21 +35,21 @@ class AI {
         }
     }
 
-    handleOtherRules() {
+    #handleOtherRules() {
         const random = Math.random();
         if (random < 0.5) {
             gameState.isPositionChangeMode = true;
-            this.aiPositionChangeMove();
+            this.#aiPositionChangeMove();
         } else {
             gameState.isGridMoveMode = true;
-            this.aiGridMove();
+            this.#aiGridMove();
         }
     }
 
-    aiPositionChangeMove() {
+    #aiPositionChangeMove() {
         const squares = getAllSquares();
         const currentGridBounds = gameState.getCurrentGridBounds();
-        const aiPieces = this.findAllAiPieces(squares, currentGridBounds);
+        const aiPieces = this.#findAllAiPieces(squares, currentGridBounds);
         const emptySquaresWithinGrid = this.findEmptySquaresWithinGridForAi(squares, currentGridBounds);
 
         if (aiPieces.length === 0 || emptySquaresWithinGrid.length === 0) {
@@ -70,11 +70,11 @@ class AI {
         }
     }
 
-    aiGridMove() {
+    #aiGridMove() {
         let moved = false;
 
         while (!moved) {
-            let direction = this.getRandomDirection();
+            let direction = this.#getRandomDirection();
             if (!direction) continue;
             let currentGrid = gridPeek(direction);
             let gridCenterSquareIndex = currentGrid[4];
@@ -94,12 +94,12 @@ class AI {
     }
 
     // Helpers
-    getRandomDirection() {
+    #getRandomDirection() {
         let randomKey = POSSIBLE_KEYS[Math.floor(Math.random() * POSSIBLE_KEYS.length)];
         return Direction.fromKey(randomKey);
     }
 
-    findAllAiPieces(squares, currentGridBounds) {
+    #findAllAiPieces(squares, currentGridBounds) {
         const aiPieces = [];
         currentGridBounds.forEach(i => {
             if (squares[i].textContent === gameState.currentPlayer) {

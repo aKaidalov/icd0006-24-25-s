@@ -158,7 +158,7 @@ function clickedSquareWithinGrid(square) {
 export function changePlayer() {
     changePlayerAndEndMessage();
     if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {
-        setTimeout(ai.makeAIMove.bind(ai), AI_DELAY); // AI moves automatically
+        setTimeout(() => ai.makeAIMove(), AI_DELAY); // AI moves automatically
     }
 }
 

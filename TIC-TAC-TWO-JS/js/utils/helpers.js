@@ -6,7 +6,7 @@ class Helpers {
     }
 
     startTimer() {
-        if (this.isTimerRunning) return;
+        if (this.isTimerRunning) return; // Prevent multiple intervals from running
         this.isTimerRunning = true;
         this.seconds = 0;
 
@@ -24,7 +24,7 @@ class Helpers {
     }
 
     stopTimer() {
-        clearInterval(this.timerInterval);
+        clearInterval(this.timerInterval); // Stop the timer when the game ends or other conditions are met
         this.isTimerRunning = false;
         this.seconds = 0;
     }

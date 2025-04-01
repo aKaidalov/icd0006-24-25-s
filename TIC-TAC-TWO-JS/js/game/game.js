@@ -3,7 +3,7 @@ import {startTimer, stopTimer} from "../utils/helpers.js";
 import {AI_DELAY, GAME_MODE, GRID_BOUNDS, PLAYERS, } from "../utils/constants.js";
 import {DOM_ELEMENTS, changeEndMessage, createNewGridFrom, deleteOldGrid, gridPeek} from "../ui/domElements.js";
 import {gameState} from "./gameState.js";
-import {makeAIMove} from "./ai.js";
+import {ai} from "./ai.js";
 
 
 export function startGame(gameMode) {
@@ -158,7 +158,7 @@ function clickedSquareWithinGrid(square) {
 export function changePlayer() {
     changePlayerAndEndMessage();
     if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {
-        setTimeout(makeAIMove, AI_DELAY); // AI moves automatically
+        setTimeout(ai.makeAIMove.bind(ai), AI_DELAY); // AI moves automatically
     }
 }
 

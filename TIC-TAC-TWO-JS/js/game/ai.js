@@ -1,5 +1,5 @@
 import {gameState} from "./gameState.js";
-import {assignSquareValue, changePlayerAndEndMessage, checkTieOrWin} from "./game.js";
+import {gameController} from "./game.js";
 import {
     createNewGridFrom,
     deleteOldGrid,
@@ -29,9 +29,9 @@ class AI {
             throw new Error("AI move failed: no empty grid squares available");
         }
         const aiMove = availableSquares[Math.floor(Math.random() * availableSquares.length)]; // Pick random square
-        assignSquareValue(aiMove);
-        if (!checkTieOrWin()) {
-            changePlayerAndEndMessage();
+         gameController.assignSquareValue(aiMove);
+        if (!gameController.checkTieOrWin()) {
+            gameController.changePlayerAndEndMessage();
         }
     }
 
@@ -54,7 +54,7 @@ class AI {
 
         if (aiPieces.length === 0 || emptySquaresWithinGrid.length === 0) {
             gameState.isPositionChangeMode = false;
-            changePlayerAndEndMessage();
+            gameController.changePlayerAndEndMessage();
             return;
         }
 
@@ -65,8 +65,8 @@ class AI {
         gameState.isPreviousElementRemoved = false;
         gameState.isPositionChangeMode = false;
 
-        if (!checkTieOrWin()) {
-            changePlayerAndEndMessage();
+        if (!gameController.checkTieOrWin()) {
+            gameController.changePlayerAndEndMessage();
         }
     }
 
@@ -88,8 +88,8 @@ class AI {
         }
 
         gameState.isGridMoveMode = false;
-        if (!checkTieOrWin()) {
-            changePlayerAndEndMessage();
+        if (!gameController.checkTieOrWin()) {
+            gameController.changePlayerAndEndMessage();
         }
     }
 

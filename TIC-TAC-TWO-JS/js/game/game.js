@@ -1,5 +1,5 @@
 import Direction from "../utils/direction.js";
-import {startTimer, stopTimer} from "../utils/helpers.js";
+import {helpers} from "../utils/helpers.js";
 import {AI_DELAY, GAME_MODE, GRID_BOUNDS, PLAYERS, } from "../utils/constants.js";
 import {DOM_ELEMENTS, changeEndMessage, createNewGridFrom, deleteOldGrid, gridPeek} from "../ui/domElements.js";
 import {gameState} from "./gameState.js";
@@ -16,7 +16,7 @@ export function startGame(gameMode) {
 function handleGameLogic(event) {
     console.log("---------------------------------------------------------");
 
-    if (!gameState.gameOver) startTimer();
+    if (!gameState.gameOver) helpers.startTimer();
 
     const square = event.target;
     console.log(square);
@@ -140,7 +140,7 @@ export function checkTieOrWin() {
 
         changeEndMessage(message);
         gameState.gameOver = true;
-        stopTimer();
+        helpers.stopTimer();
         return true;
     }
 

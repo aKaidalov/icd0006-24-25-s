@@ -1,4 +1,4 @@
-import {logBoardClick} from "../utils/helpers.js";
+import {helpers} from "../utils/helpers.js";
 import {GRID_STARTING_SQUARES, TOTAL_SQUARES} from "../utils/constants.js";
 
 export function setUpBaseUiElements(mode) {
@@ -90,7 +90,7 @@ function createBoard(){
         board.appendChild(square);
     }
 
-    logBoardClick(board);
+    helpers.logBoardClick(board);
 
     return board;
 }

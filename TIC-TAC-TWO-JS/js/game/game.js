@@ -1,17 +1,16 @@
 import Direction from "../utils/direction.js";
 import {helpers} from "../utils/helpers.js";
 import {AI_DELAY, GAME_MODE, GRID_BOUNDS, PLAYERS, } from "../utils/constants.js";
-import {DOM_ELEMENTS, changeEndMessage, createNewGridFrom, deleteOldGrid, gridPeek} from "../ui/domElements.js";
+import {domService} from "../ui/domElements.js";
 import {gameState} from "./gameState.js";
 import {ai} from "./ai.js";
 
 class GameController {
-
     startGame(gameMode) {
         gameState.currentGameMode = gameMode;
 
-        DOM_ELEMENTS.restartButton.addEventListener('click', (event) => this.restartGame(event));
-        DOM_ELEMENTS.board.addEventListener('click', (event) => this.handleGameLogic(event));
+        domService.DOM_ELEMENTS.restartButton.addEventListener('click', (event) => this.restartGame(event));
+        domService.DOM_ELEMENTS.board.addEventListener('click', (event) => this.handleGameLogic(event));
     }
 
     handleGameLogic(event) {
@@ -61,13 +60,13 @@ class GameController {
         document.addEventListener('keydown', (event) => {
             if (event.key === 'g' && !gameState.gameOver && !gameState.isPositionChangeMode) {
                 gameState.isGridMoveMode = true; // Enable movement mode
-                changeEndMessage(`Grid move mode for player: ${gameState.currentPlayer}!`);
+                domService.changeEndMessage(`Grid move mode for player: ${gameState.currentPlayer}!`);
                 console.log("Grid move mode enabled. Press a movement key: r, t, y, f, h, v, b, n.");
             } else if (gameState.isGridMoveMode) {
                 this.handleGridMove(event.key);
             } else if (event.key === 'c' && !gameState.gameOver && !gameState.isGridMoveMode) {
                 gameState.isPositionChangeMode = true; // Enable changing mode
-                changeEndMessage(`Position mode for player: ${gameState.currentPlayer}!`);
+                domService.changeEndMessage(`Position mode for player: ${gameState.currentPlayer}!`);
                 console.log("Position change mode enabled. Click on existing position -> click on a new position.");
             }
 
@@ -102,15 +101,15 @@ class GameController {
     }
 
     move(direction) {
-        let currentGrid = gridPeek(direction);
+        let currentGrid = domService.gridPeek(direction);
         let gridCenterSquareIndex = this.getGridCenter(currentGrid)
         if (this.isInBounds(gridCenterSquareIndex)) {
-            deleteOldGrid();
-            createNewGridFrom(currentGrid);
+            domService.deleteOldGrid();
+            domService.createNewGridFrom(currentGrid);
             gameState.currentGridCenterSquareIndex = gridCenterSquareIndex;
             console.log(`Grid center: ${gameState.currentGridCenterSquareIndex}`);
             this.changePlayer();
-            changeEndMessage(`${gameState.currentPlayer}'s turn!`);
+            domService.changeEndMessage(`${gameState.currentPlayer}'s turn!`);
             return true;
         }
         console.log("Wrong direction! Try again.");
@@ -139,7 +138,7 @@ class GameController {
                 message = `Game Over! ${document.querySelector('.winner').textContent} wins!`;
             }
 
-            changeEndMessage(message);
+            domService.changeEndMessage(message);
             gameState.gameOver = true;
             helpers.stopTimer();
             return true;
@@ -165,7 +164,7 @@ class GameController {
 
     changePlayerAndEndMessage() {
         gameState.changePlayer();
-        changeEndMessage(`${gameState.currentPlayer}'s turn!`);
+        domService.changeEndMessage(`${gameState.currentPlayer}'s turn!`);
     }
 
     getGridCenter(grid) {

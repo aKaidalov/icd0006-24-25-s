@@ -1,12 +1,6 @@
 import {gameState} from "./gameState.js";
 import {gameController} from "./game.js";
-import {
-    createNewGridFrom,
-    deleteOldGrid,
-    findEmptySquaresWithinGrid,
-    getAllSquares,
-    gridPeek
-} from "../ui/domElements.js";
+import {domService} from "../ui/domElements.js";
 import Direction from "../utils/direction.js";
 import {GRID_BOUNDS, POSSIBLE_KEYS} from "../utils/constants.js";
 
@@ -24,7 +18,7 @@ class AI {
     }
 
      #placeOneOfRemainingPieces() {
-        const availableSquares = findEmptySquaresWithinGrid();
+        const availableSquares = domService.findEmptySquaresWithinGrid();
         if (availableSquares.length === 0) {
             throw new Error("AI move failed: no empty grid squares available");
         }
@@ -47,7 +41,7 @@ class AI {
     }
 
     #aiPositionChangeMove() {
-        const squares = getAllSquares();
+        const squares = domService.getAllSquares();
         const currentGridBounds = gameState.getCurrentGridBounds();
         const aiPieces = this.#findAllAiPieces(squares, currentGridBounds);
         const emptySquaresWithinGrid = this.#findEmptySquaresWithinGridForAi(squares, currentGridBounds);
@@ -76,11 +70,11 @@ class AI {
         while (!moved) {
             let direction = this.#getRandomDirection();
             if (!direction) continue;
-            let currentGrid = gridPeek(direction);
+            let currentGrid = domService.gridPeek(direction);
             let gridCenterSquareIndex = currentGrid[4];
             if (GRID_BOUNDS.includes(gridCenterSquareIndex)) {
-                deleteOldGrid();
-                createNewGridFrom(currentGrid);
+                domService.deleteOldGrid();
+                domService.createNewGridFrom(currentGrid);
                 gameState.currentGridCenterSquareIndex = gridCenterSquareIndex;
                 console.log(`AI moved grid to center index: ${gridCenterSquareIndex}`);
                 moved = true;

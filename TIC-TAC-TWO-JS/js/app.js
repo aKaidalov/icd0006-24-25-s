@@ -1,7 +1,7 @@
-import { uiBuilder } from "./ui/ui.js";
-import { gameController } from "./game/game.js";
-import { GAME_MODE } from "./utils/constants.js";
-import { initializeDOMElements } from "./ui/domElements.js";
+import {uiBuilder} from "./ui/ui.js";
+import {gameController} from "./game/game.js";
+import {GAME_MODE} from "./utils/constants.js";
+import {domService} from "./ui/domElements.js";
 
 class App {
     constructor() {
@@ -18,7 +18,7 @@ class App {
         const landingPage = document.getElementById('landing-page');
         landingPage.style.display = 'none';
         uiBuilder.setUpBaseUiElements(gameMode);
-        initializeDOMElements();
+        domService.initializeDOMElements();
         gameController.startGame(gameMode);
     }
 }

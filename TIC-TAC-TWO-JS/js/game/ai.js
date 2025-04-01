@@ -50,7 +50,7 @@ class AI {
         const squares = getAllSquares();
         const currentGridBounds = gameState.getCurrentGridBounds();
         const aiPieces = this.#findAllAiPieces(squares, currentGridBounds);
-        const emptySquaresWithinGrid = this.findEmptySquaresWithinGridForAi(squares, currentGridBounds);
+        const emptySquaresWithinGrid = this.#findEmptySquaresWithinGridForAi(squares, currentGridBounds);
 
         if (aiPieces.length === 0 || emptySquaresWithinGrid.length === 0) {
             gameState.isPositionChangeMode = false;
@@ -109,7 +109,7 @@ class AI {
         return aiPieces;
     }
 
-    findEmptySquaresWithinGridForAi(squares, currentGridBounds) {
+    #findEmptySquaresWithinGridForAi(squares, currentGridBounds) {
         return currentGridBounds.filter(i => squares[i].textContent === '')
     }
 }

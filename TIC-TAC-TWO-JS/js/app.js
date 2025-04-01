@@ -5,16 +5,16 @@ import { initializeDOMElements } from "./ui/domElements.js";
 
 class App {
     constructor() {
-        document.addEventListener("DOMContentLoaded", () => this.init());
+        document.addEventListener("DOMContentLoaded", () => this.#init());
     }
 
-    init() {
+    #init() {
         const { pvpButton, pveButton } = uiBuilder.createLandingPage();
-        pvpButton.addEventListener('click', () => this.playGame(GAME_MODE.PVP));
-        pveButton.addEventListener('click', () => this.playGame(GAME_MODE.PVE));
+        pvpButton.addEventListener('click', () => this.#playGame(GAME_MODE.PVP));
+        pveButton.addEventListener('click', () => this.#playGame(GAME_MODE.PVE));
     }
 
-    playGame(gameMode) {
+    #playGame(gameMode) {
         const landingPage = document.getElementById('landing-page');
         landingPage.style.display = 'none';
         uiBuilder.setUpBaseUiElements(gameMode);

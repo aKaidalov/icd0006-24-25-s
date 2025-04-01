@@ -1,11 +1,11 @@
-import {createLandingPage, setUpBaseUiElements} from "./ui/ui.js";
+import {uiBuilder} from "./ui/ui.js";
 import {startGame} from "./game/game.js";
 import {GAME_MODE} from "./utils/constants.js";
 import {initializeDOMElements} from "./ui/domElements.js";
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const {pvpButton, pveButton } = createLandingPage();
+    const {pvpButton, pveButton } = uiBuilder.createLandingPage();
     pvpButton.addEventListener('click', () => playGame(GAME_MODE.PVP));
     pveButton.addEventListener('click', () => playGame(GAME_MODE.PVE));
 });
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function playGame(gameMode){
     const landingPage = document.getElementById('landing-page');
     landingPage.style.display = 'none';
-    setUpBaseUiElements(gameMode);
+    uiBuilder.setUpBaseUiElements(gameMode);
     initializeDOMElements();
     startGame(gameMode);
 }

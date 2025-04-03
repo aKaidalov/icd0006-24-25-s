@@ -12,5 +12,5 @@ Student code: 223348IADB
 ## Projects
 
 - [TIC-TAC-TWO-JS](./TIC-TAC-TWO-JS) – JavaScript version
-- [TIC-TAC-TWO-TS](./TIC-TAC-TWO-TS) – TypeScript version (in progress)
+- [TIC-TAC-TWO-TS](./TIC-TAC-TWO-TS) – TypeScript version
 - [TIC-TAC-TWO-VUE](./TIC-TAC-TWO-VUE) – Vue version (planned)

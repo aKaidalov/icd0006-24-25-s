@@ -1,4 +1,4 @@
-# icd0006-24-25-s Projects
+# JavaScript course projects (icd0006-24-25-s)
 
 This repository contains projects developed for the course *icd0006-24-25-s*.
 

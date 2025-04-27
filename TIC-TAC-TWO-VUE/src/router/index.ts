@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LandingView from '../views/LandingView.vue';
-import GameView from '../views/GameView.vue';
+import LandingView from '@/views/LandingView.vue';
+import GameView from '@/views/GameView.vue';
 
 const routes = [
     { path: '/', name: 'Landing', component: LandingView },
-    { path: '/game', name: 'Game', component: GameView }, //TODO: /game/mode
+    { path: '/game/:mode', name: 'Game', component: GameView }, //TODO: /game/mode
 ];
 
 const router = createRouter({

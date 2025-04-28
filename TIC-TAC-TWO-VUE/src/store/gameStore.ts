@@ -16,7 +16,6 @@ export const useGameStore = defineStore('game', () => {
     const isPreviousElementRemoved = ref(false);
     const currentGameMode = ref<string | null>(null);
     const otherRulesEnabled = ref(false);
-    const winningSquares = ref<number[]>([]);
 
     function changePlayer() {
         currentPlayer.value = currentPlayer.value === PLAYERS[0] ? PLAYERS[1] : PLAYERS[0];
@@ -49,6 +48,11 @@ export const useGameStore = defineStore('game', () => {
         ];
     }
 
+    function currentPlayerPlacedPieces(squares: string[]): number {
+        return squares.filter(square => square === currentPlayer.value).length;
+    }
+
+
     function resetGame() {
         currentPlayer.value = PLAYERS[0];
         gameOver.value = false;
@@ -75,7 +79,6 @@ export const useGameStore = defineStore('game', () => {
         isPreviousElementRemoved,
         currentGameMode,
         otherRulesEnabled,
-        winningSquares,
 
         // Methods
         changePlayer,
@@ -83,5 +86,6 @@ export const useGameStore = defineStore('game', () => {
         getCurrentGridBounds,
         generateWinningCombinations,
         resetGame,
+        currentPlayerPlacedPieces,
     };
 })

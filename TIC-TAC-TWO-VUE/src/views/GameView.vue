@@ -3,7 +3,7 @@
     <h1>TicTacTwo</h1>
 
     <h2 id="subheadings">
-      <span>{{ game.currentGameMode }}</span>
+      <span>{{ gameMode }}</span>
       <span> - </span>
       <span id="game-time">{{ formattedTime }}</span>
     </h2>
@@ -13,8 +13,8 @@
           v-for="(square, index) in squares"
           :key="index"
           class="square"
-          :class="{ grid: game.getCurrentGridBounds().includes(index), winner: winningSquares.includes(index) }"
-          @click="handleClick(index)"
+          :class="{ grid: currentGridBounds.includes(index), winner: winningSquares.includes(index) }"
+          @click="handleSquareClick(index)"
           :data-index="index"
       >
         {{ square }}
@@ -30,20 +30,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useGameStore } from '@/store/game';
-import { gameService } from '@/service/gameService';
-import { aiService } from '@/service/aiService';
+import { gameController } from '@/service/gameService';
+import { useGameStore } from '@/store/gameStore';
 
-const game = useGameStore(); //TODO: rename to gameStore
 const route = useRoute();
 const router = useRouter();
 
-const squares = ref<string[]>(Array(25).fill(''));
-const endMessage = ref(`${game.currentPlayer}'s turn`);
-const winningSquares = ref<number[]>([]);
+const gameStore = useGameStore();
 
+// State variables
+const squares = ref<string[]>(Array(25).fill(''));
+const endMessage = ref<string>('X\'s turn');
+const winningSquares = ref<number[]>([]);
+const gameMode = ref<string>('');
+
+// Timer
 const seconds = ref(0);
 let timerInterval: number | undefined;
 
@@ -53,6 +56,9 @@ const formattedTime = computed(() => {
   return `${min}:${sec}`;
 });
 
+const currentGridBounds = computed(() => gameStore.getCurrentGridBounds());
+
+// Start the timer
 function startTimer() {
   if (timerInterval !== undefined) return;
   timerInterval = setInterval(() => {
@@ -60,6 +66,7 @@ function startTimer() {
   }, 1000);
 }
 
+// Stop the timer
 function stopTimer() {
   if (timerInterval !== undefined) {
     clearInterval(timerInterval);
@@ -67,40 +74,17 @@ function stopTimer() {
   }
 }
 
-function handleClick(index: number) {
-  if (game.gameOver) return;
-
-  if (game.isPositionChangeMode) {
-    gameService.handlePositionChange(squares.value, index, endMessage);
-    if (game.gameOver) stopTimer();
-    return;
-  }
-
-  if (squares.value[index] !== '') return;
-
-  if (!game.isGridMoveMode) {
-    if (gameService.isInBounds(index)) {
-      gameService.assignSquareValue(squares.value, index);
-
-      if (gameService.checkTieOrWin(squares.value, endMessage)) {
-        stopTimer();
-      } else {
-        gameService.changePlayerAndEndMessage(endMessage);
-      }
-    }
-  }
+// Handle click on a square
+function handleSquareClick(index: number) {
+  gameController.handleClick(index, squares, winningSquares, endMessage);
 }
 
+// Restart the game
 function restartGame() {
-  game.resetGame();
-  squares.value = Array(25).fill('');
-  endMessage.value = `${game.currentPlayer}'s turn`;
-  seconds.value = 0;
-  winningSquares.value = [];
-  stopTimer();
-  router.push('/');
+  gameController.restartGame(squares, winningSquares, endMessage, stopTimer, router);
 }
 
+// Initialize the game when component is mounted
 onMounted(() => {
   const mode = route.params.mode as string;
 
@@ -109,11 +93,8 @@ onMounted(() => {
     return;
   }
 
-  game.currentGameMode = mode;
+  gameMode.value = mode;
+  gameController.startGame(mode);
   startTimer();
-});
-
-onBeforeUnmount(() => {
-  stopTimer();
 });
 </script>

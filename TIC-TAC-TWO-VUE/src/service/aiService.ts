@@ -1,4 +1,4 @@
-import { useGameStore } from '@/store/game';
+import { useGameStore } from '@/store/gameStore';
 import { gameService } from './gameService';
 import { PLAYERS, GRID_BOUNDS, POSSIBLE_KEYS } from '../utils/constants';
 import Direction from '@/utils/direction';

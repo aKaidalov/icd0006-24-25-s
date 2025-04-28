@@ -1,122 +1,160 @@
-import { useGameStore } from '@/store/game';
+import { Ref } from 'vue';
+import { helpers } from '@/utils/helpers';
+import { PLAYERS, AI_DELAY, GAME_MODE, GRID_BOUNDS } from '@/utils/constants';
+// import { ai } from '@/service/ai';
 import Direction from '@/utils/direction';
-import { aiService } from './aiService';
-import {GRID_BOUNDS, PLAYERS} from "../utils/constants";
+import { useGameStore } from '@/store/gameStore';
 
-export const gameService = {
-    assignSquareValue(squares: string[], index: number) {
-        const game = useGameStore();
-        squares[index] = game.currentPlayer;
-        game.moveCounter++;
+class GameController {
+    startGame(gameMode: string): void {
+        const gameState = useGameStore();
+        gameState.currentGameMode = gameMode;
+    }
 
-        if (game.isFourthMove() && !game.otherRulesEnabled) {
-            game.otherRulesEnabled = true;
-        }
-    },
+    handleClick(index: number, squares: Ref<string[]>, winningSquares: Ref<number[]>, endMessage: Ref<string>): void {
+        const gameState = useGameStore();
+        if (gameState.gameOver) return;
 
-    handlePositionChange(squares: string[], index: number, endMessage: { value: string }) {
-        const game = useGameStore();
-        const squareContent = squares[index];
+        helpers.startTimer();
 
-        if (squareContent === game.currentPlayer && !game.isPreviousElementRemoved) {
-            squares[index] = '';
-            game.isPreviousElementRemoved = true;
-        } else if (squareContent === '' && game.isPreviousElementRemoved && game.getCurrentGridBounds().includes(index)) {
-            squares[index] = game.currentPlayer;
-            game.isPreviousElementRemoved = false;
-            game.isPositionChangeMode = false;
-            this.changePlayerAndEndMessage(endMessage);
-        }
-    },
-
-    handleGridMove(squares: string[], key: string, endMessage: { value: string }) {
-        const game = useGameStore();
-        const direction = Direction.fromKey(key);
-
-        if (!direction) {
-            console.log("Invalid key! Try again.");
+        if (gameState.isPositionChangeMode) {
+            this.handlePositionChange(index, squares, endMessage, winningSquares);
             return;
         }
 
-        if (this.move(squares, direction)) {
-            game.isGridMoveMode = false;
-            this.changePlayerAndEndMessage(endMessage);
-        }
-    },
+        if (squares.value[index] !== '') return;
 
-    move(squares: string[], direction: number): boolean {
-        const game = useGameStore();
-        const currentGrid = this.getCurrentGridIndices();
+        if (!gameState.isGridMoveMode) {
+            if (gameState.currentPlayerPlacedPieces(squares.value) < 4) {
+                if (!gameState.isPositionChangeMode && this.clickedSquareWithinGrid(index)) {
+                    this.assignSquareValue(index, squares);
+                    if (!this.checkTieOrWin(squares, endMessage, winningSquares)) {
+                        this.changePlayer(endMessage, squares, winningSquares);
+                    }
+                }
+            }
+        }
+    }
+
+    assignSquareValue(index: number, squares: Ref<string[]>): void {
+        const gameState = useGameStore();
+        squares.value[index] = gameState.currentPlayer;
+        gameState.moveCounter++;
+
+        if (gameState.isFourthMove() && !gameState.otherRulesEnabled) {
+            gameState.otherRulesEnabled = true;
+        }
+    }
+
+    handlePositionChange(index: number, squares: Ref<string[]>, endMessage: Ref<string>, winningSquares: Ref<number[]>): void {
+        const gameState = useGameStore();
+        if (squares.value[index] === gameState.currentPlayer && !gameState.isPreviousElementRemoved) {
+            squares.value[index] = '';
+            gameState.isPreviousElementRemoved = true;
+        } else if (squares.value[index] === '' && gameState.isPreviousElementRemoved && this.clickedSquareWithinGrid(index)) {
+            squares.value[index] = gameState.currentPlayer;
+            gameState.isPreviousElementRemoved = false;
+            gameState.isPositionChangeMode = false;
+
+            if (!this.checkTieOrWin(squares, endMessage, winningSquares)) {
+                this.changePlayer(endMessage, squares, winningSquares);
+            }
+        }
+    }
+
+    handleGridMove(key: string): void {
+        const gameState = useGameStore();
+        const direction = Direction.fromKey(key);
+        if (!direction) return;
+
+        if (this.move(direction)) {
+            gameState.isGridMoveMode = false;
+        }
+    }
+
+    move(direction: number): boolean {
+        const gameState = useGameStore();
+        const currentGrid = this.getCurrentGridBounds();
         const newGrid = currentGrid.map(i => i + direction);
         const newCenter = this.getGridCenter(newGrid);
 
         if (this.isInBounds(newCenter)) {
-            game.currentGridCenterSquareIndex = newCenter;
+            gameState.currentGridCenterSquareIndex = newCenter;
             return true;
         }
-        console.log("Wrong direction! Try again.");
+
         return false;
-    },
+    }
 
-    checkTieOrWin(squares: string[], endMessage: { value: string }): boolean {
-        const game = useGameStore();
-        game.generateWinningCombinations();
-        const winners: number[] = [];
+    checkTieOrWin(squares: Ref<string[]>, endMessage: Ref<string>, winningSquares: Ref<number[]>): boolean {
+        const gameState = useGameStore();
+        gameState.generateWinningCombinations();
+        winningSquares.value = [];
 
-        for (const [a, b, c] of game.currentWinningCombinations) {
-            if (this.winningCombinationContainsPlayer(squares, a, b, c, PLAYERS[0]) ||
-                this.winningCombinationContainsPlayer(squares, a, b, c, PLAYERS[1])) {
-                winners.push(a, b, c);
+        for (const [a, b, c] of gameState.currentWinningCombinations) {
+            if (this.winningCombinationContainsPlayer(squares.value, a, b, c, 0)
+                || this.winningCombinationContainsPlayer(squares.value, a, b, c, 1)) {
+                winningSquares.value.push(a, b, c);
             }
         }
 
-        if (winners.length > 0) {
-            game.winningSquares = winners;
-            endMessage.value = `Game Over! ${squares[winners[0]]} wins!`;
-            game.gameOver = true;
-            return true;
-        }
-
-        if (squares.every(square => square !== '')) {
-            endMessage.value = "It's a tie!";
-            game.gameOver = true;
+        if (winningSquares.value.length >= 3) {
+            let message = "It's a tie!";
+            if (winningSquares.value.length === 3) {
+                message = `Game Over! ${squares.value[winningSquares.value[0]]} wins!`;
+            }
+            endMessage.value = message;
+            gameState.gameOver = true;
+            helpers.stopTimer();
             return true;
         }
 
         return false;
-    },
+    }
 
-    winningCombinationContainsPlayer(squares: string[], a: number, b: number, c: number, player: string): boolean {
-        return squares[a] === player && squares[b] === player && squares[c] === player;
-    },
+    winningCombinationContainsPlayer(squares: string[], a: number, b: number, c: number, playerIndex: number): boolean {
+        return squares[a] === PLAYERS[playerIndex]
+            && squares[b] === PLAYERS[playerIndex]
+            && squares[c] === PLAYERS[playerIndex];
+    }
 
-    changePlayerAndEndMessage(endMessage: { value: string }) {
-        const game = useGameStore();
-        game.changePlayer();
-        endMessage.value = `${game.currentPlayer}'s turn!`;
+    clickedSquareWithinGrid(index: number): boolean {
+        const gameState = useGameStore();
+        return gameState.getCurrentGridBounds().includes(index);
+    }
 
-        // if (game.currentGameMode === GAME_MODE.PVE && game.currentPlayer === PLAYERS[1] && !game.gameOver) {
-        //     setTimeout(() => {
-        //         aiService.makeAIMove();
-        //     }, AI_DELAY);
+    changePlayer(endMessage: Ref<string>, squares: Ref<string[]>, winningSquares: Ref<number[]>): void {
+        const gameState = useGameStore();
+        gameState.changePlayer();
+        endMessage.value = `${gameState.currentPlayer}'s turn!`;
+
+        // if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {
+        //     setTimeout(() => ai.makeAIMove(squares, endMessage, winningSquares), AI_DELAY);
         // }
-    },
+    }
 
-    getCurrentGridIndices(): number[] {
-        const game = useGameStore();
-        const i = game.currentGridCenterSquareIndex;
-        return [
-            i + Direction.UP_LEFT, i + Direction.UP, i + Direction.UP_RIGHT,
-            i + Direction.LEFT, i, i + Direction.RIGHT,
-            i + Direction.DOWN_LEFT, i + Direction.DOWN, i + Direction.DOWN_RIGHT
-        ];
-    },
+    getCurrentGridBounds(): number[] {
+        const gameState = useGameStore();
+        return gameState.getCurrentGridBounds();
+    }
 
     getGridCenter(grid: number[]): number {
         return grid[4];
-    },
+    }
 
     isInBounds(index: number): boolean {
         return GRID_BOUNDS.includes(index);
     }
-};
+
+    restartGame(squares: Ref<string[]>, winningSquares: Ref<number[]>, endMessage: Ref<string>, resetTimer: () => void, router: any): void {
+        const gameState = useGameStore();
+        gameState.resetGame();
+        squares.value = Array(25).fill('');
+        winningSquares.value = [];
+        endMessage.value = "X's turn";
+        resetTimer();
+        router.push('/');
+    }
+}
+
+export const gameController = new GameController();

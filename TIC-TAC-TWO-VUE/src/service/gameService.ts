@@ -12,10 +12,12 @@ class GameController {
     }
 
     handleClick(index: number, squares: Ref<string[]>, winningSquares: Ref<number[]>, endMessage: Ref<string>): void {
+        console.log("---------------------------------------------------------");
+
         const gameState = useGameStore();
         if (gameState.gameOver) return;
 
-        helpers.startTimer();
+        // helpers.startTimer();
 
         if (gameState.isPositionChangeMode) {
             this.handlePositionChange(index, squares, endMessage, winningSquares);
@@ -35,6 +37,28 @@ class GameController {
             }
         }
     }
+
+    enableOtherRules(
+        event: KeyboardEvent,
+        squares: Ref<string[]>,
+        endMessage: Ref<string>,
+        winningSquares: Ref<number[]>
+    ): void {
+        const gameStore = useGameStore();
+
+        if (event.key === 'g' && !gameStore.isPositionChangeMode) {
+            gameStore.isGridMoveMode = true;
+            endMessage.value = `Grid move mode for player: ${gameStore.currentPlayer}!`;
+        } else if (gameStore.isGridMoveMode) {
+            this.handleGridMove(event.key, squares, endMessage, winningSquares);
+        } else if (event.key === 'c' && !gameStore.isGridMoveMode) {
+            gameStore.isPositionChangeMode = true;
+            endMessage.value = `Position mode for player: ${gameStore.currentPlayer}!`;
+        }
+
+        this.checkTieOrWin(squares, endMessage, winningSquares);
+    }
+
 
     assignSquareValue(index: number, squares: Ref<string[]>): void {
         const gameState = useGameStore();
@@ -62,17 +86,25 @@ class GameController {
         }
     }
 
-    handleGridMove(key: string): void {
+    handleGridMove(
+        key: string,
+        squares: Ref<string[]>,
+        endMessage: Ref<string>,
+        winningSquares: Ref<number[]>): void {
         const gameState = useGameStore();
         const direction = Direction.fromKey(key);
         if (!direction) return;
 
-        if (this.move(direction)) {
+        if (this.move(direction, squares, endMessage, winningSquares)) {
             gameState.isGridMoveMode = false;
         }
     }
 
-    move(direction: number): boolean {
+    move(
+        direction: number,
+        squares: Ref<string[]>,
+        endMessage: Ref<string>,
+        winningSquares: Ref<number[]>): boolean {
         const gameState = useGameStore();
         const currentGrid = this.getCurrentGridBounds();
         const newGrid = currentGrid.map(i => i + direction);
@@ -80,6 +112,7 @@ class GameController {
 
         if (this.isInBounds(newCenter)) {
             gameState.currentGridCenterSquareIndex = newCenter;
+            this.changePlayer(endMessage, squares, winningSquares);
             return true;
         }
 

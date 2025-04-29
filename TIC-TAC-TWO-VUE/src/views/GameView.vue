@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import {ref, computed, onMounted, onUpdated} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { gameController } from '@/service/gameService';
 import { useGameStore } from '@/store/gameStore';
@@ -46,7 +46,7 @@ const endMessage = ref<string>('X\'s turn');
 const winningSquares = ref<number[]>([]);
 const gameMode = ref<string>('');
 
-// Timer
+// Timer TODO: Move/replace timer logic to Helpers.
 const seconds = ref(0);
 let timerInterval: number | undefined;
 
@@ -74,7 +74,7 @@ function stopTimer() {
   }
 }
 
-// Handle click on a square
+// Handle click on a square TODO: Change handleClick -> handleLogic
 function handleSquareClick(index: number) {
   gameController.handleClick(index, squares, winningSquares, endMessage);
 }
@@ -96,5 +96,14 @@ onMounted(() => {
   gameMode.value = mode;
   gameController.startGame(mode);
   startTimer();
+
+  window.addEventListener('keydown', (event: KeyboardEvent) => {
+    if (gameStore.gameOver || !gameStore.otherRulesEnabled) return;
+    gameController.enableOtherRules(event, squares, endMessage, winningSquares);
+  });
 });
+
+onUpdated(() => {
+  if (gameStore.gameOver) stopTimer();
+})
 </script>

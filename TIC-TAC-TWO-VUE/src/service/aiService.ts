@@ -1,101 +1,126 @@
 import { useGameStore } from '@/store/gameStore';
-import { gameService } from './gameService';
-import { PLAYERS, GRID_BOUNDS, POSSIBLE_KEYS } from '../utils/constants';
+import { gameController } from './gameService';
+import { GRID_BOUNDS, POSSIBLE_KEYS } from '../utils/constants';
 import Direction from '@/utils/direction';
+import type { Ref } from 'vue';
 
 export const aiService = {
-    makeAIMove(squares: string[], endMessage: { value: string }): void {
-        const game = useGameStore();
-        if (game.gameOver) return;
+    makeAIMove(
+        squares: Ref<string[]>,
+        endMessage: Ref<string>,
+        winningSquares: Ref<number[]>
+    ): void {
+        const gameStore = useGameStore();
+        if (gameStore.gameOver) return;
 
-        if (aiService.currentPlayerPlacedPieces(squares) < 4) {
-            aiService.placeOneOfRemainingPieces(squares, endMessage);
+        if (aiService.currentPlayerPlacedPieces(squares.value) < 4) {
+            aiService.placeOneOfRemainingPieces(squares, endMessage, winningSquares);
         } else {
-            aiService.handleOtherRules(squares, endMessage);
+            aiService.handleOtherRules(squares, endMessage, winningSquares);
         }
     },
 
     currentPlayerPlacedPieces(squares: string[]): number {
-        const game = useGameStore();
-        return squares.filter(square => square === game.currentPlayer).length;
+        const gameStore = useGameStore();
+        return squares.filter(square => square === gameStore.currentPlayer).length;
     },
 
-    placeOneOfRemainingPieces(squares: string[], endMessage: { value: string }) {
-        const game = useGameStore();
-        const availableSquares = game.getCurrentGridBounds().filter(index => squares[index] === '');
+    placeOneOfRemainingPieces(
+        squares: Ref<string[]>,
+        endMessage: Ref<string>,
+        winningSquares: Ref<number[]>
+    ): void {
+        const gameStore = useGameStore();
+        const availableSquares = gameStore.getCurrentGridBounds().filter(index => squares.value[index] === '');
 
-        if (availableSquares.length === 0) {
-            throw new Error("AI move failed: no empty grid squares available");
-        }
+        if (availableSquares.length === 0) return;
 
         const randomIndex = availableSquares[Math.floor(Math.random() * availableSquares.length)];
-        gameService.assignSquareValue(squares, randomIndex);
 
-        if (!gameService.checkTieOrWin(squares, endMessage)) {
-            gameService.changePlayerAndEndMessage(endMessage);
+        squares.value[randomIndex] = gameStore.currentPlayer;
+        gameStore.moveCounter++;
+
+        if (gameStore.isFourthMove() && !gameStore.otherRulesEnabled) {
+            gameStore.otherRulesEnabled = true;
+        }
+
+        if (!gameController.checkTieOrWin(squares, endMessage, winningSquares)) {
+            gameController.changePlayer(endMessage, squares, winningSquares);
         }
     },
 
-    handleOtherRules(squares: string[], endMessage: { value: string }) {
-        const game = useGameStore();
+    handleOtherRules(
+        squares: Ref<string[]>,
+        endMessage: Ref<string>,
+        winningSquares: Ref<number[]>
+    ): void {
+        const gameStore = useGameStore();
         const random = Math.random();
 
         if (random < 0.5) {
-            game.isPositionChangeMode = true;
-            aiService.aiPositionChangeMove(squares, endMessage);
+            gameStore.isPositionChangeMode = true;
+            aiService.aiPositionChangeMove(squares, endMessage, winningSquares);
         } else {
-            game.isGridMoveMode = true;
-            aiService.aiGridMove(squares, endMessage);
+            gameStore.isGridMoveMode = true;
+            aiService.aiGridMove(squares, endMessage, winningSquares);
         }
     },
 
-    aiPositionChangeMove(squares: string[], endMessage: { value: string }) {
-        const game = useGameStore();
-        const aiPieces = aiService.findAllAiPieces(squares);
-        const emptySquaresWithinGrid = aiService.findEmptySquaresWithinGrid(squares);
+    aiPositionChangeMove(
+        squares: Ref<string[]>,
+        endMessage: Ref<string>,
+        winningSquares: Ref<number[]>
+    ): void {
+        const gameStore = useGameStore();
+        const aiPieces = aiService.findAllAiPieces(squares.value);
+        const emptySquares = aiService.findEmptySquaresWithinGrid(squares.value);
 
-        if (aiPieces.length === 0 || emptySquaresWithinGrid.length === 0) {
-            game.isPositionChangeMode = false;
-            gameService.changePlayerAndEndMessage(endMessage);
+        if (aiPieces.length === 0 || emptySquares.length === 0) {
+            gameStore.isPositionChangeMode = false;
+            gameController.changePlayer(endMessage, squares, winningSquares);
             return;
         }
 
         const fromIndex = aiPieces[Math.floor(Math.random() * aiPieces.length)];
-        const toIndex = emptySquaresWithinGrid[Math.floor(Math.random() * emptySquaresWithinGrid.length)];
+        const toIndex = emptySquares[Math.floor(Math.random() * emptySquares.length)];
 
-        squares[fromIndex] = '';
-        squares[toIndex] = game.currentPlayer;
+        squares.value[fromIndex] = '';
+        squares.value[toIndex] = gameStore.currentPlayer;
 
-        game.isPreviousElementRemoved = false;
-        game.isPositionChangeMode = false;
+        gameStore.isPreviousElementRemoved = false;
+        gameStore.isPositionChangeMode = false;
 
-        if (!gameService.checkTieOrWin(squares, endMessage)) {
-            gameService.changePlayerAndEndMessage(endMessage);
+        if (!gameController.checkTieOrWin(squares, endMessage, winningSquares)) {
+            gameController.changePlayer(endMessage, squares, winningSquares);
         }
     },
 
-    aiGridMove(squares: string[], endMessage: { value: string }) {
-        const game = useGameStore();
+    aiGridMove(
+        squares: Ref<string[]>,
+        endMessage: Ref<string>,
+        winningSquares: Ref<number[]>
+    ): void {
+        const gameStore = useGameStore();
         let moved = false;
 
         while (!moved) {
             const direction = aiService.getRandomDirection();
             if (!direction) continue;
 
-            const currentGrid = gameService.getCurrentGridIndices();
+            const currentGrid = gameStore.getCurrentGridBounds();
             const newGrid = currentGrid.map(i => i + direction);
-            const newCenter = gameService.getGridCenter(newGrid);
+            const newCenter = newGrid[4];
 
             if (GRID_BOUNDS.includes(newCenter)) {
-                game.currentGridCenterSquareIndex = newCenter;
+                gameStore.currentGridCenterSquareIndex = newCenter;
                 moved = true;
             }
         }
 
-        game.isGridMoveMode = false;
+        gameStore.isGridMoveMode = false;
 
-        if (!gameService.checkTieOrWin(squares, endMessage)) {
-            gameService.changePlayerAndEndMessage(endMessage);
+        if (!gameController.checkTieOrWin(squares, endMessage, winningSquares)) {
+            gameController.changePlayer(endMessage, squares, winningSquares);
         }
     },
 
@@ -105,12 +130,12 @@ export const aiService = {
     },
 
     findAllAiPieces(squares: string[]): number[] {
-        const game = useGameStore();
-        return game.getCurrentGridBounds().filter(index => squares[index] === game.currentPlayer);
+        const gameStore = useGameStore();
+        return gameStore.getCurrentGridBounds().filter(index => squares[index] === gameStore.currentPlayer);
     },
 
     findEmptySquaresWithinGrid(squares: string[]): number[] {
-        const game = useGameStore();
-        return game.getCurrentGridBounds().filter(index => squares[index] === '');
-    },
+        const gameStore = useGameStore();
+        return gameStore.getCurrentGridBounds().filter(index => squares[index] === '');
+    }
 };

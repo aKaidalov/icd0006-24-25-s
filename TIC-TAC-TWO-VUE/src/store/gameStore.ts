@@ -3,8 +3,6 @@ import { ref, computed } from 'vue';
 import { GRID_BOUNDS, PLAYERS, FOUR_MOVES} from "@/utils/constants";
 import Direction from "@/utils/direction";
 
-//TODO: Rename file as gameStore.ts
-
 export const useGameStore = defineStore('game', () => {
     const currentPlayer = ref(PLAYERS[0]);
     const gameOver = ref(false);
@@ -66,7 +64,6 @@ export const useGameStore = defineStore('game', () => {
         otherRulesEnabled.value = false;
     }
 
-    //TODO: Make variables to return state and methods.
     return {
         // State
         currentPlayer,

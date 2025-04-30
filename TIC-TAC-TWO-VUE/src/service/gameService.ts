@@ -1,7 +1,7 @@
 import { Ref } from 'vue';
 import { helpers } from '@/utils/helpers';
 import { PLAYERS, AI_DELAY, GAME_MODE, GRID_BOUNDS } from '@/utils/constants';
-// import { ai } from '@/service/ai';
+import { aiService } from './aiService';
 import Direction from '@/utils/direction';
 import { useGameStore } from '@/store/gameStore';
 
@@ -165,9 +165,9 @@ class GameController {
         gameState.changePlayer();
         endMessage.value = `${gameState.currentPlayer}'s turn!`;
 
-        // if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {
-        //     setTimeout(() => ai.makeAIMove(squares, endMessage, winningSquares), AI_DELAY);
-        // }
+        if (gameState.currentGameMode === GAME_MODE.PVE && gameState.currentPlayer === PLAYERS[1] && !gameState.gameOver) {
+            setTimeout(() => aiService.makeAIMove(squares, endMessage, winningSquares), AI_DELAY);
+        }
     }
 
     getCurrentGridBounds(): number[] {

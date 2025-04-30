@@ -4,7 +4,7 @@ import GameView from '@/views/GameView.vue';
 
 const routes = [
     { path: '/', name: 'Landing', component: LandingView },
-    { path: '/game/:mode', name: 'Game', component: GameView }, //TODO: /game/mode
+    { path: '/game/:mode', name: 'Game', component: GameView },
 ];
 
 const router = createRouter({

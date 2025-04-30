@@ -74,7 +74,7 @@ function stopTimer() {
   }
 }
 
-// Handle click on a square TODO: Change handleClick -> handleLogic
+// Handle click on a square
 function handleSquareClick(index: number) {
   gameController.handleClick(index, squares, winningSquares, endMessage);
 }

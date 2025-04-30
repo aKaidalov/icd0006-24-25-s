@@ -1,34 +1,37 @@
+import { ref, computed } from 'vue';
+
 class Helpers {
-    private timerInterval: number | null = null;
-    private seconds: number = 0;
-    private isTimerRunning: boolean = false;
+    private timerInterval: number | undefined = undefined;
+    private seconds = ref(0);
 
-    startTimer(): void {
-        if (this.isTimerRunning) return;
-        this.isTimerRunning = true;
-        this.seconds = 0;
+    formattedTime = computed(() => {
+        const min = Math.floor(this.seconds.value / 60).toString().padStart(2, '0');
+        const sec = (this.seconds.value % 60).toString().padStart(2, '0');
+        return `${min}:${sec}`;
+    });
 
-        this.timerInterval = window.setInterval(() => {
-            this.seconds++;
-            const minutes = Math.floor(this.seconds / 60);
-            const sec = this.seconds % 60;
-            const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
-                sec
-            ).padStart(2, "0")}`;
-
-            const timerElement = document.getElementById("game-time");
-            if (timerElement) {
-                timerElement.textContent = formattedTime;
-            }
+    startTimer() {
+        if (this.timerInterval !== undefined) return;
+        this.seconds.value = 0;
+        this.timerInterval = setInterval(() => {
+            this.seconds.value++;
         }, 1000);
     }
 
-    stopTimer(): void {
-        if (this.timerInterval !== null) {
+    stopTimer() {
+        if (this.timerInterval !== undefined) {
             clearInterval(this.timerInterval);
+            this.timerInterval = undefined;
         }
-        this.isTimerRunning = false;
-        this.seconds = 0;
+    }
+
+    resetTimer() {
+        this.stopTimer();
+        this.seconds.value = 0;
+    }
+
+    getFormattedTime() {
+        return this.formattedTime;
     }
 }
 

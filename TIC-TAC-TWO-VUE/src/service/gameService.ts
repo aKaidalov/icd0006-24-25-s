@@ -12,7 +12,6 @@ class GameController {
     }
 
     handleClick(index: number, squares: Ref<string[]>, winningSquares: Ref<number[]>, endMessage: Ref<string>): void {
-        console.log("---------------------------------------------------------");
 
         const gameState = useGameStore();
         if (gameState.gameOver) return;

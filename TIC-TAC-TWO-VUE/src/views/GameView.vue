@@ -34,6 +34,7 @@ import {ref, computed, onMounted, onUpdated, onUnmounted} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { gameController } from '@/service/gameService';
 import { useGameStore } from '@/store/gameStore';
+import {helpers} from "@/utils/helpers";
 
 const route = useRoute();
 const router = useRouter();
@@ -46,32 +47,17 @@ const endMessage = ref<string>('X\'s turn');
 const winningSquares = ref<number[]>([]);
 const gameMode = ref<string>('');
 
-// Timer TODO: Move/replace timer logic to Helpers.
-const seconds = ref(0);
-let timerInterval: number | undefined;
-
-const formattedTime = computed(() => {
-  const min = Math.floor(seconds.value / 60).toString().padStart(2, '0');
-  const sec = (seconds.value % 60).toString().padStart(2, '0');
-  return `${min}:${sec}`;
-});
+const formattedTime = helpers.getFormattedTime();
 
 const currentGridBounds = computed(() => gameStore.getCurrentGridBounds());
 
 // Start the timer
 function startTimer() {
-  if (timerInterval !== undefined) return;
-  timerInterval = setInterval(() => {
-    seconds.value++;
-  }, 1000);
+  helpers.startTimer();
 }
 
-// Stop the timer
 function stopTimer() {
-  if (timerInterval !== undefined) {
-    clearInterval(timerInterval);
-    timerInterval = undefined;
-  }
+  helpers.stopTimer();
 }
 
 // Handle click on a square

@@ -46,6 +46,8 @@ class GameController {
     ): void {
         const gameStore = useGameStore();
 
+        if (gameStore.gameOver || !gameStore.otherRulesEnabled) return;
+
         if (event.key === 'g' && !gameStore.isPositionChangeMode) {
             gameStore.isGridMoveMode = true;
             endMessage.value = `Grid move mode for player: ${gameStore.currentPlayer}!`;
@@ -56,7 +58,9 @@ class GameController {
             endMessage.value = `Position mode for player: ${gameStore.currentPlayer}!`;
         }
 
-        this.checkTieOrWin(squares, endMessage, winningSquares);
+        if (!gameStore.isPositionChangeMode) {
+            this.checkTieOrWin(squares, endMessage, winningSquares);
+        }
     }
 
 

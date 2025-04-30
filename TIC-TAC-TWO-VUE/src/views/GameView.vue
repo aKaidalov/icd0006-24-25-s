@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, onUpdated} from 'vue';
+import {ref, computed, onMounted, onUpdated, onUnmounted} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { gameController } from '@/service/gameService';
 import { useGameStore } from '@/store/gameStore';
@@ -84,7 +84,8 @@ function restartGame() {
   gameController.restartGame(squares, winningSquares, endMessage, stopTimer, router);
 }
 
-// Initialize the game when component is mounted
+let keyHandler: (e: KeyboardEvent) => void;
+
 onMounted(() => {
   const mode = route.params.mode as string;
 
@@ -97,13 +98,21 @@ onMounted(() => {
   gameController.startGame(mode);
   startTimer();
 
-  window.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (gameStore.gameOver || !gameStore.otherRulesEnabled) return;
+  keyHandler = (event: KeyboardEvent) => {
     gameController.enableOtherRules(event, squares, endMessage, winningSquares);
-  });
+  };
+
+  window.addEventListener('keydown', keyHandler);
 });
+
 
 onUpdated(() => {
   if (gameStore.gameOver) stopTimer();
 })
+
+onUnmounted(() => {
+  if (keyHandler) {
+    window.removeEventListener('keydown', keyHandler);
+  }
+});
 </script>

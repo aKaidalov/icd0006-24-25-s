@@ -13,7 +13,7 @@ Student code: 223348IADB
 
 - [TIC-TAC-TWO-JS](./TIC-TAC-TWO-JS) – JavaScript version
 - [TIC-TAC-TWO-TS](./TIC-TAC-TWO-TS) – TypeScript version
-- [TIC-TAC-TWO-VUE](./TIC-TAC-TWO-VUE) – Vue version
+- [TIC-TAC-TWO-VUE](https://akaidalov.github.io/icd0006-24-25-s/TIC-TAC-TWO-VUE/dist/) – Vue version
 
 ## Deployments
 

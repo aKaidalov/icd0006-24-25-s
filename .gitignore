@@ -1,5 +1,6 @@
 node_modules/
 dist/
+!TIC-TAC-TWO-VUE/dist/
 build/
 .env
 .DS_Store

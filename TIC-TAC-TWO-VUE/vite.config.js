@@ -5,9 +5,7 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production'
-      ? '/icd0006-24-25-s/TIC-TAC-TWO-VUE/dist/'
-      : '/',
+  base: '/icd0006-24-25-s/TIC-TAC-TWO-VUE/dist/',
   plugins: [vue()],
   resolve: {
     alias: {

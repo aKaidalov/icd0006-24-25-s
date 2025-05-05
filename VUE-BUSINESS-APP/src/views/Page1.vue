@@ -2,7 +2,7 @@
   <div>Request is {{ requestIsOngoing == true ? 'ongoing' : 'done' }}</div>
 
   <div v-if="data.data">
-    <table border="1">
+    <table class="table">
       <tr v-for="(item, index) in data.data" :key="index">
         <td>{{ item.id }}</td>
         <td>{{ item.name }}</td>

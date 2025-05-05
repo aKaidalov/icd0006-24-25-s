@@ -1,7 +1,7 @@
 <template>
   <Header />
   <main class="container">
-    <RouterView style="margin-top: 60px;"/>
+    <RouterView />
   </main>
   <Footer />
 </template>

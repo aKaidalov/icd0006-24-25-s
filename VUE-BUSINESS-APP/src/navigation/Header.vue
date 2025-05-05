@@ -17,11 +17,15 @@
             <li class="nav-item">
               <RouterLink class="nav-link text-dark" to="/page1">Page1</RouterLink>
             </li>
+          </ul>
 
+          <ul class="navbar-nav">
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/gpssession">GpsSessions</RouterLink>
+              <RouterLink class="nav-link text-dark"  to="/Register">Register</RouterLink>
             </li>
-
+            <li class="nav-item">
+              <RouterLink class="nav-link text-dark"  to="/Login">Login</RouterLink>
+            </li>
           </ul>
         </div>
       </div>

@@ -1,20 +1,11 @@
-import axios from "axios";
 import type {IGpsLocationType} from "../domain/IGpsLocationType.ts";
 import type {IResultObject} from "../types/IResultObject.ts";
+import {BaseService} from "./BaseService.ts";
 
-export abstract class GpsLocationTypeService {
-    protected static axios = axios.create({
-        baseURL: 'https://sportmap.akaver.com/api/v1.0/GpsLocationTypes',
-        headers: {
-            common: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        },
-    })
+export abstract class GpsLocationTypeService extends BaseService{
 
     static async getAllAsync(): Promise<IResultObject<IGpsLocationType[]>> {
-        const url = "";
+        const url = "/GpsLocationTypes";
         try {
             const response = await this.axios.get<IGpsLocationType[]>(url);
 

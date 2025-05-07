@@ -44,17 +44,26 @@
 import {ref} from "vue";
 import {useUserDataStore} from "../stores/userDataStore.ts";
 import {IdentityService} from "../service/IdentityService.ts";
+import {useRouter} from "vue-router";
 
-const store = useUserDataStore;
+const router = useRouter();
+const store = useUserDataStore();
 
-const error = ref<string | null>(null);
 const email = ref('');
 const password = ref('');
+const error = ref<string | null>(null);
 
 const doLogin = async () => {
   //do login
   const response = await IdentityService.login(email.value, password.value);
   // store
-  console.log(response);
+  if (response.data) {
+    store.jwt = response.data.token;
+    store.firstName = response.data.firstName;
+    store.lastName = response.data.lastName;
+    await router.push({name: 'Home'});
+  } else {
+    error.value = response.errors?.[0] ||"Login failed.";
+  }
 }
 </script>

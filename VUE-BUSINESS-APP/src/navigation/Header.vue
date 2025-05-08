@@ -17,14 +17,23 @@
             <li class="nav-item">
               <RouterLink class="nav-link text-dark" to="/page1">Page1</RouterLink>
             </li>
+
+            <li class="nav-item">
+              <RouterLink class="nav-link text-dark" to="/gps-session">GpsSessions</RouterLink>
+            </li>
           </ul>
 
-          <ul class="navbar-nav">
+          <ul v-if="!useStore.jwt" class="navbar-nav">
             <li class="nav-item">
               <RouterLink class="nav-link text-dark"  to="/Register">Register</RouterLink>
             </li>
             <li class="nav-item">
               <RouterLink class="nav-link text-dark"  to="/Login">Login</RouterLink>
+            </li>
+          </ul>
+          <ul v-else>
+            <li class="nav-item">
+              <RouterLink class="nav-link text-dark"  to="#">Logout</RouterLink>
             </li>
           </ul>
         </div>
@@ -34,4 +43,9 @@
 </template>
 
 <script setup lang="ts">
+import {RouterLink, useRouter} from "vue-router";
+import {useUserDataStore} from "../stores/userDataStore.ts";
+
+const useStore = useUserDataStore();
+
 </script>

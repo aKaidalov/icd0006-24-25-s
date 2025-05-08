@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-
 import { GpsLocationTypeService } from "../service/GpsLocationTypeService.ts";
 import {onMounted, reactive, ref} from "vue";
 import type {IResultObject} from "../types/IResultObject.ts";
@@ -25,11 +24,12 @@ import type {IGpsLocationType} from "../domain/IGpsLocationType.ts";
 
 const requestIsOngoing = ref(false);
 const data = reactive<IResultObject<IGpsLocationType[]>>({});
+const gpsLocationTypeService = new GpsLocationTypeService();
 
 const fetchPageData = async () => {
   requestIsOngoing.value = true;
   try{
-    const result = await GpsLocationTypeService.getAllAsync();
+    const result = await gpsLocationTypeService.getAllAsync();
     console.log(result.data);
 
     data.data = result.data;
@@ -45,7 +45,6 @@ const fetchPageData = async () => {
 onMounted(async () => {
   await fetchPageData();
 });
-
 </script>
 
 <style scoped></style>

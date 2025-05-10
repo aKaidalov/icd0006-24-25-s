@@ -1,5 +1,5 @@
 <template>
-  <h1>Index</h1>
+  <h1>GpsSessions</h1>
 
   <p>
     <RouterLink to="/gps-session-create" class="">Create New</RouterLink>

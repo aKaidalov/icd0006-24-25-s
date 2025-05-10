@@ -15,7 +15,7 @@
             </li>
 
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/page1">Page1</RouterLink>
+              <RouterLink class="nav-link text-dark" to="/page1">Types</RouterLink>
             </li>
 
             <li class="nav-item">
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import {RouterLink, useRouter} from "vue-router";
+import {RouterLink} from "vue-router";
 import {useUserDataStore} from "../stores/userDataStore.ts";
 
 const useStore = useUserDataStore();

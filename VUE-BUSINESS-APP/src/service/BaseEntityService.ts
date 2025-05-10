@@ -51,10 +51,11 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
     //         return {
     //             errors: [(response.status.toString() + " " + response.statusText).trim()],
     //         };
-    //     } catch (error) {
-    //         console.log('error: ', (error as Error).message);
+    //     } catch (error: any) {
+    //         console.log('error: ', error.response?.data);
+    //
     //         return {
-    //             errors: [JSON.stringify(error)],
+    //             errors: [error.response?.data?.errors || 'Unknown error']
     //         };
     //     }
     // }

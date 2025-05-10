@@ -3,12 +3,7 @@ import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {useUserDataStore} from "../stores/userDataStore.ts";
 import type {IResultObject} from "../types/IResultObject.ts";
 import {BaseService} from "./BaseService.ts";
-
-export interface IGpsSessionRequest {
-    name: string;
-    description: string;
-    gpsSessionTypeId: string;
-}
+import type {IGpsSessionRequest} from "../domain/IGpsSessionRequest.ts";
 
 export class GpsSessionService extends BaseEntityService<IGpsSession> {
 

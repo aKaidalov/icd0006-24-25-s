@@ -42,7 +42,8 @@
 import {reactive, ref} from "vue";
 import type {IResultObject} from "../types/IResultObject.ts";
 import type {IGpsSession} from "../domain/IGpsSession.ts";
-import {GpsSessionService, type IGpsSessionRequest} from "../service/GpsSessionService.ts";
+import {GpsSessionService} from "../service/GpsSessionService.ts";
+import type {IGpsSessionRequest} from "../domain/IGpsSessionRequest.ts";
 
 const requestIsOngoing = ref(false);
 const gpsSessionData = reactive<IResultObject<IGpsSession>>({});

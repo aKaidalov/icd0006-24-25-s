@@ -42,10 +42,11 @@ export class GpsSessionService extends BaseEntityService<IGpsSession> {
             return {
                 errors: [(response.status.toString() + " " + response.statusText).trim()],
             };
-        } catch (error) {
-            console.log('error: ', (error as Error).message);
+        } catch (error: any) {
+            console.log('error: ', error.response?.data);
+
             return {
-                errors: [JSON.stringify(error)],
+                errors: [error.response?.data?.errors || 'Unknown error']
             };
         }
     }

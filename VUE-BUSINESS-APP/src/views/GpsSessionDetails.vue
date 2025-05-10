@@ -2,69 +2,53 @@
   <div class="container mt-4">
     <div v-if="requestIsOngoing">Loading session details...</div>
 
-    <div v-else-if="gpsSessionData.data">
-      <h2>Session Details</h2>
-      <table class="table table-sm table-bordered">
-        <tbody>
-        <tr>
-          <th>ID</th>
-          <td>{{ gpsSessionData.data.id }}</td>
-        </tr>
-        <tr>
-          <th>Name</th>
-          <td>{{ gpsSessionData.data.name }}</td>
-        </tr>
-        <tr>
-          <th>Description</th>
-          <td>{{ gpsSessionData.data.description }}</td>
-        </tr>
-        <tr>
-          <th>Recorded At</th>
-          <td>{{ gpsSessionData.data.recordedAt }}</td>
-        </tr>
-        <tr>
-          <th>Duration</th>
-          <td>{{ gpsSessionData.data.duration }}</td>
-        </tr>
-        <tr>
-          <th>Speed</th>
-          <td>{{ gpsSessionData.data.speed }}</td>
-        </tr>
-        <tr>
-          <th>Distance</th>
-          <td>{{ gpsSessionData.data.distance }}</td>
-        </tr>
-        <tr>
-          <th>Climb</th>
-          <td>{{ gpsSessionData.data.climb }}</td>
-        </tr>
-        <tr>
-          <th>Descent</th>
-          <td>{{ gpsSessionData.data.descent }}</td>
-        </tr>
-        <tr>
-          <th>Pace (min)</th>
-          <td>{{ gpsSessionData.data.paceMin }}</td>
-        </tr>
-        <tr>
-          <th>Pace (max)</th>
-          <td>{{ gpsSessionData.data.paceMax }}</td>
-        </tr>
-        <tr>
-          <th>Type</th>
-          <td>{{ gpsSessionData.data.gpsSessionType }}</td>
-        </tr>
-        <tr>
-          <th>Location Count</th>
-          <td>{{ gpsSessionData.data.gpsLocationsCount }}</td>
-        </tr>
-        <tr>
-          <th>User</th>
-          <td>{{ gpsSessionData.data.userFirstLastName }}</td>
-        </tr>
-        </tbody>
-      </table>
+    <div v-else-if="gpsSessionData.data" class="card shadow-sm p-4">
+      <h2 class="mb-4">GPS Session Details</h2>
+      <dl class="row">
+        <dt class="col-sm-3">ID</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.id }}</dd>
+
+        <dt class="col-sm-3">Name</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.name }}</dd>
+
+        <dt class="col-sm-3">Description</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.description }}</dd>
+
+        <dt class="col-sm-3">Recorded At</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.recordedAt }}</dd>
+
+        <dt class="col-sm-3">Duration</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.duration }}</dd>
+
+        <dt class="col-sm-3">Speed</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.speed }}</dd>
+
+        <dt class="col-sm-3">Distance</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.distance }}</dd>
+
+        <dt class="col-sm-3">Climb</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.climb }}</dd>
+
+        <dt class="col-sm-3">Descent</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.descent }}</dd>
+
+        <dt class="col-sm-3">Pace (min)</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.paceMin }}</dd>
+
+        <dt class="col-sm-3">Pace (max)</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.paceMax }}</dd>
+
+        <dt class="col-sm-3">Type</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.gpsSessionType }}</dd>
+
+        <dt class="col-sm-3">Location Count</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.gpsLocationsCount }}</dd>
+
+        <dt class="col-sm-3">User</dt>
+        <dd class="col-sm-9">{{ gpsSessionData.data.userFirstLastName }}</dd>
+      </dl>
     </div>
+
 
     <div v-else-if="gpsSessionData.errors" class="alert alert-danger">
       {{ gpsSessionData.errors }}

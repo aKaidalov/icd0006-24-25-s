@@ -44,7 +44,7 @@
       </td>
       <td>
         <a href="/ContactTypes/Edit/01960002-68f1-7a7a-9947-e0c9b8c948f9">Edit</a> |
-        <a href="/ContactTypes/Details/01960002-68f1-7a7a-9947-e0c9b8c948f9">Details</a> |
+        <RouterLink :to="`/gps-session-details/${item.id}`" class="">Details</RouterLink> |
         <a href="/ContactTypes/Delete/01960002-68f1-7a7a-9947-e0c9b8c948f9">Delete</a>
       </td>
     </tr>

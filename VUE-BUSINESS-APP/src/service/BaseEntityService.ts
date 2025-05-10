@@ -30,6 +30,27 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
         }
     }
 
+    async getByIdAsync(id: string): Promise<IResultObject<TEntity>> {
+        const url = `${this.basePath}/${id}`;
+        try {
+            const response = await BaseService.axios.get<TEntity>(url);
+
+            console.log('getById response', response);
+
+            if (response.status <= 300) {
+                return {data: response.data};
+            }
+            return {
+                errors: [(response.status.toString() + " " + response.statusText).trim()],
+            };
+        } catch (error: any) {
+            console.log('error: ', error.response?.data);
+            return {
+                errors: [error.response?.data?.errors || 'Unknown error']
+            };
+        }
+    }
+
     //GpsSession -> name: string, description: string, gpsSessionTypeId: string
     async addAsync(entity: TEntity): Promise<IResultObject<TEntity>> {
         try {
@@ -53,7 +74,6 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
             };
         } catch (error: any) {
             console.log('error: ', error.response?.data);
-
             return {
                 errors: [error.response?.data?.errors || 'Unknown error']
             };

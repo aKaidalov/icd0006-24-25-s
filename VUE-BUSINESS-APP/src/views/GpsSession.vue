@@ -26,7 +26,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr v-for="item in data.data" :key="item.id">
+    <tr v-for="item in gpsSessionData.data" :key="item.id">
       <td>
         {{ item.name }}
       </td>
@@ -51,6 +51,7 @@
     </tbody>
   </table>
 
+  {{gpsSessionData.errors}}
 </template>
 <script setup lang="ts">
 import {onMounted, reactive, ref} from "vue";
@@ -59,7 +60,7 @@ import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 
 const requestIsOngoing = ref(false);
-const data = reactive<IResultObject<IGpsSession[]>>({});
+const gpsSessionData = reactive<IResultObject<IGpsSession[]>>({});
 const gpsSessionService = new GpsSessionService();
 
 const fetchPageData = async () => {
@@ -68,8 +69,8 @@ const fetchPageData = async () => {
     const result = await gpsSessionService.getAllAsync();
     console.log(result.data);
 
-    data.data = result.data;
-    data.errors = result.errors;
+    gpsSessionData.data = result.data;
+    gpsSessionData.errors = result.errors;
 
   } catch(error){
     console.error('Error fetching data: ', error);

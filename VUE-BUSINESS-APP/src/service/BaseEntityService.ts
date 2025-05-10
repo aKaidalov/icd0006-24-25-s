@@ -30,7 +30,7 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
         }
     }
 
-    //name: string, description: string, gpsSessionTypeId: string
+    //GpsSession -> name: string, description: string, gpsSessionTypeId: string
     async addAsync(entity: TEntity): Promise<IResultObject<TEntity>> {
         try {
             let options = {};

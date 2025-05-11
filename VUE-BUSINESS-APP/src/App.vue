@@ -1,9 +1,9 @@
 <template>
-  <Header />
-  <main class="container">
+  <Header class="p-3"/>
+  <main class="container flex-fill py-4">
     <RouterView />
   </main>
-  <Footer />
+  <Footer class="text-center py-3"/>
 </template>
 
 <script setup lang="ts">

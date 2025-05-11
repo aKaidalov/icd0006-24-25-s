@@ -44,6 +44,7 @@ import type {IResultObject} from "../types/IResultObject.ts";
 import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 import type {IGpsSessionRequest} from "../domain/IGpsSessionRequest.ts";
+import router from "../router";
 
 const requestIsOngoing = ref(false);
 const gpsSessionData = reactive<IResultObject<IGpsSession>>({});
@@ -63,6 +64,8 @@ const postGpsSession = async () => {
 
     gpsSessionData.data = result.data;
     gpsSessionData.errors = result.errors;
+
+    await router.push(`/gps-session-edit/${result.data?.id}`)
 
   } catch(error){
     console.error('Error fetching data: ', error);

@@ -46,7 +46,7 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
         } catch (error: any) {
             console.log('error: ', error.response?.data);
             return {
-                errors: [error.response?.data?.errors || 'Unknown error']
+                errors: [error.response?.data?.errors || 'Unknown error -> view logs']
             };
         }
     }
@@ -75,7 +75,36 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
         } catch (error: any) {
             console.log('error: ', error.response?.data);
             return {
-                errors: [error.response?.data?.errors || 'Unknown error']
+                errors: [error.response?.data?.errors || 'Unknown error -> view logs']
+            };
+        }
+    }
+
+    async updateAsync(id: string, entity: TEntity): Promise<IResultObject<TEntity>> {
+        const url = `${this.basePath}/${id}`;
+        try {
+            let options = {};
+            if (this.store.jwt) {
+                options = {
+                    headers: {
+                        Authorization: `Bearer ${this.store.jwt}`,
+                    }
+                }
+            }
+            const response = await BaseService.axios.put<TEntity>(url, entity, options);
+
+            console.log('update response', response);
+
+            if (response.status <= 300) {
+                return {data: response.data};
+            }
+            return {
+                errors: [(response.status.toString() + " " + response.statusText).trim()],
+            };
+        } catch (error: any) {
+            console.log('error: ', error.response?.data);
+            return {
+                errors: [error.response?.data?.errors || 'Unknown error -> view logs']
             };
         }
     }

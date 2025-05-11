@@ -6,6 +6,7 @@ import Login from "../views/Login.vue";
 import GpsSession from "../views/GpsSession.vue";
 import GpsSessionCreate from "../views/GpsSessionCreate.vue";
 import GpsSessionDetails from "../views/GpsSessionDetails.vue";
+import GpsSessionEdit from "../views/GpsSessionEdit.vue";
 
 
 const routes = [
@@ -28,6 +29,11 @@ const routes = [
         path: "/gps-session-create",
         name: "GpsSessionCreate",
         component: GpsSessionCreate,
+    },
+    {
+        path: "/gps-session-edit/:id",
+        name: "GpsSessionEdit",
+        component: GpsSessionEdit,
     },
     {
         path: "/gps-session-details/:id",

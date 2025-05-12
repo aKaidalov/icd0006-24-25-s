@@ -2,6 +2,10 @@
   <div class="container mt-4">
     <div v-if="requestIsOngoing">Loading session details...</div>
 
+    <div v-else-if="gpsSessionData.errors" class="alert alert-danger">
+      {{ gpsSessionData.errors }}
+    </div>
+
     <div v-else-if="gpsSessionData.data" class="card shadow-sm p-4">
       <h2 class="mb-4">GPS Session Details</h2>
       <dl class="row">
@@ -49,10 +53,10 @@
       </dl>
     </div>
 
-
-    <div v-else-if="gpsSessionData.errors" class="alert alert-danger">
-      {{ gpsSessionData.errors }}
+    <div class="d-flex justify-content-end  mt-4">
+      <button @click="cancel" class="btn btn-outline-secondary">Cancel</button>
     </div>
+
   </div>
 </template>
 
@@ -62,6 +66,7 @@ import type {IResultObject} from "../types/IResultObject.ts";
 import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 import {useRoute} from "vue-router";
+import router from "../router";
 
 const requestIsOngoing = ref(false);
 const gpsSessionData = reactive<IResultObject<IGpsSession>>({});
@@ -85,6 +90,14 @@ const fetchPageData = async () => {
     requestIsOngoing.value = false;
   }
 };
+
+function returnToSessionsPage(): void {
+  router.push('/gps-session');
+}
+
+function cancel() {
+  returnToSessionsPage();
+}
 
 onMounted(async () => {
   await fetchPageData();

@@ -65,7 +65,8 @@ const postGpsSession = async () => {
     gpsSessionData.data = result.data;
     gpsSessionData.errors = result.errors;
 
-    await router.push(`/gps-session-edit/${result.data?.id}`)
+    // await router.push(`/gps-session-edit/${result.data?.id}`)
+    await router.push(`/gps-session-delete/${result.data?.id}`)
 
   } catch(error){
     console.error('Error fetching data: ', error);

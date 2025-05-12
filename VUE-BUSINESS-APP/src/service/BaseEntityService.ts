@@ -30,6 +30,23 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
         }
     }
 
+    async getFilteredAsync(params: any): Promise<IResultObject<TEntity>> {
+        try {
+            const response = await BaseService.axios.get<TEntity>(this.basePath, { params });
+            if (response.status <= 300) {
+                return { data: response.data };
+            }
+            return {
+                errors: [`${response.status} ${response.statusText}`],
+            };
+        } catch (error: any) {
+            return {
+                errors: [error.response?.data?.errors || 'Unknown error']
+            };
+        }
+    }
+
+
     async getByIdAsync(id: string): Promise<IResultObject<TEntity>> {
         const url = `${this.basePath}/${id}`;
         try {

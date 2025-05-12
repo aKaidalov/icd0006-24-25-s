@@ -90,18 +90,20 @@ function formatDate(isoString: string): string {
 }
 
 function getDefaultFilters() {
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
+  const fromDate = new Date('2020-01-01T00:00:00.000Z');
+  const toDate = new Date(Date.now() + 3 * 60 * 60 * 1000);
+
   const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
 
   return {
     minLocationsCount: 10,
     minDuration: 60,
     minDistance: 10,
-    fromDateTime: toISOStringLocal(yesterday),
-    toDateTime: toISOStringLocal(new Date())
-  }
+    fromDateTime: toISOStringLocal(fromDate),
+    toDateTime: toISOStringLocal(toDate)
+  };
 }
+
 
 const filters = reactive(getDefaultFilters());
 
@@ -113,7 +115,7 @@ function resetFilters() {
   filters.fromDateTime = defaults.fromDateTime;
   filters.toDateTime = defaults.toDateTime;
 
-  fetchPageData();
+  fetchFilteredData();
 }
 
 async function fetchFilteredData() {
@@ -136,23 +138,23 @@ async function fetchFilteredData() {
 }
 
 
-const fetchPageData = async () => {
-  requestIsOngoing.value = true;
-  try{
-    const result = await gpsSessionService.getAllAsync();
-    console.log(result.data);
-
-    gpsSessionData.data = result.data;
-    gpsSessionData.errors = result.errors;
-
-  } catch(error){
-    console.error('Error fetching data: ', error);
-  } finally {
-    requestIsOngoing.value = false;
-  }
-};
+// const fetchPageData = async () => {
+//   requestIsOngoing.value = true;
+//   try{
+//     const result = await gpsSessionService.getAllAsync();
+//     console.log(result.data);
+//
+//     gpsSessionData.data = result.data;
+//     gpsSessionData.errors = result.errors;
+//
+//   } catch(error){
+//     console.error('Error fetching data: ', error);
+//   } finally {
+//     requestIsOngoing.value = false;
+//   }
+// };
 
 onMounted(async () => {
-  await fetchPageData();
+  await fetchFilteredData();
 });
 </script>

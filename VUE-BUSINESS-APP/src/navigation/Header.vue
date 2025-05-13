@@ -25,16 +25,22 @@
 
           <ul v-if="!useStore.jwt" class="navbar-nav">
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark"  to="/Register">Register</RouterLink>
+              <RouterLink class="nav-link text-dark" to="/account/register">Register</RouterLink>
             </li>
             <li class="mt-2">|</li>
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark"  to="/Login">Login</RouterLink>
+              <RouterLink class="nav-link text-dark" to="/account/login">Login</RouterLink>
             </li>
           </ul>
-          <ul v-else>
+          <ul v-else class="navbar-nav">
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark"  to="/Logout">Logout</RouterLink>
+              <RouterLink class="nav-link text-dark" to="/account/logout">Logout</RouterLink>
+            </li>
+            <li class="mt-2">|</li>
+            <li class="nav-item">
+              <RouterLink class="nav-link text-dark" to="/account">
+                <i class="bi bi-person-circle"></i>
+              </RouterLink>
             </li>
           </ul>
         </div>

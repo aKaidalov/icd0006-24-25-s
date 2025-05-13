@@ -12,12 +12,12 @@
         <section>
           <form @submit.prevent="doRegister" id="account" method="post" novalidate="novalidate">
             <div class="form-floating mb-3">
-              <input v-model="email" class="form-control" id="Input_Email" aria-required="true"
+              <input v-model="email" class="form-control" id="Input_Email" autocomplete="username" aria-required="true"
               placeholder="name@example.com" type="email">
               <label class="form-label" for="Input_Email">Email</label>
             </div>
             <div class="form-floating mb-3">
-              <input v-model="password" class="form-control" id="Input_Password" aria-required="true"
+              <input v-model="password" class="form-control" id="Input_Password" autocomplete="current-password" aria-required="true"
               placeholder="password" type="password">
               <label class="form-label" for="Input_Email">Password</label>
             </div>

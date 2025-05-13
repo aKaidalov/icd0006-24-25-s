@@ -29,7 +29,7 @@
                 <a id="forgot-password" href="/Identity/Account/ForgotPassword">Forgot your password?</a>
               </p>
               <p>
-                <RouterLink class="btn-link" to="/Register">Register as a new user</RouterLink>
+                <RouterLink class="btn-link" to="/account/register">Register as a new user</RouterLink>
               </p>
             </div>
           </form>

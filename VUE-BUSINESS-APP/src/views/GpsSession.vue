@@ -91,7 +91,7 @@ function formatDate(isoString: string): string {
 
 function getDefaultFilters() {
   const fromDate = new Date('2020-01-01T00:00:00.000Z');
-  const toDate = new Date(Date.now() + 3 * 60 * 60 * 1000);
+  const toDate = new Date(Date.now() + 3 * 60 * 60 * 1000); // UTC + 3h
 
   const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
 

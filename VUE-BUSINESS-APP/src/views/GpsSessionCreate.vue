@@ -5,7 +5,7 @@
 
   <div class="container mt-4">
     <div class="card shadow-sm p-4">
-      <h2 class="mb-4">Create New Session</h2>
+      <h2 class="mb-4">Create New GpsSession</h2>
 
       <form @submit.prevent="doCreate">
         <div class="row mb-3">

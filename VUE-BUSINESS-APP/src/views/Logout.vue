@@ -9,7 +9,7 @@
 
         <div class="d-grid gap-2">
           <button class="btn btn-danger" @click="doLogout">Logout</button>
-          <RouterLink to="/" class="btn btn-secondary">Cancel</RouterLink>
+          <RouterLink to="/" class="btn btn-outline-secondary">Cancel</RouterLink>
         </div>
 
       </div>

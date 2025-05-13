@@ -34,7 +34,7 @@
       </div>
     </div>
     <div class="d-flex justify-content-end mt-3">
-      <button class="btn btn-secondary btn-sm me-2" @click="resetFilters">Reset</button>
+      <button class="btn btn-outline-secondary btn-sm me-2" @click="resetFilters">Reset</button>
       <button class="btn btn-primary btn-sm" @click="fetchFilteredData">Filter</button>
     </div>
   </div>

@@ -95,7 +95,7 @@ const postGpsSession = async () => {
     // await router.push(`/gps-session-edit/${result.data?.id}`)
     // await router.push(`/gps-session-delete/${result.data?.id}`)
 
-    await router.push('/')
+    returnToSessionsPage();
 
   } catch(error){
     console.error('Error fetching data: ', error);
@@ -109,7 +109,7 @@ const doCreate = async () => {
 }
 
 function returnToSessionsPage(): void {
-  router.push('/gps-session');
+  router.push({name: 'GpsSession'});
 }
 
 function cancel() {

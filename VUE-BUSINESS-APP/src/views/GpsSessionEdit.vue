@@ -76,6 +76,7 @@ const gpsSessionService = new GpsSessionService();
 const route = useRoute()
 const sessionId = route.params.id as string
 
+// TODO: can create an Interface or smth
 const form = ref({
   id: '',
   name: '',

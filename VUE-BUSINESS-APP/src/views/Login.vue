@@ -24,12 +24,12 @@
             <div>
               <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
             </div>
-            <div>
+            <div class="form-floating mt-3">
               <p>
                 <a id="forgot-password" href="/Identity/Account/ForgotPassword">Forgot your password?</a>
               </p>
               <p>
-                <a href="/Identity/Account/Register?returnUrl=%2F">Register as a new user</a>
+                <RouterLink class="btn-link" to="/Register">Register as a new user</RouterLink>
               </p>
             </div>
           </form>
@@ -44,7 +44,7 @@
 import {ref} from "vue";
 import {useUserDataStore} from "../stores/userDataStore.ts";
 import {IdentityService} from "../service/IdentityService.ts";
-import {useRouter} from "vue-router";
+import {RouterLink, useRouter} from "vue-router";
 
 const router = useRouter();
 const store = useUserDataStore();
@@ -59,6 +59,7 @@ const doLogin = async () => {
   // store
   if (response.data) {
     store.jwt = response.data.token;
+    store.status = response.data.status;
     store.firstName = response.data.firstName;
     store.lastName = response.data.lastName;
     await router.push({name: 'Home'});

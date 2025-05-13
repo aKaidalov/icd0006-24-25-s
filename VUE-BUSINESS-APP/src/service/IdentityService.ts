@@ -29,4 +29,65 @@ export abstract class IdentityService extends BaseService{
             };
         }
     }
+
+    // TODO: can create an Interface or smth
+    static async register(
+        email: string,
+        password: string,
+        firstName: string,
+        lastName: string
+    ): Promise<IResultObject<ILoginDto>> {
+        const url = '/Account/Register';
+        try {
+            const registerData = {
+                email,
+                password,
+                firstName,
+                lastName
+            }
+
+            const response = await this.axios.post<ILoginDto>(url, registerData);
+
+            console.log('register response', response);
+
+            if (response.status <= 300) {
+                return {data: response.data};
+            }
+            return {
+                errors: [(response.status.toString() + " " + response.statusText).trim()],
+            };
+        } catch (error) {
+            console.log('error: ', (error as Error).message);
+            return {
+                errors: [JSON.stringify(error)],
+            };
+        }
+    }
+    //
+    // How to make a logout without a request?
+    // static async logout(): Promise<IResultObject<ILoginDto>> {
+    //     const url = '/Account/Logout';
+    //     try {
+    //         const loginData = {
+    //             email,
+    //             password,
+    //         }
+    //
+    //         const response = await this.axios.post<ILoginDto>(url, loginData);
+    //
+    //         console.log('login response', response);
+    //
+    //         if (response.status <= 300) {
+    //             return {data: response.data};
+    //         }
+    //         return {
+    //             errors: [(response.status.toString() + " " + response.statusText).trim()],
+    //         };
+    //     } catch (error) {
+    //         console.log('error: ', (error as Error).message);
+    //         return {
+    //             errors: [JSON.stringify(error)],
+    //         };
+    //     }
+    // }
 }

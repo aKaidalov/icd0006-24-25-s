@@ -27,13 +27,14 @@
             <li class="nav-item">
               <RouterLink class="nav-link text-dark"  to="/Register">Register</RouterLink>
             </li>
+            <li class="mt-2">|</li>
             <li class="nav-item">
               <RouterLink class="nav-link text-dark"  to="/Login">Login</RouterLink>
             </li>
           </ul>
           <ul v-else>
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark"  to="#">Logout</RouterLink>
+              <RouterLink class="nav-link text-dark"  to="/Logout">Logout</RouterLink>
             </li>
           </ul>
         </div>

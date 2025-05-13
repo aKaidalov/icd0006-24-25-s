@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 import Home from "../views/Home.vue";
-import Page1 from "../views/Page1.vue";
+import Types from "../views/Types.vue";
 import Register from "../views/Register.vue";
 import Login from "../views/Login.vue";
 import GpsSession from "../views/GpsSession.vue";
@@ -17,9 +17,9 @@ const routes = [
         component: Home,
     },
     {
-        path: "/page1",
-        name: "Page1",
-        component: Page1,
+        path: "/types",
+        name: "Types",
+        component: Types,
     },
     {
         path: "/gps-session",

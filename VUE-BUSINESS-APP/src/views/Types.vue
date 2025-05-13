@@ -1,5 +1,5 @@
 <template>
-  <div>Request is {{ requestIsOngoing == true ? 'ongoing' : 'done' }}</div>
+  <div v-if="requestIsOngoing">Request is {{ requestIsOngoing == true ? 'ongoing' : 'done' }}</div>
 
   <div v-if="locationTypeData.data">
     <h2>GpsLocationTypes</h2>

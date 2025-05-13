@@ -15,7 +15,7 @@
             </li>
 
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/page1">Types</RouterLink>
+              <RouterLink class="nav-link text-dark" to="/types">Types</RouterLink>
             </li>
 
             <li class="nav-item">

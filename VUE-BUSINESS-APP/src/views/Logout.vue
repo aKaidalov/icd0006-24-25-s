@@ -26,6 +26,6 @@ const router = useRouter();
 
 const doLogout = () => {
   userStore.logout();
-  router.push("/login");
+  router.push({name: 'Login'});
 };
 </script>

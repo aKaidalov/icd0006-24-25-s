@@ -22,7 +22,7 @@
 
     <div class="d-flex justify-content-end mt-4 gap-2">
       <RouterLink to="/" class="btn btn-outline-secondary">Cancel</RouterLink>
-      <RouterLink to="/account/edit" class="btn btn-outline-primary">Edit Profile</RouterLink>
+      <RouterLink to="#" class="btn btn-outline-primary">Edit Profile</RouterLink>
       <button @click="logout" class="btn btn-danger">Logout</button>
     </div>
   </div>
@@ -36,12 +36,11 @@ import { computed } from "vue";
 const store = useUserDataStore();
 const router = useRouter();
 
-const fullName = computed(() => `${store.firstName} ${store.lastName}`);
 const status = computed(() => store.status);
 
 const logout = () => {
   store.logout();
-  router.push("/login");
+  router.push({name: 'Login'});
 }
 
 </script>

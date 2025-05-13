@@ -8,6 +8,7 @@ import GpsSessionCreate from "../views/GpsSessionCreate.vue";
 import GpsSessionDetails from "../views/GpsSessionDetails.vue";
 import GpsSessionEdit from "../views/GpsSessionEdit.vue";
 import GpsSessionDelete from "../views/GpsSessionDelete.vue";
+import Logout from "../views/Logout.vue";
 
 
 const routes = [
@@ -55,6 +56,11 @@ const routes = [
         path: "/login",
         name: "Login",
         component: Login,
+    },
+    {
+        path: "/logout",
+        name: "Logout",
+        component: Logout,
     },
 ]
 

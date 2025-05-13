@@ -1,41 +1,64 @@
 <template>
-  <main role="main" class="pb-3">
-    <div class="row">
-      <div class="col-md-4 offset-md-4">
+  <div v-if="gpsSessionData.errors" class="alert alert-warning" role="alert">
+    {{ gpsSessionData.errors }}
+  </div>
 
-        <h1>Create New Session</h1>
+  <div class="container mt-4">
+    <div class="card shadow-sm p-4">
+      <h2 class="mb-4">Create New Session</h2>
 
-        <div v-if="gpsSessionData.errors" class="alert alert-warning" role="alert">
-          {{ gpsSessionData.errors }}
+      <form @submit.prevent="doCreate">
+        <div class="row mb-3">
+          <label for="Input_Name" class="col-sm-3 col-form-label fw-bold">Name</label>
+          <div class="col-sm-9">
+            <input v-model="gpsSession.name" id="Input_Name" type="text" class="form-control" />
+          </div>
         </div>
 
-        <section>
-          <form @submit.prevent="doCreate" id="gps-session-create" method="post" novalidate="novalidate">
-            <div class="form-floating mb-3">
-              <input v-model="gpsSession.name" class="form-control" id="Input_Name" aria-required="true"
-                     placeholder="name" type="text">
-              <label class="form-label" for="Input_Name">name</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input v-model="gpsSession.description" class="form-control" id="Input_Description" aria-required="true"
-                     placeholder="description" type="text">
-              <label class="form-label" for="Input_Description">description</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input v-model="gpsSession.gpsSessionTypeId" class="form-control" id="Input_Input_GpsSessionTypeId" aria-required="true"
-                     placeholder="gpsSessionTypeId" type="text">
-              <label class="form-label" for="Input_GpsSessionTypeId">typeId</label>
-            </div>
-            <div>
-              <button id="create-submit" type="submit" class="w-100 btn btn-lg btn-primary">Create</button>
-            </div>
+        <div class="row mb-3">
+          <label for="Input_Description" class="col-sm-3 col-form-label fw-bold">Description</label>
+          <div class="col-sm-9">
+            <input v-model="gpsSession.description" id="Input_Description" type="text" class="form-control" />
+          </div>
+        </div>
 
-          </form>
-        </section>
+        <div class="row mb-3">
+          <label for="Input_GpsSessionTypeId" class="col-sm-3 col-form-label fw-bold">Session Type</label>
+          <div class="col-sm-9">
+            <input v-model="gpsSession.gpsSessionTypeId" id="Input_GpsSessionTypeId" type="text" class="form-control" />
+          </div>
+        </div>
 
-      </div>
+        <div class="row mb-3">
+          <label for="Input_RecordedAt" class="col-sm-3 col-form-label fw-bold">Recorded At</label>
+          <div class="col-sm-9">
+            <input v-model="gpsSession.recordedAt" id="Input_RecordedAt" type="datetime-local" class="form-control" />
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <label for="Input_PaceMin" class="col-sm-3 col-form-label fw-bold">Pace Min</label>
+          <div class="col-sm-9">
+            <input v-model.number="gpsSession.paceMin" id="Input_PaceMin" type="number" class="form-control" />
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <label for="Input_PaceMax" class="col-sm-3 col-form-label fw-bold">Pace Max</label>
+          <div class="col-sm-9">
+            <input v-model.number="gpsSession.paceMax" id="Input_PaceMax" type="number" class="form-control" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="offset-sm-3 col-sm-9 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-secondary" @click="cancel">Cancel</button>
+            <button type="submit" class="btn btn-success ms-2">Create</button>
+          </div>
+        </div>
+      </form>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -50,10 +73,14 @@ const requestIsOngoing = ref(false);
 const gpsSessionData = reactive<IResultObject<IGpsSession>>({});
 const gpsSessionService = new GpsSessionService();
 
+// TODO: change to IGpsSessionCreateRequest?
 const gpsSession = reactive<IGpsSessionRequest>({
   name: '',
   description: '',
-  gpsSessionTypeId: ''
+  gpsSessionTypeId: '',
+  recordedAt: '',
+  paceMin: 60,
+  paceMax: 61,
 });
 
 const postGpsSession = async () => {
@@ -66,7 +93,9 @@ const postGpsSession = async () => {
     gpsSessionData.errors = result.errors;
 
     // await router.push(`/gps-session-edit/${result.data?.id}`)
-    await router.push(`/gps-session-delete/${result.data?.id}`)
+    // await router.push(`/gps-session-delete/${result.data?.id}`)
+
+    await router.push('/')
 
   } catch(error){
     console.error('Error fetching data: ', error);
@@ -77,5 +106,13 @@ const postGpsSession = async () => {
 
 const doCreate = async () => {
   await postGpsSession();
+}
+
+function returnToSessionsPage(): void {
+  router.push('/gps-session');
+}
+
+function cancel() {
+  returnToSessionsPage();
 }
 </script>

@@ -45,7 +45,7 @@
       <input v-model="searchTerm" type="text" class="form-control" placeholder="Search by name, description, locations or user..." />
     </div>
     <button class="btn btn-outline-primary" @click="handleSearch">Search</button>
-    <button class="btn btn-outline-secondary" @click="clearSearch">Clear</button>
+    <button class="btn btn-outline-secondary" @click="clearAndResetSearch">Clear</button>
   </div>
 
   <!-- Table -->
@@ -91,6 +91,70 @@ const requestIsOngoing = ref(false);
 const filters = reactive(getDefaultFilters());
 const searchTerm = ref("");
 
+// Filter
+function getDefaultFilters() {
+  const fromDate = new Date('2020-01-01T00:00:00.000Z');
+  const toDate = new Date(Date.now() + 3 * 60 * 60 * 1000); // UTC + 3h
+
+  const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
+
+  return {
+    minLocationsCount: 10,
+    minDuration: 60,
+    minDistance: 10,
+    fromDateTime: toISOStringLocal(fromDate),
+    toDateTime: toISOStringLocal(toDate)
+  };
+}
+
+async function fetchFilteredData() {
+  requestIsOngoing.value = true;
+  try {
+    const result = await gpsSessionService.getFilteredAsync({
+      minLocationsCount: filters.minLocationsCount,
+      minDuration: filters.minDuration,
+      minDistance: filters.minDistance,
+      fromDateTime: filters.fromDateTime,
+      toDateTime: filters.toDateTime
+    });
+
+    filteredGpsSessions.data = result.data;
+    gpsSessionData.data = [...filteredGpsSessions.data];
+    gpsSessionData.errors = result.errors;
+
+    clearSearch();
+
+  } catch (error) {
+    console.error("Error fetching filtered data", error);
+  } finally {
+    requestIsOngoing.value = false;
+  }
+}
+
+function resetFilters() {
+  const defaults = getDefaultFilters();
+  filters.minLocationsCount = defaults.minLocationsCount;
+  filters.minDuration = defaults.minDuration;
+  filters.minDistance = defaults.minDistance;
+  filters.fromDateTime = defaults.fromDateTime;
+  filters.toDateTime = defaults.toDateTime;
+
+  fetchFilteredData();
+}
+
+function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleString("et-EE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+
+// Search
 const isNumeric = (term: string): boolean => /^\d+$/.test(term);
 
 async function handleSearch() {
@@ -119,66 +183,11 @@ async function handleSearch() {
 
 function clearSearch() {
   searchTerm.value = '';
+}
+
+function clearAndResetSearch() {
+  clearSearch();
   fetchFilteredData();
-}
-
-function formatDate(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleString("et-EE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
-
-function getDefaultFilters() {
-  const fromDate = new Date('2020-01-01T00:00:00.000Z');
-  const toDate = new Date(Date.now() + 3 * 60 * 60 * 1000); // UTC + 3h
-
-  const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
-
-  return {
-    minLocationsCount: 10,
-    minDuration: 60,
-    minDistance: 10,
-    fromDateTime: toISOStringLocal(fromDate),
-    toDateTime: toISOStringLocal(toDate)
-  };
-}
-
-function resetFilters() {
-  const defaults = getDefaultFilters();
-  filters.minLocationsCount = defaults.minLocationsCount;
-  filters.minDuration = defaults.minDuration;
-  filters.minDistance = defaults.minDistance;
-  filters.fromDateTime = defaults.fromDateTime;
-  filters.toDateTime = defaults.toDateTime;
-
-  fetchFilteredData();
-}
-
-async function fetchFilteredData() {
-  requestIsOngoing.value = true;
-  try {
-    const result = await gpsSessionService.getFilteredAsync({
-      minLocationsCount: filters.minLocationsCount,
-      minDuration: filters.minDuration,
-      minDistance: filters.minDistance,
-      fromDateTime: filters.fromDateTime,
-      toDateTime: filters.toDateTime
-    });
-
-    filteredGpsSessions.data = result.data;
-    gpsSessionData.data = [...filteredGpsSessions.data];
-    gpsSessionData.errors = result.errors;
-
-  } catch (error) {
-    console.error("Error fetching filtered data", error);
-  } finally {
-    requestIsOngoing.value = false;
-  }
 }
 
 

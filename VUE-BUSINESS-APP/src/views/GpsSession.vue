@@ -52,14 +52,44 @@
   <table class="table">
     <thead>
     <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th>RecordedAt</th>
-      <th>Locations</th>
-      <th>User</th>
+      <th @click="sortBy('name')">
+        <span v-if="sortState.column === 'name'">
+          {{ sortState.ascending ? '↑' : '↓' }}
+        </span>
+        Name
+      </th>
+
+      <th @click="sortBy('description')">
+        <span v-if="sortState.column === 'description'">
+          {{ sortState.ascending ? '↑' : '↓' }}
+        </span>
+        Description
+      </th>
+
+      <th @click="sortBy('recordedAt')">
+        <span v-if="sortState.column === 'recordedAt'">
+          {{ sortState.ascending ? '↑' : '↓' }}
+        </span>
+        RecordedAt
+      </th>
+
+      <th @click="sortBy('gpsLocationsCount')">
+        <span v-if="sortState.column === 'gpsLocationsCount'">
+          {{ sortState.ascending ? '↑' : '↓' }}
+        </span>
+        Locations
+      </th>
+
+      <th @click="sortBy('userFirstLastName')">
+        <span v-if="sortState.column === 'userFirstLastName'">
+          {{ sortState.ascending ? '↑' : '↓' }}
+        </span>
+        User
+      </th>
       <th></th>
     </tr>
     </thead>
+
     <tbody>
     <tr v-for="item in gpsSessionData.data" :key="item.id">
       <td>{{ item.name }}</td>
@@ -88,10 +118,9 @@ const gpsSessionData = reactive<IResultObject<IGpsSession[]>>({});
 const filteredGpsSessions = reactive<IResultObject<IGpsSession[]>>({});
 const requestIsOngoing = ref(false);
 
-const filters = reactive(getDefaultFilters());
-const searchTerm = ref("");
-
 // Filter
+const filters = reactive(getDefaultFilters());
+
 function getDefaultFilters() {
   const fromDate = new Date('2020-01-01T00:00:00.000Z');
   const toDate = new Date(Date.now() + 3 * 60 * 60 * 1000); // UTC + 3h
@@ -155,6 +184,7 @@ function formatDate(isoString: string): string {
 
 
 // Search
+const searchTerm = ref("");
 const isNumeric = (term: string): boolean => /^\d+$/.test(term);
 
 async function handleSearch() {
@@ -188,6 +218,40 @@ function clearSearch() {
 function clearAndResetSearch() {
   clearSearch();
   fetchFilteredData();
+}
+
+
+// Sorting
+const sortState = reactive({
+  column: '',
+  ascending: true,
+});
+
+
+function sortBy(column: keyof IGpsSession) {
+  if (sortState.column === column) {
+    sortState.ascending = !sortState.ascending;
+  } else {
+    sortState.column = column;
+    sortState.ascending = true;
+  }
+
+  // Black magic
+  gpsSessionData.data?.sort((a, b) => {
+    const valA = a[column];
+    const valB = b[column];
+
+    if (valA == null) return 1;
+    if (valB == null) return -1;
+
+    const direction = sortState.ascending ? 1 : -1;
+
+    if (typeof valA === 'number' && typeof valB === 'number') {
+      return (valA - valB) * direction;
+    }
+
+    return String(valA).localeCompare(String(valB)) * direction;
+  })
 }
 
 

@@ -39,6 +39,15 @@
     </div>
   </div>
 
+<!-- Search bar-->
+  <div class="mb-4 d-flex align-items-end gap-2">
+    <div class="flex-grow-1">
+      <input v-model="searchTerm" type="text" class="form-control" placeholder="Search by name, description, locations or user..." />
+    </div>
+    <button class="btn btn-outline-primary" @click="handleSearch">Search</button>
+    <button class="btn btn-outline-secondary" @click="clearSearch">Clear</button>
+  </div>
+
   <!-- Table -->
   <table class="table">
     <thead>
@@ -76,7 +85,42 @@ import type {IGpsSession} from "../domain/IGpsSession.ts";
 
 const gpsSessionService = new GpsSessionService();
 const gpsSessionData = reactive<IResultObject<IGpsSession[]>>({});
+const filteredGpsSessions = reactive<IResultObject<IGpsSession[]>>({});
 const requestIsOngoing = ref(false);
+
+const filters = reactive(getDefaultFilters());
+const searchTerm = ref("");
+
+const isNumeric = (term: string): boolean => /^\d+$/.test(term);
+
+async function handleSearch() {
+  const term = searchTerm.value.trim();
+  if (!term) {
+    return;
+  }
+  if (isNumeric(term) ) {
+    console.log(`HEYYYYYY Search term is numeric: ${term}`);
+    const numericValue = Number(term);
+    gpsSessionData.data = filteredGpsSessions.data?.filter(item =>
+        item.gpsLocationsCount === numericValue ||
+        item.name.toLowerCase().includes(term) ||
+        item.description?.toLowerCase().includes(term) ||
+        item.userFirstLastName?.toLowerCase().includes(term)
+    ) ?? []
+  } else {
+    gpsSessionData.data = filteredGpsSessions.data?.filter(item =>
+        item.name.toLowerCase().includes(term.toLowerCase()) ||
+        item.description?.toLowerCase().includes(term.toLowerCase()) ||
+        item.userFirstLastName?.toLowerCase().includes(term.toLowerCase())
+    ) ?? [];
+  }
+
+}
+
+function clearSearch() {
+  searchTerm.value = '';
+  fetchFilteredData();
+}
 
 function formatDate(isoString: string): string {
   const date = new Date(isoString);
@@ -104,9 +148,6 @@ function getDefaultFilters() {
   };
 }
 
-
-const filters = reactive(getDefaultFilters());
-
 function resetFilters() {
   const defaults = getDefaultFilters();
   filters.minLocationsCount = defaults.minLocationsCount;
@@ -128,8 +169,11 @@ async function fetchFilteredData() {
       fromDateTime: filters.fromDateTime,
       toDateTime: filters.toDateTime
     });
-    gpsSessionData.data = result.data;
+
+    filteredGpsSessions.data = result.data;
+    gpsSessionData.data = [...filteredGpsSessions.data];
     gpsSessionData.errors = result.errors;
+
   } catch (error) {
     console.error("Error fetching filtered data", error);
   } finally {

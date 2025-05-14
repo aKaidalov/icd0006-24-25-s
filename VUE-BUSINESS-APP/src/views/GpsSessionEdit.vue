@@ -53,7 +53,7 @@
         <div class="row">
           <div class="offset-sm-3 col-sm-9 d-flex justify-content-end">
             <button type="button" @click="cancel" class="btn btn-outline-secondary">Cancel</button>
-            <button type="submit" class="btn btn-primary ms-2">Save</button>
+            <button type="submit" class="btn btn-warning ms-2">Save</button>
           </div>
         </div>
       </form>

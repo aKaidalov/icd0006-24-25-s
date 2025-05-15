@@ -42,8 +42,9 @@
         <dt class="col-sm-3">Pace (max)</dt>
         <dd class="col-sm-9">{{ gpsSessionData.data.paceMax }}</dd>
 
+        <!--Parsed from JSON-->
         <dt class="col-sm-3">Type</dt>
-        <dd class="col-sm-9">{{ gpsSessionData.data.gpsSessionType }}</dd>
+        <dd class="col-sm-9">{{ gpsSessionTypeName }}</dd>
 
         <dt class="col-sm-3">Location Count</dt>
         <dd class="col-sm-9">{{ gpsSessionData.data.gpsLocationsCount }}</dd>
@@ -61,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import type {IResultObject} from "../types/IResultObject.ts";
 import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
@@ -98,6 +99,17 @@ function returnToSessionsPage(): void {
 function cancel() {
   returnToSessionsPage();
 }
+
+const gpsSessionTypeName = computed(() => {
+  const rawType = gpsSessionData.data?.gpsSessionType;
+  if (!rawType) {return "(unknown)"}
+  try {
+    const parsed = JSON.parse(rawType);
+    return parsed.en || "(no name)";
+  } catch {
+    return "(unknown)";
+  }
+});
 
 onMounted(async () => {
   await fetchPageData();

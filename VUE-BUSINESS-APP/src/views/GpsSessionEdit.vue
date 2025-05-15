@@ -43,12 +43,19 @@
           </div>
         </div>
 
+        <!--Dropdown-->
         <div class="row mb-4">
           <label class="col-sm-3 col-form-label fw-bold">Session Type</label>
           <div class="col-sm-9">
-            <input v-model="form.gpsSessionTypeId" type="text" class="form-control" />
+            <select v-model="form.gpsSessionTypeId" class="form-select">
+              <option disabled value="">Please select a session type</option>
+              <option v-for="type in gpsSessionTypeData.data" :key="type.id" :value="type.id">
+                {{ type.name }}
+              </option>
+            </select>
           </div>
         </div>
+
 
         <div class="row">
           <div class="offset-sm-3 col-sm-9 d-flex justify-content-end">
@@ -68,6 +75,8 @@ import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 import {useRoute} from "vue-router";
 import router from "../router";
+import type {IGpsSessionType} from "../domain/IGpsSessionType.ts";
+import {GpsSessionTypeService} from "../service/GpsSessionTypeService.ts";
 
 const requestIsOngoing = ref(false);
 const gpsSessionData = reactive<IResultObject<IGpsSession>>({});
@@ -87,6 +96,7 @@ const form = ref({
   gpsSessionTypeId: ''
 })
 
+// Edit
 const fetchPageData = async () => {
   requestIsOngoing.value = true;
   try{
@@ -95,6 +105,11 @@ const fetchPageData = async () => {
 
     gpsSessionData.data = result.data;
     gpsSessionData.errors = result.errors;
+
+    const typeNameObj = JSON.parse(result.data.gpsSessionType);
+    const typeName = typeNameObj?.en;
+
+    const matchedType = gpsSessionTypeData.data?.find(type => type.name === typeName);
 
     if (result.data) {
       form.value = {
@@ -105,7 +120,7 @@ const fetchPageData = async () => {
         paceMin: result.data.paceMin,
         paceMax: result.data.paceMax,
         // gpsSessionType: result.data.gpsSessionType
-        gpsSessionTypeId: ''
+        gpsSessionTypeId: matchedType?.id?.toString() ?? ''
       };
     }
   } catch(error){
@@ -141,7 +156,27 @@ async function save() {
   }
 }
 
+// GET GpsSessionTypes
+const gpsSessionTypeData = reactive<IResultObject<IGpsSessionType[]>>({});
+const gpsSessionTypeService = new GpsSessionTypeService();
+
+const fetchSessionTypes = async () => {
+  requestIsOngoing.value = true;
+  try {
+    const result = await gpsSessionTypeService.getAllAsync();
+    gpsSessionTypeData.data = result.data;
+    gpsSessionTypeData.errors = result.errors;
+  } catch (e) {
+    console.error("Error fetching session types:", e);
+  } finally {
+    requestIsOngoing.value = false;
+  }
+}
+
 onMounted(async () => {
-  await fetchPageData();
+  await Promise.all([
+      fetchPageData(),
+      fetchSessionTypes()
+  ]);
 });
 </script>

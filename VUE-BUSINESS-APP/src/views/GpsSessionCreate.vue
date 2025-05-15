@@ -22,6 +22,7 @@
           </div>
         </div>
 
+        <!--Dropdown-->
         <div class="row mb-3">
           <label for="Input_GpsSessionTypeId" class="col-sm-3 col-form-label fw-bold">Session Type</label>
           <div class="col-sm-9">

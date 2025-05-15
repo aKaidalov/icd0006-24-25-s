@@ -25,7 +25,12 @@
         <div class="row mb-3">
           <label for="Input_GpsSessionTypeId" class="col-sm-3 col-form-label fw-bold">Session Type</label>
           <div class="col-sm-9">
-            <input v-model="gpsSession.gpsSessionTypeId" id="Input_GpsSessionTypeId" type="text" class="form-control" />
+            <select v-model="gpsSession.gpsSessionTypeId" id="Input_GpsSessionTypeId" class="form-select">
+              <option disabled value="">Please select a session type</option>
+              <option v-for="type in gpsSessionTypeData.data" :key="type.id" :value="type.id">
+                {{ type.name }}
+              </option>>
+            </select>
           </div>
         </div>
 
@@ -62,12 +67,14 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import type {IResultObject} from "../types/IResultObject.ts";
 import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 import type {IGpsSessionRequest} from "../domain/IGpsSessionRequest.ts";
 import router from "../router";
+import type {IGpsSessionType} from "../domain/IGpsSessionType.ts";
+import {GpsSessionTypeService} from "../service/GpsSessionTypeService.ts";
 
 const requestIsOngoing = ref(false);
 const gpsSessionData = reactive<IResultObject<IGpsSession>>({});
@@ -83,6 +90,7 @@ const gpsSession = reactive<IGpsSessionRequest>({
   paceMax: 61,
 });
 
+// POST GpsSession
 const postGpsSession = async () => {
   requestIsOngoing.value = true;
   try{
@@ -115,4 +123,25 @@ function returnToSessionsPage(): void {
 function cancel() {
   returnToSessionsPage();
 }
+
+// GET GpsSessionTypes
+const gpsSessionTypeData = reactive<IResultObject<IGpsSessionType[]>>({});
+const gpsSessionTypeService = new GpsSessionTypeService();
+
+const fetchSessionTypes = async () => {
+  requestIsOngoing.value = true;
+  try {
+    const result = await gpsSessionTypeService.getAllAsync();
+    gpsSessionTypeData.data = result.data;
+    gpsSessionTypeData.errors = result.errors;
+  } catch (e) {
+    console.error("Error fetching session types:", e);
+  } finally {
+    requestIsOngoing.value = false;
+  }
+}
+
+onMounted(async () => {
+  await fetchSessionTypes();
+})
 </script>

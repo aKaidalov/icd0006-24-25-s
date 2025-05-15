@@ -22,7 +22,7 @@
   </div>
 
   <div v-if="sessionTypeData.data">
-    <h2>GpsLocationTypes</h2>
+    <h2>GpsSessionTypes</h2>
     <table class="table">
       <thead>
         <tr>

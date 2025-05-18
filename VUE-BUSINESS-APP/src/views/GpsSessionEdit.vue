@@ -25,7 +25,7 @@
         <div class="row mb-3">
           <label class="col-sm-3 col-form-label fw-bold">Recorded At</label>
           <div class="col-sm-9">
-            <input v-model="form.recordedAt" type="text" class="form-control" />
+            <input v-model="form.recordedAt" type="datetime-local" class="form-control" />
           </div>
         </div>
 
@@ -116,7 +116,7 @@ const fetchPageData = async () => {
         id: sessionId,
         name: result.data.name,
         description: result.data.description,
-        recordedAt: result.data.recordedAt,
+        recordedAt: formatDateForInput(result.data.recordedAt),
         paceMin: result.data.paceMin,
         paceMax: result.data.paceMax,
         // gpsSessionType: result.data.gpsSessionType
@@ -129,6 +129,13 @@ const fetchPageData = async () => {
     requestIsOngoing.value = false;
   }
 };
+
+function formatDateForInput(dateString: string): string {
+  const date = new Date(dateString);
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60 * 1000);
+  return localDate.toISOString().slice(0, 16);
+}
 
 function returnToSessionsPage(): void {
   router.push('/gps-session')

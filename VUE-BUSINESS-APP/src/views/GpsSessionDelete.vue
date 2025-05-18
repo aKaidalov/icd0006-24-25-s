@@ -69,7 +69,7 @@ async function deleteSession() {
 }
 
 function returnToSessionsPage(): void {
-  router.push('/gps-session');
+  router.push({name: 'GpsSession', query: route.query});
 }
 
 function cancel() {

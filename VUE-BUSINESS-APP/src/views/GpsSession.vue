@@ -6,7 +6,7 @@
 
   <h1>
     <span>GpsSessions</span>
-    <RouterLink to="/gps-session-create" class="btn btn-success btn-sm ms-2">+</RouterLink>
+    <RouterLink :to="{name: 'GpsSessionCreate', query: route.query}" class="btn btn-success btn-sm ms-2">+</RouterLink>
   </h1>
 
   <!-- Filter bar -->
@@ -98,9 +98,9 @@
       <td>{{ item.gpsLocationsCount }}</td>
       <td>{{ item.userFirstLastName }}</td>
       <td>
-        <RouterLink :to="`/gps-session-edit/${item.id}`" class="text-warning">Edit</RouterLink> |
-        <RouterLink :to="`/gps-session-details/${item.id}`">Details</RouterLink> |
-        <RouterLink :to="`/gps-session-delete/${item.id}`" class="text-danger">Delete</RouterLink>
+        <RouterLink :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning">Edit</RouterLink> |
+        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}">Details</RouterLink> |
+        <RouterLink :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">Delete</RouterLink>
       </td>
     </tr>
     </tbody>
@@ -112,33 +112,33 @@ import {onMounted, reactive, ref} from "vue";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 import type {IResultObject} from "../types/IResultObject.ts";
 import type {IGpsSession} from "../domain/IGpsSession.ts";
+import {useRoute, useRouter} from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
 
 const gpsSessionService = new GpsSessionService();
 const gpsSessionData = reactive<IResultObject<IGpsSession[]>>({});
 const filteredGpsSessions = reactive<IResultObject<IGpsSession[]>>({});
 const requestIsOngoing = ref(false);
 
-// Filter
-const filters = reactive(getDefaultFilters());
-
-function getDefaultFilters() {
-  const fromDate = new Date('2020-01-01T00:00:00.000Z');
-  const toDate = new Date(Date.now() + 3 * 60 * 60 * 1000); // UTC + 3h
-
-  const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
-
-  return {
-    minLocationsCount: 10,
-    minDuration: 60,
-    minDistance: 10,
-    fromDateTime: toISOStringLocal(fromDate),
-    toDateTime: toISOStringLocal(toDate)
-  };
-}
 
 async function fetchFilteredData() {
   requestIsOngoing.value = true;
   try {
+
+    await router.push({
+      query: {
+        ...route.query,
+        minLocationsCount: filters.minLocationsCount.toString(),
+        minDuration: filters.minDuration.toString(),
+        minDistance: filters.minDistance.toString(),
+        fromDateTime: filters.fromDateTime,
+        toDateTime: filters.toDateTime,
+        search: searchTerm.value || undefined,
+      }
+    });
+
     const result = await gpsSessionService.getFilteredAsync({
       minLocationsCount: filters.minLocationsCount,
       minDuration: filters.minDuration,
@@ -151,7 +151,8 @@ async function fetchFilteredData() {
     gpsSessionData.data = [...filteredGpsSessions.data];
     gpsSessionData.errors = result.errors;
 
-    clearSearch();
+    await handleSearch();
+    // clearSearch();
 
   } catch (error) {
     console.error("Error fetching filtered data", error);
@@ -160,26 +161,56 @@ async function fetchFilteredData() {
   }
 }
 
+
+// Filter
+const filters = reactive({
+  minLocationsCount: 10,
+  minDuration: 60,
+  minDistance: 10,
+  fromDateTime: '',
+  toDateTime: ''
+});
+
+function initFiltersFromQuery() {
+  const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
+
+  const fromDateDefault = toISOStringLocal(new Date('2020-01-01T00:00:00.000Z'));
+  const toDateCurrent = toISOStringLocal(new Date(Date.now() + 3 * 60 * 60 * 1000)); // UTC + 3h
+
+  filters.minLocationsCount = route.query.minLocationsCount ? parseInt(route.query.minLocationsCount as string) : 10;
+  filters.minDuration = route.query.minDuration ? parseInt(route.query.minDuration as string) : 60;
+  filters.minDistance = route.query.minDistance ? parseInt(route.query.minDistance as string) : 10;
+  filters.fromDateTime = (route.query.fromDateTime as string) || fromDateDefault;
+  filters.toDateTime = (route.query.toDateTime as string) || toDateCurrent;
+
+  if (route.query.search) searchTerm.value = route.query.search as string;
+}
+
+function getDefaultFilters() {
+  const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
+
+  return {
+    minLocationsCount: 10,
+    minDuration: 60,
+    minDistance: 10,
+    fromDateTime: toISOStringLocal(new Date('2020-01-01T00:00:00.000Z')),
+    toDateTime: toISOStringLocal(new Date(Date.now() + 3 * 60 * 60 * 1000)) // UTC+3
+  };
+}
+
 function resetFilters() {
   const defaults = getDefaultFilters();
+
   filters.minLocationsCount = defaults.minLocationsCount;
   filters.minDuration = defaults.minDuration;
   filters.minDistance = defaults.minDistance;
   filters.fromDateTime = defaults.fromDateTime;
   filters.toDateTime = defaults.toDateTime;
 
-  fetchFilteredData();
-}
+  clearSearch();
 
-function formatDate(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleString("et-EE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  router.replace({ query: {} });
+  fetchFilteredData();
 }
 
 
@@ -192,6 +223,15 @@ async function handleSearch() {
   if (!term) {
     return;
   }
+
+  // Update path
+  await router.push({
+    query: {
+      ...route.query,
+      search: term
+    }
+  });
+
   if (isNumeric(term) ) {
     console.log(`HEYYYYYY Search term is numeric: ${term}`);
     const numericValue = Number(term);
@@ -208,7 +248,6 @@ async function handleSearch() {
         item.userFirstLastName?.toLowerCase().includes(term.toLowerCase())
     ) ?? [];
   }
-
 }
 
 function clearSearch() {
@@ -254,6 +293,17 @@ function sortBy(column: keyof IGpsSession) {
   })
 }
 
+function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleString("et-EE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 
 // const fetchPageData = async () => {
 //   requestIsOngoing.value = true;
@@ -272,6 +322,7 @@ function sortBy(column: keyof IGpsSession) {
 // };
 
 onMounted(async () => {
+  initFiltersFromQuery();
   await fetchFilteredData();
 });
 </script>

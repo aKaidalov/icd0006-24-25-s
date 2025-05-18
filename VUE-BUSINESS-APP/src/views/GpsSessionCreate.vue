@@ -76,6 +76,9 @@ import type {IGpsSessionRequest} from "../domain/IGpsSessionRequest.ts";
 import router from "../router";
 import type {IGpsSessionType} from "../domain/IGpsSessionType.ts";
 import {GpsSessionTypeService} from "../service/GpsSessionTypeService.ts";
+import {useRoute} from "vue-router";
+
+const route = useRoute();
 
 const requestIsOngoing = ref(false);
 const gpsSessionData = reactive<IResultObject<IGpsSession>>({});
@@ -118,7 +121,7 @@ const doCreate = async () => {
 }
 
 function returnToSessionsPage(): void {
-  router.push({name: 'GpsSession'});
+  router.push({name: 'GpsSession', query: route.query});
 }
 
 function cancel() {

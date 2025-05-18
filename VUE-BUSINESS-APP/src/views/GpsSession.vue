@@ -207,8 +207,6 @@ function resetFilters() {
   filters.fromDateTime = defaults.fromDateTime;
   filters.toDateTime = defaults.toDateTime;
 
-  clearSearch();
-
   router.replace({ query: {} });
   fetchFilteredData();
 }

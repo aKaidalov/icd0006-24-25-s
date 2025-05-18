@@ -11,34 +11,38 @@
           <ul class="navbar-nav flex-grow-1">
 
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/">Home</RouterLink>
+              <RouterLink class="nav-link text-dark" :to="{name: 'Home'}">Home</RouterLink>
             </li>
 
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/types">Types</RouterLink>
+              <RouterLink class="nav-link text-dark" :to="{name: 'Types'}">Types</RouterLink>
             </li>
 
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/gps-session">GpsSessions</RouterLink>
+              <RouterLink class="nav-link text-dark" :to="{name: 'GpsSession'}">GpsSessions</RouterLink>
+            </li>
+
+            <li class="nav-item">
+              <RouterLink class="nav-link text-dark" :to="{name: 'GpsLocation'}">GpsLocations</RouterLink>
             </li>
           </ul>
 
           <ul v-if="!useStore.jwt" class="navbar-nav">
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/account/register">Register</RouterLink>
+              <RouterLink class="nav-link text-dark" :to="{name: 'Register'}">Register</RouterLink>
             </li>
             <li class="mt-2">|</li>
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/account/login">Login</RouterLink>
+              <RouterLink class="nav-link text-dark" :to="{name: 'Login'}">Login</RouterLink>
             </li>
           </ul>
           <ul v-else class="navbar-nav">
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/account/logout">Logout</RouterLink>
+              <RouterLink class="nav-link text-dark" :to="{name: 'Logout'}">Logout</RouterLink>
             </li>
             <li class="mt-2">|</li>
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" to="/account">
+              <RouterLink class="nav-link text-dark" :to="{name: 'Account'}">
                 <i class="bi bi-person-circle"></i>
               </RouterLink>
             </li>
@@ -52,6 +56,7 @@
 <script setup lang="ts">
 import {RouterLink} from "vue-router";
 import {useUserDataStore} from "../stores/userDataStore.ts";
+import GpsLocation from "../views/GpsLocation.vue";
 
 const useStore = useUserDataStore();
 

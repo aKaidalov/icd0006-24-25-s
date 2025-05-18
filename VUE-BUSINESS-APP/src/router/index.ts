@@ -10,6 +10,7 @@ import GpsSessionEdit from "../views/GpsSessionEdit.vue";
 import GpsSessionDelete from "../views/GpsSessionDelete.vue";
 import Logout from "../views/Logout.vue";
 import Account from "../views/Account.vue";
+import GpsLocation from "../views/GpsLocation.vue";
 
 
 const routes = [
@@ -47,6 +48,16 @@ const routes = [
         path: "/gps-session-delete/:id",
         name: "GpsSessionDelete",
         component: GpsSessionDelete,
+    },
+    { // not in use yet. for the header
+        path: "/gps-location",
+        name: "GpsLocation",
+        component: GpsLocation,
+    },
+    {
+        path: "/gps-locations-session/:gpsSessionId",
+        name: "GpsLocationsSession",
+        component: GpsLocation,
     },
     {
         path: "/account/register",

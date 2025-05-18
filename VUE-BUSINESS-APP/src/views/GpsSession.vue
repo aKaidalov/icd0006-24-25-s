@@ -100,7 +100,18 @@
       <td>
         <RouterLink :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning">Edit</RouterLink> |
         <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}">Details</RouterLink> |
-        <RouterLink :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">Delete</RouterLink>
+        <RouterLink :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">Delete</RouterLink> |
+        <RouterLink
+            :to="{
+              name: 'GpsLocationsSession',
+              params: { gpsSessionId: item.id },
+              query: route.query
+            }"
+            title="View Locations"
+            class="text-primary ms-2"
+        >
+          <i class="bi bi-geo-alt-fill"></i>
+        </RouterLink>
       </td>
     </tr>
     </tbody>

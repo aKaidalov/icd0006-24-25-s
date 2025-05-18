@@ -4,6 +4,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap'
 import './style.css'
 
+import 'leaflet/dist/leaflet.css'
+
 import { createApp } from 'vue'
 import { createPinia } from "pinia";
 import router from "./router";

@@ -21,10 +21,6 @@
             <li class="nav-item">
               <RouterLink class="nav-link text-dark" :to="{name: 'GpsSession'}">GpsSessions</RouterLink>
             </li>
-
-            <li class="nav-item">
-              <RouterLink class="nav-link text-dark" :to="{name: 'GpsLocation'}">GpsLocations</RouterLink>
-            </li>
           </ul>
 
           <ul v-if="!useStore.jwt" class="navbar-nav">
@@ -56,7 +52,6 @@
 <script setup lang="ts">
 import {RouterLink} from "vue-router";
 import {useUserDataStore} from "../stores/userDataStore.ts";
-import GpsLocation from "../views/GpsLocation.vue";
 
 const useStore = useUserDataStore();
 

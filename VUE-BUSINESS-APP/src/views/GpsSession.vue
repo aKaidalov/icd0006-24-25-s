@@ -52,6 +52,7 @@
   <table class="table">
     <thead>
     <tr>
+      <th></th>
       <th @click="sortBy('name')">
         <span v-if="sortState.column === 'name'">
           {{ sortState.ascending ? '↑' : '↓' }}
@@ -92,15 +93,7 @@
 
     <tbody>
     <tr v-for="item in gpsSessionData.data" :key="item.id">
-      <td>{{ item.name }}</td>
-      <td>{{ item.description }}</td>
-      <td>{{ formatDate(item.recordedAt) }}</td>
-      <td>{{ item.gpsLocationsCount }}</td>
-      <td>{{ item.userFirstLastName }}</td>
       <td>
-        <RouterLink :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning">Edit</RouterLink> |
-        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}">Details</RouterLink> |
-        <RouterLink :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">Delete</RouterLink> |
         <RouterLink
             :to="{
               name: 'GpsLocationsSession',
@@ -112,6 +105,16 @@
         >
           <i class="bi bi-geo-alt-fill"></i>
         </RouterLink>
+      </td>
+      <td>{{ item.name }}</td>
+      <td>{{ item.description }}</td>
+      <td>{{ formatDate(item.recordedAt) }}</td>
+      <td>{{ item.gpsLocationsCount }}</td>
+      <td>{{ item.userFirstLastName }}</td>
+      <td>
+        <RouterLink :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning">Edit</RouterLink> |
+        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}">Details</RouterLink> |
+        <RouterLink :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">Delete</RouterLink> |
       </td>
     </tr>
     </tbody>

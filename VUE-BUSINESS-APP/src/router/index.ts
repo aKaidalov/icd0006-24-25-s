@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from "vue-router";
-import Home from "../views/Home.vue";
+// import Home from "../views/Home.vue";
 import Types from "../views/Types.vue";
 import Register from "../views/Register.vue";
 import Login from "../views/Login.vue";
@@ -10,14 +10,17 @@ import GpsSessionEdit from "../views/GpsSessionEdit.vue";
 import GpsSessionDelete from "../views/GpsSessionDelete.vue";
 import Logout from "../views/Logout.vue";
 import Account from "../views/Account.vue";
-import GpsLocation from "../views/GpsLocation.vue";
+// import GpsLocation from "../views/GpsLocation.vue";
+import MapView from "../views/MapView.vue";
+import GpsLocationMapView from "../views/GpsLocationMapView.vue";
+import AccountEdit from "../views/AccountEdit.vue";
 
 
 const routes = [
     {
         path: "/",
         name: "Home",
-        component: Home,
+        component: MapView,
     },
     {
         path: "/types",
@@ -49,15 +52,11 @@ const routes = [
         name: "GpsSessionDelete",
         component: GpsSessionDelete,
     },
-    { // not in use yet. for the header
-        path: "/gps-location",
-        name: "GpsLocation",
-        component: GpsLocation,
-    },
     {
         path: "/gps-locations-session/:gpsSessionId",
         name: "GpsLocationsSession",
-        component: GpsLocation,
+        // component: GpsLocation,
+        component: GpsLocationMapView,
     },
     {
         path: "/account/register",
@@ -78,6 +77,11 @@ const routes = [
         path: "/account",
         name: "Account",
         component: Account,
+    },
+    {
+        path: "/account-edit",
+        name: "AccountEdit",
+        component: AccountEdit,
     },
 ]
 

@@ -19,7 +19,7 @@
         <dd class="col-sm-9">{{ gpsSessionData.data.description }}</dd>
 
         <dt class="col-sm-3">Recorded At</dt>
-        <dd class="col-sm-9">{{ gpsSessionData.data.recordedAt }}</dd>
+        <dd class="col-sm-9">{{ formatDate(gpsSessionData.data.recordedAt) }}</dd>
 
         <dt class="col-sm-3">Duration</dt>
         <dd class="col-sm-9">{{ gpsSessionData.data.duration }}</dd>
@@ -110,6 +110,17 @@ const gpsSessionTypeName = computed(() => {
     return "(unknown)";
   }
 });
+
+function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleString("et-EE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
 
 onMounted(async () => {
   await fetchPageData();

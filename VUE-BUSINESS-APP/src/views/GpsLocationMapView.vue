@@ -8,7 +8,7 @@
 
     <div class="row">
       <!-- Left Panel -->
-      <div class="col-md-4 mb-3" style="max-height: 80vh; overflow-y: auto;">
+      <div class="col-md-4 mb-3" style="max-height: 70vh; overflow-y: auto;">
         <table v-if="gpsLocationData.data" class="table table-sm table-bordered">
           <thead class="table-light">
           <tr>
@@ -34,7 +34,7 @@
 
       <!-- Right Panel (Map) -->
       <div class="col-md-8">
-        <div id="map" style="height: 80vh; border: 1px solid #dee2e6;"></div>
+        <div id="map" style="height: 70vh; border: 1px solid #dee2e6;"></div>
       </div>
     </div>
   </div>

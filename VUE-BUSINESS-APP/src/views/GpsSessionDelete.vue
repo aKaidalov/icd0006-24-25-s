@@ -12,7 +12,7 @@
       <ul class="list-group mb-4">
         <li class="list-group-item"><strong>Name:</strong> {{ gpsSessionData.data?.name }}</li>
         <li class="list-group-item"><strong>Description:</strong> {{ gpsSessionData.data?.description }}</li>
-        <li class="list-group-item"><strong>Recorded At:</strong> {{ gpsSessionData.data?.recordedAt }}</li>
+        <li class="list-group-item"><strong>Recorded At:</strong> {{ gpsSessionData.data?.recordedAt ? formatDate(gpsSessionData.data?.recordedAt) : '—' }}</li>
         <li class="list-group-item"><strong>Pace Min:</strong> {{ gpsSessionData.data?.paceMin }}</li>
         <li class="list-group-item"><strong>Pace Max:</strong> {{ gpsSessionData.data?.paceMax }}</li>
       </ul>
@@ -74,6 +74,17 @@ function returnToSessionsPage(): void {
 
 function cancel() {
   returnToSessionsPage();
+}
+
+function formatDate(isoString: string): string {
+  const date = new Date(isoString);
+  return date.toLocaleString("et-EE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
 onMounted(() => {

@@ -154,4 +154,34 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
             };
         }
     }
+
+    //TODO: should be found better solution!
+    async addLocationAsync(entity: TEntity, sessionId: string): Promise<IResultObject<TEntity>> {
+        const url = `${this.basePath}/${sessionId}`;
+        try {
+            let options = {};
+            if (this.store.jwt) {
+                options = {
+                    headers: {
+                        Authorization: `Bearer ${this.store.jwt}`,
+                    }
+                }
+            }
+            const response = await BaseService.axios.post<TEntity>(url, entity, options);
+
+            console.log('post Location response', response);
+
+            if (response.status <= 300) {
+                return {data: response.data};
+            }
+            return {
+                errors: [(response.status.toString() + " " + response.statusText).trim()],
+            };
+        } catch (error: any) {
+            console.log('error: ', error.response?.data);
+            return {
+                errors: [error.response?.data?.errors || 'Unknown error -> view logs']
+            };
+        }
+    }
 }

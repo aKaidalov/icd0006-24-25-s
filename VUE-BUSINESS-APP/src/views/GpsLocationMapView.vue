@@ -169,6 +169,7 @@ const submitLocationFromMap = async () => {
 }
 
 // Show data
+// Black magic 2
 const fetchPageData = async () => {
   try {
     const result = await gpsLocationService.getLocationsBySessionId(gpsSessionId)
@@ -177,8 +178,11 @@ const fetchPageData = async () => {
 
     if (map.value && result.data) {
       markers.forEach(m => m.remove())
+      markers.length = 0
+
       result.data.forEach(location => {
-        const marker = L.marker([location.latitude, location.longitude]).addTo(map.value!)
+        const marker = L.marker([location.latitude, location.longitude], { draggable: true }).addTo(map.value!)
+
         const popupContent = `
           <div>
             <strong>Recorded At:</strong> ${location.recordedAt}<br>
@@ -190,11 +194,39 @@ const fetchPageData = async () => {
             <strong>App User ID:</strong> ${location.appUserId}<br>
             <strong>Session ID:</strong> ${location.gpsSessionId}<br>
             <strong>Type ID:</strong> ${location.gpsLocationTypeId}<br>
-            <strong>ID:</strong> ${location.id}
+            <strong>ID:</strong> ${location.id}<br><br>
+            <div class="row">
+              <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-outline-danger ms-2" onclick="window.deleteLocation('${location.id}')">Delete</button>
+              </div>
+            </div>
           </div>
         `
         marker.bindPopup(popupContent)
         marker.on('click', () => marker.openPopup())
+
+        // Handle marker move
+        marker.on('dragend', async (e) => {
+          const newLatLng = e.target.getLatLng()
+          const updatedLocation = {
+            ...location,
+            latitude: newLatLng.lat,
+            longitude: newLatLng.lng
+          }
+
+          const result = await gpsLocationService.updateAsync(location.id, updatedLocation)
+
+          if (result.errors) {
+            alert('Failed to update location: ' + result.errors.join(', '))
+            // return marker to previous place
+            marker.setLatLng([location.latitude, location.longitude])
+            return
+          }
+
+          alert('Location successfully updated.')
+          await fetchPageData()
+        })
+
         markers.push(marker)
       })
     }
@@ -202,6 +234,7 @@ const fetchPageData = async () => {
     console.error('Error fetching data:', error)
   }
 }
+
 
 const centerMapOn = (location: IGpsLocation) => {
   if (map.value) {

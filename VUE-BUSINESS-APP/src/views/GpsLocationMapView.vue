@@ -183,7 +183,7 @@ const fetchPageData = async () => {
       result.data.forEach(location => {
         const marker = L.marker([location.latitude, location.longitude], { draggable: true }).addTo(map.value!)
 
-        const popupContent = `
+        let popupContent = `
           <div>
             <strong>Recorded At:</strong> ${location.recordedAt}<br>
             <strong>Latitude:</strong> ${location.latitude}<br>
@@ -195,13 +195,21 @@ const fetchPageData = async () => {
             <strong>Session ID:</strong> ${location.gpsSessionId}<br>
             <strong>Type ID:</strong> ${location.gpsLocationTypeId}<br>
             <strong>ID:</strong> ${location.id}<br><br>
-            <div class="row">
-              <div class="d-flex justify-content-center">
-                <button type="submit" class="btn btn-outline-danger ms-2" onclick="window.deleteLocation('${location.id}')">Delete</button>
-              </div>
-            </div>
-          </div>
         `
+
+        if (location.appUserId === currentUserId.value) {
+          popupContent += `
+            <div class="row">
+                <div class="d-flex justify-content-center">
+                  <button type="submit" class="btn btn-outline-danger ms-2" onclick="window.deleteLocation('${location.id}')">Delete</button>
+                </div>
+              </div>
+            </div>`
+        } else {
+          popupContent += `
+          </div>`
+        }
+
         marker.bindPopup(popupContent)
         marker.on('click', () => marker.openPopup())
 
@@ -241,6 +249,22 @@ const centerMapOn = (location: IGpsLocation) => {
     map.value.setView([location.latitude, location.longitude], 16)
   }
 }
+
+// Delete
+(window as any).deleteLocation = async (id: string) => {
+  if (!confirm('Are you sure you want to delete this location?')) return
+
+  const result = await gpsLocationService.deleteAsync(id)
+
+  if (result.errors) {
+    alert('Failed to delete location: ' + result.errors.join(', '))
+    return
+  }
+
+  alert('Location deleted.')
+  await fetchPageData()
+}
+
 
 onMounted(async () => {
   map.value = L.map('map').setView([59.437, 24.7535], 12)

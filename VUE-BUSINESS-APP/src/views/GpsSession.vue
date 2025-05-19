@@ -57,35 +57,35 @@
         <span v-if="sortState.column === 'name'">
           {{ sortState.ascending ? '↑' : '↓' }}
         </span>
-        Name
+        <span>Name</span>
       </th>
 
       <th @click="sortBy('description')">
         <span v-if="sortState.column === 'description'">
           {{ sortState.ascending ? '↑' : '↓' }}
         </span>
-        Description
+        <span>Description</span>
       </th>
 
       <th @click="sortBy('recordedAt')">
         <span v-if="sortState.column === 'recordedAt'">
           {{ sortState.ascending ? '↑' : '↓' }}
         </span>
-        RecordedAt
+        <span>Recorded</span>
       </th>
 
       <th @click="sortBy('gpsLocationsCount')">
         <span v-if="sortState.column === 'gpsLocationsCount'">
           {{ sortState.ascending ? '↑' : '↓' }}
         </span>
-        Locations
+        <span>Locations</span>
       </th>
 
       <th @click="sortBy('userFirstLastName')">
         <span v-if="sortState.column === 'userFirstLastName'">
           {{ sortState.ascending ? '↑' : '↓' }}
         </span>
-        User
+        <span>User</span>
       </th>
       <th></th>
     </tr>

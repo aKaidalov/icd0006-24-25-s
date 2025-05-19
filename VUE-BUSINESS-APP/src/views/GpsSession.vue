@@ -6,7 +6,7 @@
 
   <h1>
     <span>GpsSessions</span>
-    <RouterLink :to="{name: 'GpsSessionCreate', query: route.query}" class="btn btn-success btn-sm ms-2">+</RouterLink>
+    <RouterLink v-if="currentUserId" :to="{name: 'GpsSessionCreate', query: route.query}" class="btn btn-success btn-sm ms-2">+</RouterLink>
   </h1>
 
   <!-- Filter bar -->
@@ -112,9 +112,11 @@
       <td>{{ item.gpsLocationsCount }}</td>
       <td>{{ item.userFirstLastName }}</td>
       <td>
-        <RouterLink :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning">Edit</RouterLink> |
-        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}">Details</RouterLink> |
-        <RouterLink :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">Delete</RouterLink> |
+        <RouterLink v-if="item.userFirstLastName.trim().toLowerCase() === currentUserFullName?.toLowerCase()"
+            :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning"> Edit |</RouterLink>
+        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}"> Details </RouterLink>
+        <RouterLink v-if="item.userFirstLastName.trim().toLowerCase() === currentUserFullName?.toLowerCase()"
+            :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">| Delete </RouterLink>
       </td>
     </tr>
     </tbody>
@@ -122,11 +124,13 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 import type {IResultObject} from "../types/IResultObject.ts";
 import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {useRoute, useRouter} from "vue-router";
+import {useUserDataStore} from "../stores/userDataStore.ts";
+import {jwtDecode} from "jwt-decode";
 
 const route = useRoute();
 const router = useRouter();
@@ -135,6 +139,25 @@ const gpsSessionService = new GpsSessionService();
 const gpsSessionData = reactive<IResultObject<IGpsSession[]>>({});
 const filteredGpsSessions = reactive<IResultObject<IGpsSession[]>>({});
 const requestIsOngoing = ref(false);
+
+// Identify User
+const store = useUserDataStore()
+const currentUserId = computed(() => {
+  if (!store.jwt) return null
+  const decoded: any = jwtDecode(store.jwt)
+  // console.log('Decoded JWT:', decoded)
+  return decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]
+})
+
+const currentUserFullName = computed(() => {
+  if (!store.jwt) return null
+  const decoded: any = jwtDecode(store.jwt)
+  const firstName = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"]
+  const lastName = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"]
+  return `${firstName} ${lastName}`.trim()
+})
+
+// console.log("!" + currentUserFullName.value + "!")
 
 
 async function fetchFilteredData() {

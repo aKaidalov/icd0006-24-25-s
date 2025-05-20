@@ -1,22 +1,38 @@
 <template>
   <div class="container-fluid position-relative">
-    <h1 class="h1 mb-2">
-      <span>{{ gpsSessionData.data?.name }}</span>
-    </h1>
+<!--    <h1 class="h1 mb-2">-->
+<!--      <span>{{ gpsSessionData.data?.name }}</span>-->
+<!--    </h1>-->
+
+    <!-- Header + Buttons -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h1 class="h1 mb-0">
+        <span>{{ gpsSessionData.data?.name }}</span>
+      </h1>
+      <div v-if="verifyUserByFullName()" class="btn-group">
+        <button v-if="mode === 'idle'" class="btn btn-outline-success" @click="startTrackAdding">
+          Create Track
+        </button>
+        <template v-else class="btn-group offset-sm-3 col-sm-9 d-flex">
+          <button class="btn btn-outline-success" @click="openTypeSelectionModal">Save</button>
+          <button class="btn btn-outline-secondary" @click="discardTrack">Discard</button>
+        </template>
+      </div>
+    </div>
 
     <div v-if="gpsLocationData.errors" class="alert alert-warning" role="alert">
       {{ gpsLocationData.errors }}
     </div>
 
-    <div v-if="verifyUserByFullName()" class="button-wrapper">
-      <button v-if="mode === 'idle'" class="btn green" @click="startTrackAdding">
-        Create<br />Track
-      </button>
-      <template v-else>
-        <button class="btn green" @click="openTypeSelectionModal">Save</button>
-        <button class="btn grey" @click="discardTrack">Discard</button>
-      </template>
-    </div>
+<!--    <div v-if="verifyUserByFullName()" class="button-wrapper">-->
+<!--      <button v-if="mode === 'idle'" class="btn green" @click="startTrackAdding">-->
+<!--        Create<br />Track-->
+<!--      </button>-->
+<!--      <template v-else>-->
+<!--        <button class="btn green" @click="openTypeSelectionModal">Save</button>-->
+<!--        <button class="btn grey" @click="discardTrack">Discard</button>-->
+<!--      </template>-->
+<!--    </div>-->
 
     <!-- Type selection modal -->
     <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5)" v-if="showTypeModal">
@@ -35,8 +51,8 @@
               </select>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" @click="showTypeModal = false">Cancel</button>
-              <button type="submit" class="btn btn-primary">Confirm Save</button>
+              <button type="button" class="btn btn-outline-secondary" @click="showTypeModal = false">Cancel</button>
+              <button type="submit" class="btn btn-outline-success">Confirm Save</button>
             </div>
           </form>
         </div>

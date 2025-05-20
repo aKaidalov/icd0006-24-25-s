@@ -47,7 +47,7 @@
 
     <!-- Table and Map -->
     <div class="row">
-      <div class="col-md-4 mb-3" style="max-height: 70vh; overflow-y: auto;">
+      <div class="col-md-4" style="max-height: 70vh; overflow-y: auto;">
         <table v-if="gpsLocationData.data" class="table table-sm table-bordered">
           <thead class="table-light">
           <tr>
@@ -72,15 +72,16 @@
       </div>
 
       <div class="col-md-8">
-        <div id="map" style="height: 70vh; border: 1px solid #dee2e6;"></div>
-      </div>
-    </div>
-  </div>
+        <div class="d-flex flex-column justify-content-between" style="height: 70vh;">
+          <!-- Map -->
+          <div id="map" style="flex-grow: 1; border: 1px solid #dee2e6;"></div>
 
-  <!-- Cancel -->
-  <div class="row">
-    <div class="offset-sm-3 col-sm-9 d-flex">
-      <button type="button" class="btn btn-outline-secondary" @click="cancel">Cancel</button>
+          <!-- Cancel -->
+          <div class="text-center mt-3">
+            <button type="button" class="btn btn-outline-secondary" @click="cancel">Cancel</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

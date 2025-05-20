@@ -214,9 +214,9 @@ function initFiltersFromQuery() {
   const fromDateDefault = toISOStringLocal(new Date('2020-01-01T00:00:00.000Z'));
   const toDateCurrent = toISOStringLocal(new Date(Date.now() + 3 * 60 * 60 * 1000)); // UTC + 3h
 
-  filters.minLocationsCount = route.query.minLocationsCount ? parseInt(route.query.minLocationsCount as string) : 10;
-  filters.minDuration = route.query.minDuration ? parseInt(route.query.minDuration as string) : 60;
-  filters.minDistance = route.query.minDistance ? parseInt(route.query.minDistance as string) : 10;
+  filters.minLocationsCount = route.query.minLocationsCount ? parseInt(route.query.minLocationsCount as string) : 0; //10
+  filters.minDuration = route.query.minDuration ? parseInt(route.query.minDuration as string) : 0; //60
+  filters.minDistance = route.query.minDistance ? parseInt(route.query.minDistance as string) : 0; //10
   filters.fromDateTime = (route.query.fromDateTime as string) || fromDateDefault;
   filters.toDateTime = (route.query.toDateTime as string) || toDateCurrent;
 

@@ -29,4 +29,33 @@ export class GpsLocationService extends BaseEntityService<IGpsLocation> {
         }
     }
 
+    async addBulkLocationsAsync(locations: Partial<IGpsLocation>[], sessionId: string): Promise<IResultObject<any>> {
+        try {
+            const jwt = super.getStore().jwt
+            let options = {};
+            if (jwt) {
+                options = {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    }
+                }
+            }
+
+            const response = await BaseService.axios.post(`/GpsLocations/bulk/${sessionId}`, locations, options);
+
+            if (response.status <= 300) {
+                return { data: response.data };
+            }
+
+            return {
+                errors: [`${response.status} ${response.statusText}`],
+            };
+        } catch (error: any) {
+            return {
+                errors: [error.response?.data?.errors || 'Unknown error'],
+            };
+        }
+    }
+
+
 }

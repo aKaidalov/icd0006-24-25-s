@@ -6,6 +6,10 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
 
     private store = useUserDataStore();
 
+    getStore() {
+        return this.store;
+    }
+
     protected constructor(private basePath: string) {
         super();
     }

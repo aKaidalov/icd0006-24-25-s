@@ -9,15 +9,34 @@
       {{ gpsLocationData.errors }}
     </div>
 
+    <!--TODO: Buttons can be as one reusable element?-->
+
     <!-- Add Location Button -->
     <button
-        v-if="gpsLocationData.data?.[0].appUserId === currentUserId"
+        v-if="verifyUserByFullName()"
         class="btn btn-success position-absolute"
         style="top: 15px; right: 15px; z-index: 1000"
         @click="enableAddMode"
     >
       +
     </button>
+
+    <!-- Bulk Add Button -->
+    <button
+        v-if="verifyUserByFullName()"
+        class="btn btn-warning position-absolute"
+        style="top: 65px; right: 15px; z-index: 1000"
+        @click="enableBulkMode"
+    >
+      ++
+    </button>
+
+    <div class="text-center mt-2" v-else-if="isBulkMode">
+      <button type="button" class="btn btn-primary" @click="submitBulkLocations">
+        Finish bulk adding ({{ bulkLocations.length }})
+      </button>
+    </div>
+
 
     <!-- Modal -->
     <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5)" v-if="showModal">
@@ -97,6 +116,8 @@ import { jwtDecode } from 'jwt-decode'
 
 import {useUserDataStore} from "../stores/userDataStore.ts";
 import router from "../router";
+import type {IGpsSession} from "../domain/IGpsSession.ts";
+import {GpsSessionService} from "../service/GpsSessionService.ts";
 
 const route = useRoute()
 const gpsSessionId = route.params.gpsSessionId as string
@@ -122,11 +143,86 @@ function cancel() {
 
 // Identify User
 const store = useUserDataStore()
+
 const currentUserId = computed(() => {
   if (!store.jwt) return null
   const decoded: any = jwtDecode(store.jwt)
   return decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"]
 })
+
+const currentUserFullName = computed(() => {
+  if (!store.jwt) return null
+  const decoded: any = jwtDecode(store.jwt)
+  const firstName = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname"]
+  const lastName = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname"]
+  return `${firstName} ${lastName}`.trim()
+})
+
+
+function verifyUserByFullName() {
+  return currentUserFullName.value === gpsSessionData.data?.userFirstLastName;
+}
+
+
+// Get Session by id
+const requestIsOngoing = ref(false);
+const gpsSessionData = reactive<IResultObject<IGpsSession>>({});
+const gpsSessionService = new GpsSessionService();
+
+const getGpsSessionData = async () => {
+  requestIsOngoing.value = true;
+  try{
+    const result = await gpsSessionService.getByIdAsync(gpsSessionId);
+    console.log(result.data);
+
+    gpsSessionData.data = result.data;
+    gpsSessionData.errors = result.errors;
+
+  } catch(error){
+    console.error('Error fetching data: ', error);
+  } finally {
+    requestIsOngoing.value = false;
+  }
+};
+
+
+// Add multiple Locations
+const isBulkMode = ref(false)
+  const bulkLocations = ref<Partial<IGpsLocation>[]>([])
+
+  const enableBulkMode = () => {
+    const confirmBulk = confirm('Bulk mode activated. Click on the map to add points. When finished, click "Finish bulk adding".')
+  if (confirmBulk) {
+    isBulkMode.value = true
+    bulkLocations.value = []
+  }
+}
+
+const submitBulkLocations = async () => {
+  if (bulkLocations.value.length === 0) {
+    alert('No points to submit.')
+    return
+  }
+
+  const payload = bulkLocations.value.map(loc => ({
+    ...loc,
+    recordedAt: new Date(loc.recordedAt || new Date()).toISOString(),
+    gpsLocationTypeId: '00000000-0000-0000-0000-000000000001' // default
+  }))
+
+  const result = await gpsLocationService.addBulkLocationsAsync(payload, gpsSessionId)
+
+  if (result.errors) {
+    alert('Failed to submit bulk locations: ' + result.errors.join(', '))
+    return
+  }
+
+  alert(`Successfully added ${payload.length} locations.`)
+  isBulkMode.value = false
+  bulkLocations.value = []
+  await fetchPageData()
+}
+
 
 // Add Location
 const newLocation = reactive({
@@ -272,13 +368,38 @@ onMounted(async () => {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map.value)
 
   map.value.on('click', (e: L.LeafletMouseEvent) => {
-    if (!isAddMode.value) return
     const { lat, lng } = e.latlng
-    tempLatLng.value = [lat, lng]
-    isAddMode.value = false
-    showModal.value = true
+
+    if (isBulkMode.value) {
+      bulkLocations.value.push({
+        latitude: lat,
+        longitude: lng,
+        accuracy: 0,
+        altitude: 0,
+        verticalAccuracy: 0,
+        recordedAt: new Date().toISOString()
+      })
+      const yellowIcon = new L.Icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      })
+
+      L.marker([lat, lng], { icon: yellowIcon }).addTo(map.value!)
+      return
+    }
+
+    if (isAddMode.value) {
+      tempLatLng.value = [lat, lng]
+      isAddMode.value = false
+      showModal.value = true
+    }
   })
 
+  await getGpsSessionData()
   await fetchPageData()
 })
 </script>

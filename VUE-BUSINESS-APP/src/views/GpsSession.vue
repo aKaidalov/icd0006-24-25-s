@@ -157,7 +157,7 @@ const requestIsOngoing = ref(false);
 
 // Pagination
 const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(5)
 
 const paginatedData = computed(() => {
   if (!gpsSessionData.data) return [];

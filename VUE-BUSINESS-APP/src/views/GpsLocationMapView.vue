@@ -24,16 +24,6 @@
       {{ gpsLocationData.errors }}
     </div>
 
-<!--    <div v-if="verifyUserByFullName()" class="button-wrapper">-->
-<!--      <button v-if="mode === 'idle'" class="btn green" @click="startTrackAdding">-->
-<!--        Create<br />Track-->
-<!--      </button>-->
-<!--      <template v-else>-->
-<!--        <button class="btn green" @click="openTypeSelectionModal">Save</button>-->
-<!--        <button class="btn grey" @click="discardTrack">Discard</button>-->
-<!--      </template>-->
-<!--    </div>-->
-
     <!-- Type selection modal -->
     <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5)" v-if="showTypeModal">
       <div class="modal-dialog">
@@ -101,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import {ref, reactive, computed, onMounted, onBeforeUnmount} from 'vue'
 import { useRoute } from 'vue-router'
 import L from 'leaflet'
 import { jwtDecode } from 'jwt-decode'
@@ -138,6 +128,9 @@ const store = useUserDataStore()
 const lastCenter = ref<L.LatLngExpression>([59.437, 24.7535])
 const lastZoom = ref<number>(12)
 
+const polyline = ref<L.Polyline | null>(null)
+
+const intervalId = ref<number | null>(null)
 
 
 // Identification
@@ -246,10 +239,21 @@ const fetchPageData = async () => {
       markers.length = 0
       clearTempMarkersData()
 
+      // Delete old line
+      if (polyline.value) {
+        polyline.value.remove()
+        polyline.value = null
+      }
+
+      const latlngs: L.LatLngExpression[] = []
+
+      // Update
       result.data.forEach(location => {
         const marker = L.marker([location.latitude, location.longitude], {
           draggable: verifyUserByFullName()
         }).addTo(map.value!)
+
+        latlngs.push([location.latitude, location.longitude]) // Add coordinates
 
         if (verifyUserByFullName()) {
           marker.on('dragend', async (e: L.LeafletEvent) => {
@@ -260,14 +264,15 @@ const fetchPageData = async () => {
               longitude: latlng.lng
             }
             const result = await gpsLocationService.updateAsync(location.id, updated)
+            await fetchPageData()
             if (result.errors) {
               alert('Failed to update location: ' + result.errors.join(', '))
               return
             }
-            alert('Location updated.')
           })
         }
 
+        // Marker Data
         let popupContent = `
         <div>
           <strong>Recorded At:</strong> ${location.recordedAt}<br>
@@ -295,6 +300,12 @@ const fetchPageData = async () => {
         marker.on('click', () => marker.openPopup())
         markers.push(marker)
       })
+
+      // Draw the Track
+      if (latlngs.length > 1) {
+        polyline.value = L.polyline(latlngs, { color: 'blue' }).addTo(map.value!)
+        map.value.fitBounds(polyline.value.getBounds())
+      }
     }
 
   } catch(error){
@@ -358,5 +369,13 @@ const initMap = () => {
 onMounted(async () => {
   initMap()
   await fetchPageData()
+
+  // intervalId.value = window.setInterval(() => {
+  //   fetchPageData()
+  // }, 2000);
+})
+
+onBeforeUnmount(() => {
+  if (intervalId.value !== null) clearInterval(intervalId.value)
 })
 </script>

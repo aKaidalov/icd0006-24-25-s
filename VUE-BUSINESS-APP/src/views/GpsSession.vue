@@ -249,6 +249,9 @@ function initFiltersFromQuery() {
   filters.fromDateTime = (route.query.fromDateTime as string) || fromDateDefault;
   filters.toDateTime = (route.query.toDateTime as string) || toDateCurrent;
 
+  // currentPage.value = parseInt(route.query.currentPage as string) || 1
+  // itemsPerPage.value = parseInt(route.query.itemsPerPage as string) || 5
+
   if (route.query.search) searchTerm.value = route.query.search as string;
 }
 
@@ -367,23 +370,6 @@ function formatDate(isoString: string): string {
     minute: "2-digit"
   });
 }
-
-
-// const fetchPageData = async () => {
-//   requestIsOngoing.value = true;
-//   try{
-//     const result = await gpsSessionService.getAllAsync();
-//     console.log(result.data);
-//
-//     gpsSessionData.data = result.data;
-//     gpsSessionData.errors = result.errors;
-//
-//   } catch(error){
-//     console.error('Error fetching data: ', error);
-//   } finally {
-//     requestIsOngoing.value = false;
-//   }
-// };
 
 onMounted(async () => {
   initFiltersFromQuery();

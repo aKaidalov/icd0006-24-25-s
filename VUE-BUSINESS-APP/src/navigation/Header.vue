@@ -11,10 +11,6 @@
           <ul class="navbar-nav flex-grow-1">
 
             <li class="nav-item">
-              <RouterLink class="nav-link text-dark" :to="{name: 'Home'}">Home</RouterLink>
-            </li>
-
-            <li class="nav-item">
               <RouterLink class="nav-link text-dark" :to="{name: 'Types'}">Types</RouterLink>
             </li>
 

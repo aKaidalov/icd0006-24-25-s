@@ -103,7 +103,7 @@
             title="View Locations"
             class="text-primary ms-2"
         >
-          <i class="bi bi-geo-alt-fill"></i>
+          <i class="bi bi-geo-alt"></i>
         </RouterLink>
       </td>
       <td>{{ item.name }}</td>
@@ -113,10 +113,16 @@
       <td>{{ item.userFirstLastName }}</td>
       <td>
         <RouterLink v-if="item.userFirstLastName.trim().toLowerCase() === currentUserFullName?.toLowerCase()"
-            :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning"> Edit |</RouterLink>
-        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}"> Details </RouterLink>
+            :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning">
+          <i class="bi bi-pencil"></i>
+        </RouterLink>
+        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}" class="mx-2">
+          <i class="bi bi-info-circle"></i>
+        </RouterLink>
         <RouterLink v-if="item.userFirstLastName.trim().toLowerCase() === currentUserFullName?.toLowerCase()"
-            :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">| Delete </RouterLink>
+            :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">
+          <i class="bi bi-trash"></i>
+        </RouterLink>
       </td>
     </tr>
     </tbody>

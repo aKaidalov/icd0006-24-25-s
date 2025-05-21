@@ -13,7 +13,7 @@
         <button v-if="mode === 'idle'" class="btn btn-outline-success" @click="startTrackAdding">
           Create Track
         </button>
-        <template v-else class="btn-group offset-sm-3 col-sm-9 d-flex">
+        <template v-else class="btn-group offset-sm-2 col-sm-9 d-flex">
           <button class="btn btn-outline-success" @click="openTypeSelectionModal">Save</button>
           <button class="btn btn-outline-secondary" @click="discardTrack">Discard</button>
         </template>
@@ -36,8 +36,9 @@
             <div class="modal-body">
               <label class="form-label">Location Type</label>
               <select class="form-select" v-model="selectedTypeId" required>
-                <option value="00000000-0000-0000-0000-000000000001">Default</option>
-                <option value="00000000-0000-0000-0000-000000000002">Checkpoint</option>
+                <option v-for="type in locationTypeData.data" :key="type.id" :value="type.id">
+                  {{ type.name }}
+                </option>
               </select>
             </div>
             <div class="modal-footer">
@@ -103,6 +104,8 @@ import { GpsSessionService } from '../service/GpsSessionService'
 import type { IGpsLocation } from '../domain/IGpsLocation'
 import type { IGpsSession } from '../domain/IGpsSession'
 import type { IResultObject } from '../types/IResultObject'
+import {GpsLocationTypeService} from "../service/GpsLocationTypeService.ts";
+import type {IGpsLocationType} from "../domain/IGpsLocationType.ts";
 
 const gpsLocationService = new GpsLocationService()
 const gpsSessionService = new GpsSessionService()
@@ -131,6 +134,28 @@ const lastZoom = ref<number>(12)
 const polyline = ref<L.Polyline | null>(null)
 
 const intervalId = ref<number | null>(null)
+
+
+// Location
+const locationTypeData = reactive<IResultObject<IGpsLocationType[]>>({});
+const gpsLocationTypeService = new GpsLocationTypeService();
+
+const fetchLocationTypes = async () => {
+  requestIsOngoing.value = true;
+  try{
+    const locationTypeServiceResult = await gpsLocationTypeService.getAllAsync();
+    console.log(locationTypeServiceResult.data);
+
+    locationTypeData.data = locationTypeServiceResult.data;
+    locationTypeData.errors = locationTypeServiceResult.errors;
+
+  } catch(error){
+    console.error('Error fetching data: ', error);
+  } finally {
+    requestIsOngoing.value = false;
+  }
+};
+
 
 
 // Identification
@@ -368,6 +393,7 @@ const initMap = () => {
 
 onMounted(async () => {
   initMap()
+  await fetchLocationTypes()
   await fetchPageData()
 
   // intervalId.value = window.setInterval(() => {

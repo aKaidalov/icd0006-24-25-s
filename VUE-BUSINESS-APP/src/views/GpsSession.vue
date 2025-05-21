@@ -92,7 +92,7 @@
     </thead>
 
     <tbody>
-    <tr v-for="item in gpsSessionData.data" :key="item.id">
+    <tr v-for="item in paginatedData" :key="item.id">
       <td>
         <RouterLink
             :to="{
@@ -127,6 +127,14 @@
     </tr>
     </tbody>
   </table>
+
+  <!-- Pagination -->
+  <Pagination
+      v-model="currentPage"
+      :items-per-page="itemsPerPage"
+      :total-items="totalItems"
+      @update:itemsPerPage="itemsPerPage = $event"
+  />
 </template>
 
 <script setup lang="ts">
@@ -137,6 +145,7 @@ import type {IGpsSession} from "../domain/IGpsSession.ts";
 import {useRoute, useRouter} from "vue-router";
 import {useUserDataStore} from "../stores/userDataStore.ts";
 import {jwtDecode} from "jwt-decode";
+import Pagination from '../components/Pagination.vue'
 
 const route = useRoute();
 const router = useRouter();
@@ -145,6 +154,20 @@ const gpsSessionService = new GpsSessionService();
 const gpsSessionData = reactive<IResultObject<IGpsSession[]>>({});
 const filteredGpsSessions = reactive<IResultObject<IGpsSession[]>>({});
 const requestIsOngoing = ref(false);
+
+// Pagination
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+const paginatedData = computed(() => {
+  if (!gpsSessionData.data) return [];
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return gpsSessionData.data.slice(start, end);
+})
+
+const totalItems = computed(() => gpsSessionData.data?.length || 0)
+
 
 // Identify User
 const store = useUserDataStore()

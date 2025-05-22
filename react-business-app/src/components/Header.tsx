@@ -1,9 +1,8 @@
-// components/Header.tsx
 "use client";
 
 import Link from "next/link";
-import {useContext, useState} from "react";
-import {BaseContext, useBaseContext} from "@/context/BaseContext";
+import {useState} from "react";
+import {useBaseContext} from "@/context/BaseContext";
 
 export default function Header() {
     const [isCollapsed, setIsCollapsed] = useState(true);
@@ -14,7 +13,7 @@ export default function Header() {
         <header>
             <nav className="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
                 <div className="container">
-                    <Link className="navbar-brand" href="/">Sportmap</Link>
+                    <Link className="navbar-brand" href="/">SportMap</Link>
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -27,12 +26,6 @@ export default function Header() {
                     </button>
                     <div className={`navbar-collapse collapse d-sm-inline-flex justify-content-between ${!isCollapsed ? "show" : ""}`}>
                         <ul className="navbar-nav flex-grow-1">
-                            <li className="nav-item">
-                                <Link className="nav-link text-dark" href="/">Home</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link text-dark" href="/page1">Types</Link>
-                            </li>
                             <li className="nav-item">
                                 <Link className="nav-link text-dark" href="/gps-session">GpsSessions</Link>
                             </li>

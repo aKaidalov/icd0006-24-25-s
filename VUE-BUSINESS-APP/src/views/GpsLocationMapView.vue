@@ -1,8 +1,5 @@
 <template>
   <div class="container-fluid position-relative">
-<!--    <h1 class="h1 mb-2">-->
-<!--      <span>{{ gpsSessionData.data?.name }}</span>-->
-<!--    </h1>-->
 
     <!-- Header + Buttons -->
     <div class="d-flex justify-content-between align-items-center mb-2">

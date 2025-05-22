@@ -152,10 +152,10 @@ export default function GpsSessionsPage() {
                         <td>
                             <Link href={`/gps-session-edit/${item.id}`} className="text-warning mx-1"><i
                                 className="bi bi-pencil"></i>
-                            </Link>
+                            </Link><br/>
                             <Link href={`/gps-session-details/${item.id}`} className="mx-1">
                                 <i className="bi bi-info-circle"></i>
-                            </Link>
+                            </Link><br/>
                             <Link href={`/gps-session-delete/${item.id}`} className="text-danger mx-1">
                                 <i className="bi bi-trash"></i>
                             </Link>

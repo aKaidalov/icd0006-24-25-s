@@ -1,4 +1,4 @@
-export interface IGpsSessionRequest {
+export interface IGpsSessionCreateRequest {
     name: string;
     description: string;
     gpsSessionTypeId: string;

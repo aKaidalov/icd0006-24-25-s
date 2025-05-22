@@ -111,16 +111,16 @@
       <td>{{ formatDate(item.recordedAt) }}</td>
       <td>{{ item.gpsLocationsCount }}</td>
       <td>{{ item.userFirstLastName }}</td>
-      <td>
+      <td class="text-center align-middle">
         <RouterLink v-if="item.userFirstLastName.trim().toLowerCase() === currentUserFullName?.toLowerCase()"
-            :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning">
+            :to="{path: `/gps-session-edit/${item.id}`, query: route.query}" class="text-warning mx-1">
           <i class="bi bi-pencil"></i>
         </RouterLink>
-        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}" class="mx-2">
+        <RouterLink :to="{path: `/gps-session-details/${item.id}`, query: route.query}" class="mx-1">
           <i class="bi bi-info-circle"></i>
         </RouterLink>
         <RouterLink v-if="item.userFirstLastName.trim().toLowerCase() === currentUserFullName?.toLowerCase()"
-            :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger">
+            :to="{path: `/gps-session-delete/${item.id}`, query: route.query}" class="text-danger mx-1">
           <i class="bi bi-trash"></i>
         </RouterLink>
       </td>
@@ -133,12 +133,11 @@
       v-model="currentPage"
       :items-per-page="itemsPerPage"
       :total-items="totalItems"
-      @update:itemsPerPage="itemsPerPage = $event"
   />
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 import type {IResultObject} from "../types/IResultObject.ts";
 import type {IGpsSession} from "../domain/IGpsSession.ts";
@@ -154,19 +153,6 @@ const gpsSessionService = new GpsSessionService();
 const gpsSessionData = reactive<IResultObject<IGpsSession[]>>({});
 const filteredGpsSessions = reactive<IResultObject<IGpsSession[]>>({});
 const requestIsOngoing = ref(false);
-
-// Pagination
-const currentPage = ref(1)
-const itemsPerPage = ref(5)
-
-const paginatedData = computed(() => {
-  if (!gpsSessionData.data) return [];
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  return gpsSessionData.data.slice(start, end);
-})
-
-const totalItems = computed(() => gpsSessionData.data?.length || 0)
 
 
 // Identify User
@@ -186,9 +172,42 @@ const currentUserFullName = computed(() => {
   return `${firstName} ${lastName}`.trim()
 })
 
-// console.log("!" + currentUserFullName.value + "!")
+
+// Pagination
+const paginationFilters = {
+  defaultStartPage: 1,
+  defaultItemsPerPage: 5
+}
+
+const currentPage = ref(paginationFilters.defaultStartPage);
+const itemsPerPage = ref(paginationFilters.defaultItemsPerPage);
+
+const paginatedData = computed(() => {
+  if (!gpsSessionData.data) return [];
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return gpsSessionData.data.slice(start, end);
+})
+
+const totalItems = computed(() => gpsSessionData.data?.length || 0)
+
+watch(currentPage, (newPage) => {
+  router.replace({
+    query: {
+      ...route.query,
+      currentPage: newPage.toString()
+    }
+  });
+});
+
+watch(() => route.query.refresh, async (val) => {
+  if (val === 'true') {
+    await fetchFilteredData();
+  }
+});
 
 
+// Page data
 async function fetchFilteredData() {
   requestIsOngoing.value = true;
   try {
@@ -196,11 +215,16 @@ async function fetchFilteredData() {
     await router.push({
       query: {
         ...route.query,
+        //Filters
         minLocationsCount: filters.minLocationsCount.toString(),
         minDuration: filters.minDuration.toString(),
         minDistance: filters.minDistance.toString(),
         fromDateTime: filters.fromDateTime,
         toDateTime: filters.toDateTime,
+        //Pagination
+        currentPage: currentPage.value,
+        refresh: 'false', //To change when creating session to change url so pagination use updated data
+        //Search
         search: searchTerm.value || undefined,
       }
     });
@@ -228,43 +252,42 @@ async function fetchFilteredData() {
 }
 
 
-// Filter
-const filters = reactive({
-  minLocationsCount: 10,
-  minDuration: 60,
-  minDistance: 10,
-  fromDateTime: '',
-  toDateTime: ''
-});
-
-function initFiltersFromQuery() {
-  const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
-
-  const fromDateDefault = toISOStringLocal(new Date('2020-01-01T00:00:00.000Z'));
-  const toDateCurrent = toISOStringLocal(new Date(Date.now() + 3 * 60 * 60 * 1000)); // UTC + 3h
-
-  filters.minLocationsCount = route.query.minLocationsCount ? parseInt(route.query.minLocationsCount as string) : 0; //10
-  filters.minDuration = route.query.minDuration ? parseInt(route.query.minDuration as string) : 0; //60
-  filters.minDistance = route.query.minDistance ? parseInt(route.query.minDistance as string) : 0; //10
-  filters.fromDateTime = (route.query.fromDateTime as string) || fromDateDefault;
-  filters.toDateTime = (route.query.toDateTime as string) || toDateCurrent;
-
-  // currentPage.value = parseInt(route.query.currentPage as string) || 1
-  // itemsPerPage.value = parseInt(route.query.itemsPerPage as string) || 5
-
-  if (route.query.search) searchTerm.value = route.query.search as string;
-}
-
-function getDefaultFilters() {
+// Filter TODO: should be refactored
+const getDefaultFilters = () => {
   const toISOStringLocal = (date: Date) => date.toISOString().slice(0, 16);
 
   return {
-    minLocationsCount: 10,
-    minDuration: 60,
-    minDistance: 10,
+    minLocationsCount: 0, //10
+    minDuration: 0, //60
+    minDistance: 0, //10
     fromDateTime: toISOStringLocal(new Date('2020-01-01T00:00:00.000Z')),
     toDateTime: toISOStringLocal(new Date(Date.now() + 3 * 60 * 60 * 1000)) // UTC+3
   };
+}
+
+const defaultFilters = getDefaultFilters()
+
+const filters = reactive({
+  minLocationsCount: defaultFilters.minLocationsCount,
+  minDuration: defaultFilters.minDuration,
+  minDistance: defaultFilters.minDistance,
+  fromDateTime: defaultFilters.fromDateTime,
+  toDateTime: defaultFilters.toDateTime,
+});
+
+function initFiltersFromQuery() {
+  // Filters
+  filters.minLocationsCount = route.query.minLocationsCount ? parseInt(route.query.minLocationsCount as string) : defaultFilters.minLocationsCount;
+  filters.minDuration = route.query.minDuration ? parseInt(route.query.minDuration as string) : defaultFilters.minDuration;
+  filters.minDistance = route.query.minDistance ? parseInt(route.query.minDistance as string) : defaultFilters.minDistance;
+  filters.fromDateTime = (route.query.fromDateTime as string) || defaultFilters.fromDateTime;
+  filters.toDateTime = (route.query.toDateTime as string) || defaultFilters.toDateTime;
+
+  // Pagination
+  currentPage.value = parseInt(route.query.currentPage as string) || paginationFilters.defaultStartPage
+
+  // Search
+  if (route.query.search) searchTerm.value = route.query.search as string;
 }
 
 function resetFilters() {

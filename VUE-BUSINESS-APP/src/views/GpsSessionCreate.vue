@@ -121,7 +121,13 @@ const doCreate = async () => {
 }
 
 function returnToSessionsPage(): void {
-  router.push({name: 'GpsSession', query: route.query});
+  router.push({
+    name: 'GpsSession',
+    query: {
+      ...route.query,
+      refresh: 'true' // For Pagination to show new session after creation -> modifies tthe path
+    }
+  });
 }
 
 function cancel() {

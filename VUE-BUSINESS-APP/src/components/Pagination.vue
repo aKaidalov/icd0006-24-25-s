@@ -1,44 +1,91 @@
 <template>
-  <div class="d-flex justify-content-between align-items-center my-3">
-    <div>
-      <label for="itemsPerPage" class="me-2">Items per page:</label>
-      <select id="itemsPerPage" v-model.number="localItemsPerPage" class="form-select d-inline-block w-auto">
-        <option :value="5">5</option>
-        <option :value="10">10</option>
-        <option :value="20">20</option>
-        <option :value="50">50</option>
-      </select>
-    </div>
+  <div class="d-flex justify-content-center my-4">
+    <nav>
+      <ul class="pagination">
+        <li class="page-item" :class="{ disabled: currentPage === 1 }">
+          <button class="page-link" @click="goToPage(currentPage - 1)" :disabled="currentPage === 1">
+            Previous
+          </button>
+        </li>
 
-    <div>
-      <button class="btn btn-outline-primary btn-sm me-1" :disabled="modelValue === 1" @click="updatePage(modelValue - 1)">Previous</button>
-      <span>Page {{ modelValue }} / {{ totalPages }}</span>
-      <button class="btn btn-outline-primary btn-sm ms-1" :disabled="modelValue === totalPages" @click="updatePage(modelValue + 1)">Next</button>
-    </div>
+        <li v-for="page in visiblePages" :key="page.key" class="page-item" :class="{ active: page.number === currentPage, disabled: page.isEllipsis }">
+          <span v-if="page.isEllipsis" class="page-link">…</span>
+          <button
+              v-else
+              class="page-link"
+              @click="goToPage(page.number)"
+          >
+            {{ page.number }}
+          </button>
+        </li>
+
+        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+          <button class="page-link" @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages">
+            Next
+          </button>
+        </li>
+      </ul>
+    </nav>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, defineProps} from 'vue'
+import { computed, defineProps, defineEmits } from 'vue'
 
 const props = defineProps<{
-  modelValue: number, // currentPage
-  itemsPerPage: number,
-  totalItems: number
+  modelValue: number,
+  totalItems: number,
+  itemsPerPage: number
 }>()
 
-const emit = defineEmits(['update:modelValue', 'update:itemsPerPage'])
+const emit = defineEmits(['update:modelValue'])
 
-const localItemsPerPage = computed({
-  get: () => props.itemsPerPage,
-  set: (value) => emit('update:itemsPerPage', value)
-})
+const currentPage = computed(() => props.modelValue)
+const totalPages = computed(() => Math.max(1, Math.ceil(props.totalItems / props.itemsPerPage)))
 
-const totalPages = computed(() => {
-  return Math.max(1, Math.ceil(props.totalItems / props.itemsPerPage))
-})
-
-function updatePage(newPage: number) {
-  emit('update:modelValue', newPage)
+function goToPage(page: number) {
+  if (page >= 1 && page <= totalPages.value) {
+    emit('update:modelValue', page)
+  }
 }
+
+const visiblePages = computed(() => {
+  const total = totalPages.value
+  const current = currentPage.value
+  const delta = 2
+  const range = []
+  let left = current - delta
+  let right = current + delta
+
+  if (left < 2) {
+    right += 2 - left
+    left = 2
+  }
+  if (right > total - 1) {
+    left -= right - (total - 1)
+    right = total - 1
+  }
+
+  left = Math.max(left, 2)
+
+  range.push({ number: 1, key: 'page-1' })
+
+  if (left > 2) {
+    range.push({ isEllipsis: true, key: 'left-ellipsis' })
+  }
+
+  for (let i = left; i <= right; i++) {
+    range.push({ number: i, key: `page-${i}` })
+  }
+
+  if (right < total - 1) {
+    range.push({ isEllipsis: true, key: 'right-ellipsis' })
+  }
+
+  if (total > 1) {
+    range.push({ number: total, key: `page-${total}` })
+  }
+
+  return range
+})
 </script>

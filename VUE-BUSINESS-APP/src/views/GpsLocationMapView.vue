@@ -271,6 +271,9 @@ const fetchPageData = async () => {
 
       const latlngs: L.LatLngExpression[] = []
 
+      // Sort Before for right track creation
+      result.data.sort((a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime());
+
       // Update
       result.data.forEach(location => {
         const marker = L.marker([location.latitude, location.longitude], {

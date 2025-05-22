@@ -167,7 +167,7 @@ const currentUserFullName = computed(() => {
 })
 
 const verifyUserByFullName = () => {
-  console.log(`|${currentUserFullName.value}| - |${gpsSessionData.data?.userFirstLastName}|`)
+  // console.log(`|${currentUserFullName.value}| - |${gpsSessionData.data?.userFirstLastName}|`)
   return currentUserFullName.value === gpsSessionData.data?.userFirstLastName;
 }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { IdentityService } from "@/service/IdentityService"; // adjust the path as needed
 
 interface IBaseContext {
     jwt: string | null;

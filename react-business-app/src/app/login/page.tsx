@@ -1,14 +1,14 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {BaseContext, useBaseContext} from "@/context/BaseContext";
+import {useBaseContext} from "@/context/BaseContext";
 import { IdentityService } from "@/service/IdentityService";
 
 export default function LoginPage() {
     const router = useRouter();
-    const { setJwt, jwt } = useBaseContext();
+    const { setJwt } = useBaseContext();
     const [email, setEmail] = useState("sasha@test.ee");
     const [password, setPassword] = useState("123456Az@");
     const [error, setError] = useState<string | null>(null);

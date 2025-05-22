@@ -1,6 +1,4 @@
-import {IDomainId} from "@/domain/IDomainId";
-
-export interface IGpsSessionCreateRequest extends IDomainId{
+export interface IGpsSessionCreateRequest {
     name: string;
     description: string;
     recordedAt: string;

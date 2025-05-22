@@ -3,6 +3,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { Inter } from "next/font/google";
 import "./globals.css";
 import BootstrapActivation from '@/components/BootstrapActivation';
+import {BaseProvider} from "@/context/BaseContext";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,10 +17,14 @@ export const metadata: Metadata = {
 export default function RootLayout({children}: Readonly<{children: React.ReactNode;}>) {
   return (
       <html lang="en">
-      <body className={inter.className}>
-      {children}
-      <BootstrapActivation />
-      </body>
+          <body className={inter.className}>
+              <BaseProvider>
+                  <Header/>
+                  {children}
+                  <BootstrapActivation />
+                  <Footer/>
+              </BaseProvider>
+          </body>
       </html>
   );
 }

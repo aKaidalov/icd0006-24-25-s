@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { GpsSessionService } from "@/service/GpsSessionService";
-import { IGpsSession } from "@/domain/IGpsSession";
+import { IGpsSession } from "@/domain/IGpsSessionResponse";
 import { IResultObject } from "@/types/IResultObject";
 
 function toISOStringLocal(date: Date): string {

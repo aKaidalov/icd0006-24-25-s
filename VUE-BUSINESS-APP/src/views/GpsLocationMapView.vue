@@ -398,9 +398,9 @@ onMounted(async () => {
   await fetchLocationTypes()
   await fetchPageData()
 
-  // intervalId.value = window.setInterval(() => {
-  //   fetchPageData()
-  // }, 2000);
+  intervalId.value = window.setInterval(() => {
+    fetchPageData()
+  }, 60000);
 })
 
 onBeforeUnmount(() => {

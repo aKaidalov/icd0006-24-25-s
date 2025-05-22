@@ -3,12 +3,12 @@
 
 import Link from "next/link";
 import {useContext, useState} from "react";
-import {BaseContext} from "@/context/BaseContext";
+import {BaseContext, useBaseContext} from "@/context/BaseContext";
 
 export default function Header() {
     const [isCollapsed, setIsCollapsed] = useState(true);
 
-    const context = useContext(BaseContext);
+    const {isAuthenticated} = useBaseContext();
 
     return (
         <header>
@@ -37,7 +37,7 @@ export default function Header() {
                                 <Link className="nav-link text-dark" href="/gps-session">GpsSessions</Link>
                             </li>
                         </ul>
-                        {!context?.isAuthenticated ? (
+                        {!isAuthenticated ? (
                             <ul className="navbar-nav">
                                 <li className="nav-item">
                                     <Link className="nav-link text-dark" href="/register">Register</Link>

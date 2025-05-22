@@ -12,6 +12,14 @@ interface IBaseContext {
     isAuthenticated: boolean;
 }
 
+export const useBaseContext = () => {
+    const context = useContext(BaseContext);
+    if (!context) {
+        throw new Error("useMainContext must be used within a MainProvider");
+    }
+    return context;
+}
+
 export const BaseContext = createContext<IBaseContext | undefined>(undefined);
 
 export const BaseProvider = ({ children }: { children: ReactNode }) => {

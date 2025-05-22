@@ -24,11 +24,9 @@ export default function GpsSessionEditPage() {
     });
 
     const [errors, setErrors] = useState<IResultObject<IGpsSession>["errors"]>();
-    const [requestIsOngoing, setRequestIsOngoing] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
-            setRequestIsOngoing(true);
             try {
                 const result = await gpsSessionService.getByIdAsync(sessionId);
                 if (result.data) {
@@ -45,8 +43,6 @@ export default function GpsSessionEditPage() {
                 setErrors(result.errors);
             } catch (error) {
                 console.error('Error fetching data:', error);
-            } finally {
-                setRequestIsOngoing(false);
             }
         };
 
@@ -65,7 +61,6 @@ export default function GpsSessionEditPage() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        setRequestIsOngoing(true);
         try {
             const result = await gpsSessionService.updateAsync(sessionId, form);
             setErrors(result.errors);
@@ -73,8 +68,6 @@ export default function GpsSessionEditPage() {
             router.push('/gps-session');
         } catch (error) {
             console.error('Error saving data:', error);
-        } finally {
-            setRequestIsOngoing(false);
         }
     };
 

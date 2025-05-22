@@ -26,10 +26,8 @@ export default function GpsSessionsPage() {
     const gpsSessionService = new GpsSessionService()
     const [gpsSessionData, setGpsSessionData] = useState<IResultObject<IGpsSession[]>>({});
     const [filters, setFilters] = useState(getDefaultFilters());
-    const [requestIsOngoing, setRequestIsOngoing] = useState(false);
 
     const fetchFilteredData = async () => {
-        setRequestIsOngoing(true);
         try {
             const result = await gpsSessionService.getFilteredAsync(filters);
             setGpsSessionData({
@@ -38,8 +36,6 @@ export default function GpsSessionsPage() {
             });
         } catch (error) {
             console.error("Error fetching filtered data", error);
-        } finally {
-            setRequestIsOngoing(false);
         }
     };
 

@@ -75,7 +75,7 @@ export default function LoginPage() {
                             </div>
 
                             <div className="mt-3">
-                                <p><Link href="/forgot-password">Forgot your password?</Link></p>
+                                <p><Link href="#">Forgot your password?</Link></p>
                                 <p><Link href="/register">Register as a new user</Link></p>
                             </div>
                         </form>

@@ -1,8 +1,10 @@
-export interface IGpsSessionCreateRequest {
+import {IDomainId} from "@/domain/IDomainId";
+
+export interface IGpsSessionCreateRequest extends IDomainId{
     name: string;
     description: string;
-    gpsSessionTypeId: string;
     recordedAt: string;
     paceMin: number;
     paceMax: number;
+    gpsSessionTypeId: string;
 }

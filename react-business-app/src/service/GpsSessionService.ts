@@ -39,4 +39,34 @@ export class GpsSessionService extends BaseEntityService<IGpsSession> {
             };
         }
     }
+
+    async updateAsync(id: string, entity: IGpsSessionCreateRequest) {
+        const url = `${this.basePath}/${id}`;
+        try {
+            const jwt = this.getStore().jwt
+            let options = {};
+            if (jwt) {
+                options = {
+                    headers: {
+                        Authorization: `Bearer ${jwt}`,
+                    }
+                }
+            }
+            const response = await BaseService.axios.put(url, entity, options);
+
+            console.log('update response', response);
+
+            if (response.status <= 300) {
+                return {data: response.data};
+            }
+            return {
+                errors: [(response.status.toString() + " " + response.statusText).trim()],
+            };
+        } catch (error: any) {
+            console.log('error: ', error.response?.data);
+            return {
+                errors: [error.response?.data?.errors || 'Unknown error -> view logs']
+            };
+        }
+    }
 }

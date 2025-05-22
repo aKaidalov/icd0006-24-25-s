@@ -157,7 +157,6 @@ const fetchLocationTypes = async () => {
 };
 
 
-
 // Identification
 const currentUserFullName = computed(() => {
   if (!store.jwt) return null
@@ -220,7 +219,7 @@ const confirmSave = async () => {
   }
 
   showTypeModal.value = false
-  alert(`Saved ${payload.length} locations.`)
+  // alert(`Saved ${payload.length} locations.`)
   mode.value = 'idle'
   bulkLocations.value = []
   clearTempMarkersData()

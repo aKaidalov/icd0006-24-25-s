@@ -33,9 +33,19 @@
         <input v-model="filters.toDateTime" type="datetime-local" class="form-control" />
       </div>
     </div>
-    <div class="d-flex justify-content-end mt-3">
-      <button class="btn btn-outline-secondary btn-sm me-2" @click="resetFilters">Reset</button>
-      <button class="btn btn-primary btn-sm" @click="fetchFilteredData">Filter</button>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+
+      <div class="col-md-3">
+        <select v-model="filters.ownSessionsOnly" class="form-select">
+          <option :value="false">All Sessions</option>
+          <option v-if="store.jwt" :value="true">My Sessions</option>
+        </select>
+      </div>
+
+      <div class="d-flex">
+        <button class="btn btn-outline-secondary btn-sm me-2" @click="resetFilters">Reset</button>
+        <button class="btn btn-primary btn-sm" @click="fetchFilteredData">Filter</button>
+      </div>
     </div>
   </div>
 
@@ -221,6 +231,7 @@ async function fetchFilteredData() {
         minDistance: filters.minDistance.toString(),
         fromDateTime: filters.fromDateTime,
         toDateTime: filters.toDateTime,
+        ownSessionsOnly: filters.ownSessionsOnly.toString(),
         //Pagination
         currentPage: currentPage.value,
         refresh: 'false', //To change when creating session to change url so pagination use updated data
@@ -240,6 +251,13 @@ async function fetchFilteredData() {
     filteredGpsSessions.data = result.data;
     gpsSessionData.data = [...filteredGpsSessions.data];
     gpsSessionData.errors = result.errors;
+
+    // filter by user data
+    if (filters.ownSessionsOnly && currentUserFullName.value) {
+      gpsSessionData.data = gpsSessionData.data.filter(
+          s => s.userFirstLastName?.trim().toLowerCase() === currentUserFullName.value?.toLowerCase()
+      );
+    }
 
     await handleSearch();
     // clearSearch();
@@ -261,7 +279,8 @@ const getDefaultFilters = () => {
     minDuration: 0, //60
     minDistance: 0, //10
     fromDateTime: toISOStringLocal(new Date('2020-01-01T00:00:00.000Z')),
-    toDateTime: toISOStringLocal(new Date(Date.now() + 3 * 60 * 60 * 1000)) // UTC+3
+    toDateTime: toISOStringLocal(new Date(Date.now() + 3 * 60 * 60 * 1000)), // UTC+3
+    ownSessionsOnly: false,
   };
 }
 
@@ -273,6 +292,7 @@ const filters = reactive({
   minDistance: defaultFilters.minDistance,
   fromDateTime: defaultFilters.fromDateTime,
   toDateTime: defaultFilters.toDateTime,
+  ownSessionsOnly: defaultFilters.ownSessionsOnly,
 });
 
 function initFiltersFromQuery() {
@@ -282,6 +302,7 @@ function initFiltersFromQuery() {
   filters.minDistance = route.query.minDistance ? parseInt(route.query.minDistance as string) : defaultFilters.minDistance;
   filters.fromDateTime = (route.query.fromDateTime as string) || defaultFilters.fromDateTime;
   filters.toDateTime = (route.query.toDateTime as string) || defaultFilters.toDateTime;
+  filters.ownSessionsOnly = route.query.ownSessionsOnly === 'true';
 
   // Pagination
   currentPage.value = parseInt(route.query.currentPage as string) || paginationFilters.defaultStartPage
@@ -298,6 +319,8 @@ function resetFilters() {
   filters.minDistance = defaults.minDistance;
   filters.fromDateTime = defaults.fromDateTime;
   filters.toDateTime = defaults.toDateTime;
+
+  // filters.ownSessionsOnly = defaultFilters.ownSessionsOnly;
 
   router.replace({ query: {} });
   fetchFilteredData();

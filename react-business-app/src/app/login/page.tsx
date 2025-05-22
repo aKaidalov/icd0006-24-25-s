@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {BaseContext, useBaseContext} from "@/context/BaseContext";
-import { IdentityService } from "../../service/IdentityService";
+import { IdentityService } from "@/service/IdentityService";
 
 export default function LoginPage() {
     const router = useRouter();

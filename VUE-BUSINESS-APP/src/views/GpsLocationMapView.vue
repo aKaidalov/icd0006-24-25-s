@@ -109,7 +109,7 @@ const gpsSessionService = new GpsSessionService()
 const route = useRoute()
 const gpsSessionId = route.params.gpsSessionId as string
 
-const map = ref<L.Map | null>(null)
+const map = ref<L.Map>()
 const markers: L.Marker[] = []
 const tempMarkers: L.Marker[] = []
 
@@ -287,7 +287,7 @@ const fetchPageData = async () => {
               latitude: latlng.lat,
               longitude: latlng.lng
             }
-            const result = await gpsLocationService.updateAsync(location.id, updated)
+            const result = await gpsLocationService.updateAsync(location.id.toString(), updated)
             await fetchPageData()
             if (result.errors) {
               alert('Failed to update location: ' + result.errors.join(', '))
@@ -382,11 +382,12 @@ const initMap = () => {
     lastZoom.value = map.value.getZoom()
     map.value.off() // remove all event listeners
     map.value.remove() // destroy the map instance
-    map.value = null
+    // map.value = null
   }
 
-  map.value = L.map('map').setView(lastCenter.value, lastZoom.value)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map.value)
+  const mapInstance = L.map('map').setView([59.437, 24.7535], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
+  map.value = mapInstance;
   map.value.on('click', onMapClick)
 }
 

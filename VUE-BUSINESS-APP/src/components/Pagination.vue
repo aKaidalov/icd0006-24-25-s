@@ -13,7 +13,7 @@
           <button
               v-else
               class="page-link"
-              @click="goToPage(page.number)"
+              @click="goToPage(page.number!)"
           >
             {{ page.number }}
           </button>

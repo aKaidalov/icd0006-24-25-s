@@ -6,7 +6,7 @@
 import { onMounted, ref } from 'vue'
 import L from 'leaflet'
 
-const map = ref<L.Map | null>(null)
+const map = ref<L.Map | L.LayerGroup<any>>()
 
 onMounted(() => {
   map.value = L.map('map').setView([59.437, 24.7535], 12)

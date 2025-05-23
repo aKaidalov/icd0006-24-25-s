@@ -14,9 +14,9 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
         super();
     }
 
-     async getAllAsync(): Promise<IResultObject<TEntity>> {
+     async getAllAsync(): Promise<IResultObject<TEntity[]>> {
          try {
-            const response = await BaseService.axios.get<TEntity>(this.basePath);
+            const response = await BaseService.axios.get<TEntity[]>(this.basePath);
 
             console.log('getAll response', response);
 
@@ -34,9 +34,9 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
         }
     }
 
-    async getFilteredAsync(params: any): Promise<IResultObject<TEntity>> {
+    async getFilteredAsync(params: any): Promise<IResultObject<TEntity[]>> {
         try {
-            const response = await BaseService.axios.get<TEntity>(this.basePath, { params });
+            const response = await BaseService.axios.get<TEntity[]>(this.basePath, { params });
             if (response.status <= 300) {
                 return { data: response.data };
             }

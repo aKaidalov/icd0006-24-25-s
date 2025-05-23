@@ -106,7 +106,7 @@ const fetchPageData = async () => {
     gpsSessionData.data = result.data;
     gpsSessionData.errors = result.errors;
 
-    const typeNameObj = JSON.parse(result.data.gpsSessionType);
+    const typeNameObj = JSON.parse(result.data!.gpsSessionType);
     const typeName = typeNameObj?.en;
 
     const matchedType = gpsSessionTypeData.data?.find(type => type.name === typeName);

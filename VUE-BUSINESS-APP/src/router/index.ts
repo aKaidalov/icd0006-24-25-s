@@ -1,5 +1,4 @@
 import {createRouter, createWebHistory} from "vue-router";
-// import Home from "../views/Home.vue";
 import Types from "../views/Types.vue";
 import Register from "../views/Register.vue";
 import Login from "../views/Login.vue";
@@ -10,7 +9,6 @@ import GpsSessionEdit from "../views/GpsSessionEdit.vue";
 import GpsSessionDelete from "../views/GpsSessionDelete.vue";
 import Logout from "../views/Logout.vue";
 import Account from "../views/Account.vue";
-// import GpsLocation from "../views/GpsLocation.vue";
 import MapView from "../views/MapView.vue";
 import GpsLocationMapView from "../views/GpsLocationMapView.vue";
 import AccountEdit from "../views/AccountEdit.vue";

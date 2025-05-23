@@ -10,7 +10,7 @@
         </div>
 
         <section>
-          <form @submit.prevent="doRegister" id="account" method="post" novalidate="novalidate">
+          <form @submit.prevent="doRegister" id="account" method="post">
             <div class="form-floating mb-3">
               <input v-model="email" class="form-control" id="Input_Email" autocomplete="username" aria-required="true"
               placeholder="name@example.com" type="email">

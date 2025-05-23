@@ -249,7 +249,7 @@ async function fetchFilteredData() {
     });
 
     filteredGpsSessions.data = result.data;
-    gpsSessionData.data = [...filteredGpsSessions.data];
+    gpsSessionData.data = [...(filteredGpsSessions.data ?? [])];
     gpsSessionData.errors = result.errors;
 
     // filter by user data

@@ -10,7 +10,7 @@ export abstract class BaseEntityService<TEntity> extends BaseService {
         return this.store;
     }
 
-    protected constructor(private basePath: string) {
+    protected constructor(protected basePath: string) {
         super();
     }
 

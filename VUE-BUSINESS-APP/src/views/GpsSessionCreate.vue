@@ -70,7 +70,7 @@
 <script setup lang="ts">
 import {onMounted, reactive, ref} from "vue";
 import type {IResultObject} from "../types/IResultObject.ts";
-import type {IGpsSession} from "../domain/IGpsSession.ts";
+import type {IGpsSessionResponse} from "../domain/IGpsSession.ts";
 import {GpsSessionService} from "../service/GpsSessionService.ts";
 import type {IGpsSessionRequest} from "../domain/IGpsSessionRequest.ts";
 import router from "../router";
@@ -81,7 +81,7 @@ import {useRoute} from "vue-router";
 const route = useRoute();
 
 const requestIsOngoing = ref(false);
-const gpsSessionData = reactive<IResultObject<IGpsSession>>({});
+const gpsSessionData = reactive<IResultObject<IGpsSessionResponse>>({});
 const gpsSessionService = new GpsSessionService();
 
 // TODO: change to IGpsSessionCreateRequest?
@@ -98,7 +98,7 @@ const gpsSession = reactive<IGpsSessionRequest>({
 const postGpsSession = async () => {
   requestIsOngoing.value = true;
   try{
-    const result = await gpsSessionService.addAsync(gpsSession);
+    const result = await gpsSessionService.addSessionAsync(gpsSession);
     console.log(result.data);
 
     gpsSessionData.data = result.data;

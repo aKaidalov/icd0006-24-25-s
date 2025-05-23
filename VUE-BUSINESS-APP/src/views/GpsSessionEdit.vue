@@ -148,7 +148,7 @@ function cancel() {
 async function save() {
   requestIsOngoing.value = true;
   try{
-    const result = await gpsSessionService.updateAsync(sessionId, form.value);
+    const result = await gpsSessionService.updateSessionAsync(sessionId, form.value);
     console.log(result.data);
 
     gpsSessionData.errors = result.errors;

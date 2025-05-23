@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation';
 import type { IGpsSessionCreateRequest } from '@/domain/IGpsSessionRequest';
 import type { IResultObject } from '@/types/IResultObject';
 import { GpsSessionService } from '@/service/GpsSessionService';
-import {IGpsSessionCreateResponse} from "@/domain/IGpsSessionResponse";
+import {IGpsSessionResponse} from "@/domain/IGpsSessionResponse";
 
 export default function CreateGpsSessionPage() {
     const router = useRouter();
     const gpsSessionService = new GpsSessionService();
 
     const [requestIsOngoing, setRequestIsOngoing] = useState(false);
-    const [gpsSessionData, setGpsSessionData] = useState<IResultObject<IGpsSessionCreateResponse>>({});
+    const [gpsSessionData, setGpsSessionData] = useState<IResultObject<IGpsSessionResponse>>({});
     const [gpsSession, setGpsSession] = useState<IGpsSessionCreateRequest>({
         name: '',
         description: '',
